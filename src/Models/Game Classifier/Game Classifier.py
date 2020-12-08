@@ -8,8 +8,6 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.preprocessing import image
 
-import os
-
 
 def init_nn():
     """
@@ -49,7 +47,7 @@ def main():
     :return:
     """
 
-    result = import_image("Game Classifier/Case 1: Gameplay.jpg")
+    result = import_image("Game Classifier/Case 2: Gameplay.jpg")
 
     print(result.shape)
 
