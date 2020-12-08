@@ -17,7 +17,8 @@ def init_nn():
     """
 
     input_layer = layers.Input()
-    convolution = layers.Conv3D()(input_layer)
+    padding = layers.ZeroPadding3D()(input_layer)
+    convolution = layers.Conv3D()(padding)
     dense = layers.Dense()(convolution)
     output = layers.Dense()(dense)
 
