@@ -6,6 +6,9 @@ Author: Arthur wesley, Gregory Ghiroli
 
 from tensorflow import keras
 from tensorflow.keras import layers
+from tensorflow.keras.preprocessing import image
+
+import os
 
 
 def init_nn():
@@ -19,10 +22,23 @@ def init_nn():
     input_layer = layers.Input()
     padding = layers.ZeroPadding3D()(input_layer)
     convolution = layers.Conv3D()(padding)
-    dense = layers.Dense()(convolution)
+    flatten = layers.Flatten()(convolution)
+    dense = layers.Dense()(flatten)
     output = layers.Dense()(dense)
 
     return keras.Model(input_layer=input_layer, outputs=output, name="Game Classifier")
+
+
+def import_image(file_path):
+    """
+
+    converts an image from a file path to a numpy array
+
+    :param file_path: path to the image
+    :return: numpy array representation of the image
+    """
+
+    return image.img_to_array(image.load_img(file_path, target_size=(1280, 720)))
 
 
 def main():
@@ -33,8 +49,12 @@ def main():
     :return:
     """
 
-    model = init_nn()
-    model.summary()
+    result = import_image("Game Classifier/Case 1: Gameplay.jpg")
+
+    print(result.shape)
+
+    # model = init_nn()
+    # model.summary()
 
 
 if __name__ == "__main__":
