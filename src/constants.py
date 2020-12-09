@@ -15,8 +15,8 @@ res_480p = (848, 480)
 res_360p = (640, 360)
 res_160p = (272, 160)
 
-# resolution of our images
-resolution = res_480p
+# dimensions of our images
+dimensions = res_480p
 
 
 def size(res):
@@ -24,7 +24,7 @@ def size(res):
 
     calculates the size in kilobytes of a color image of the given dimensions
 
-    :param res: resolution to calculate
+    :param res: dimensions to calculate
     :return: size of that image
     """
 
@@ -39,7 +39,7 @@ def main():
     :return:
     """
 
-    print("resolution, size (kb)")
+    print("dimensions, size (kb)")
     print("1080p", size(res_1080p), sep=", ")
     print("720p", size(res_720p), sep=", ")
     print("480p", size(res_480p), sep=", ")

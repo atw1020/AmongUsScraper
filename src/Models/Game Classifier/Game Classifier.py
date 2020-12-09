@@ -8,6 +8,8 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.preprocessing import image
 
+from src import constants
+
 
 def init_nn():
     """
@@ -17,7 +19,7 @@ def init_nn():
     :return: game classifier neural network
     """
 
-    input_layer = layers.Input()
+    input_layer = layers.Input(input_shape=constants.dimensions)
     padding = layers.ZeroPadding3D()(input_layer)
     convolution = layers.Conv3D()(padding)
     flatten = layers.Flatten()(convolution)
