@@ -4,19 +4,19 @@ Author: Arthur wesley, Gregory Ghiroli
 
 """
 
-'''
+"""
 
 common video resolutions
 
-'''
+"""
 res_1080p = (1920, 1080)
 res_720p = (1280, 720)
-res_480p = (848, 480)
+res_480p = (852, 480)
 res_360p = (640, 360)
-res_160p = (272, 160)
+res_160p = (284, 160)
 
 # dimensions of our images
-dimensions = res_480p
+dimensions = res_360p
 
 
 def size(res):
