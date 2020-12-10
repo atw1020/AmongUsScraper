@@ -56,6 +56,13 @@ text in figure 2 is not discernible whereas that
 in figure 3 is. Thus, we chose an image 
 resolution of 360p for this project
 
+# Data Collection
+
+In order to Collect Data we use twitch's API to
+collect images of among us from the web. These
+images are then stored as jpg images in order to
+reduce the size that the images take up.
+
 # Data Labeling
 
 Since all of our code will be supervised
