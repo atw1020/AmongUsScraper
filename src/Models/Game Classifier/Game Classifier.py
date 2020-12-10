@@ -19,14 +19,26 @@ def init_nn():
     :return: game classifier neural network
     """
 
-    input_layer = layers.Input(input_shape=constants.dimensions + (3,))
-    padding = layers.ZeroPadding3D()(input_layer)
-    convolution = layers.Conv3D()(padding)
-    flatten = layers.Flatten()(convolution)
-    dense = layers.Dense()(flatten)
-    output = layers.Dense()(dense)
+    # input layer
+    input_layer = layers.Input(shape=constants.dimensions + (3,))
 
-    return keras.Model(input_layer=input_layer, outputs=output, name="Game Classifier")
+    # 2D convolutions
+    convolution =   layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(input_layer)
+    dropout     =   layers.Dropout(rate=0.8)(convolution)
+    pooling     =   layers.MaxPooling2D(pool_size=3)(dropout)
+    convolution2=   layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(pooling)
+    dropout2    =   layers.Dropout(rate=0.8)(convolution2)
+    pooling2    =   layers.MaxPooling2D(pool_size=2)(dropout2)
+    convolution3=   layers.Conv2D(filters=32, kernel_size=11, strides=5, activation="relu", padding="same")(pooling2)
+    dropout3    =   layers.Dropout(rate=0.8)(convolution3)
+
+    # flatten & feed into fully connected layers
+    flatten = layers.Flatten()(dropout3)
+    dense = layers.Dense(units=200, activation="relu")(flatten)
+    dense2 = layers.Dense(units=200, activation="relu")(dense)
+    output = layers.Dense(units=5, activation="relu")(dense2)
+
+    return keras.Model(inputs=input_layer, outputs=output, name="Game Classifier")
 
 
 def import_image(file_path):
@@ -40,7 +52,7 @@ def import_image(file_path):
     :return: numpy array representation of the image
     """
 
-    return image.img_to_array(image.load_img(file_path, target_size=(1280, 720)))
+    return image.img_to_array(image.load_img(file_path, target_size=constants.dimensions))
 
 
 def main():
@@ -51,12 +63,11 @@ def main():
     :return:
     """
 
-    result = import_image("Game Classifier/Case 2: Gameplay.jpg")
-
+    result = import_image("../../Design Docs/Resources/Case 2: Gameplay.jpg")
     print(result.shape)
 
-    # model = init_nn()
-    # model.summary()
+    model = init_nn()
+    model.summary()
 
 
 if __name__ == "__main__":
