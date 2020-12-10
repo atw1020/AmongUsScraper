@@ -24,13 +24,13 @@ def init_nn():
 
     # 2D convolutions
     convolution =   layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(input_layer)
-    dropout     =   layers.Dropout(rate=0.8)(convolution)
+    dropout     =   layers.Dropout(rate=0.2)(convolution)
     pooling     =   layers.MaxPooling2D(pool_size=3)(dropout)
     convolution2=   layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(pooling)
-    dropout2    =   layers.Dropout(rate=0.8)(convolution2)
+    dropout2    =   layers.Dropout(rate=0.2)(convolution2)
     pooling2    =   layers.MaxPooling2D(pool_size=2)(dropout2)
     convolution3=   layers.Conv2D(filters=32, kernel_size=11, strides=5, activation="relu", padding="same")(pooling2)
-    dropout3    =   layers.Dropout(rate=0.8)(convolution3)
+    dropout3    =   layers.Dropout(rate=0.2)(convolution3)
 
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(dropout3)
