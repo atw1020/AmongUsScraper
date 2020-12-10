@@ -36,9 +36,13 @@ def init_nn():
     flatten = layers.Flatten()(dropout3)
     dense = layers.Dense(units=200, activation="relu")(flatten)
     dense2 = layers.Dense(units=200, activation="relu")(dense)
-    output = layers.Dense(units=5, activation="relu")(dense2)
+    dense3 = layers.Dense(units=5, activation="relu")(dense2)
+    output = layers.Softmax()(dense3)
 
-    return keras.Model(inputs=input_layer, outputs=output, name="Game Classifier")
+    model = keras.Model(inputs=input_layer, outputs=output, name="Game Classifier")
+    model.compile(loss="mse", optimizer="adam", metrics=["accuracy"])
+
+    return model
 
 
 def import_image(file_path):
