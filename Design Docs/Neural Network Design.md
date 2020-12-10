@@ -13,28 +13,28 @@ Lobby where gameplay has not begun
 
 ![Case 1: Lobby](Resources/Case%201:%20Lobby.jpg)
 
-###Case 2: Gameplay
+### Case 2: Gameplay
 
 An image Classified as "gameplay" is an among us
 game that is currently in progress
 
 ![Case 2: Gameplay](Resources/Case%202:%20Gameplay.jpg)
 
-###Case 3: Meeting
+### Case 3: Meeting
 
 An image classified as "Meeting" shows an among
 us game where the players are in a meeting
 
 ![Case 3: Meeting](Resources/Case%203:%20Meeting.jpg)
 
-###Case 4: Over
+### Case 4: Over
 
 An image classified as "Over" represents the
 final screen of an among us game
 
 ![Case 4: Over](Resources/Case%204:%20Over.jpg)
 
-###Case 5: Other
+### Case 5: Other
 
 Any Image that does not fall into one of the
 above categories (ie. gameplay of another game)
