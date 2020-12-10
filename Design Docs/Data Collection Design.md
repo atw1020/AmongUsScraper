@@ -55,3 +55,19 @@ It is clear to tell from observation that the
 text in figure 2 is not discernible whereas that
 in figure 3 is. Thus, we chose an image 
 resolution of 360p for this project
+
+# Data Labeling
+
+Since all of our code will be supervised
+learning activities, It is necessary for us to
+label our data so that our models can look for
+something to fit. Obtaining a Sufficient 
+Quantity of useful data is difficult. In order
+to make the process of labeling data easier
+and more fun, we have a HTML program that will
+display an image to a labeler and let them
+classify it using buttons on the webpage and
+have the image automatically stored after the
+button press.
+
+
