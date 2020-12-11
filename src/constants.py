@@ -24,6 +24,7 @@ Neural Network Parameters
 
 """
 
+# accuracy goal
 accuracy_objective = 0.99
 
 # learning curve parameters
@@ -32,6 +33,14 @@ test_repeats = 10
 dataset_fractions = [0.1 * i for i in range(10)]
 
 learning_curve_extension = " test data.txt"
+
+"""
+
+file I/O Constants
+
+"""
+
+delimiter = ", "
 
 
 def size(res):

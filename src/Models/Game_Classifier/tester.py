@@ -29,7 +29,9 @@ def compute_learning_curves(name):
     # file heading
     file = open(name + constants.learning_curve_extension)
 
-    file.write("Data Size, " + name + " training accuracy, " + name + " test accuracy " + "\n")
+    file.write("Data Size" + constants.delimiter +
+               name + " training accuracy" + constants.delimiter +
+               name + " test accuracy\n")
 
     # iterate over all the different dataset fractions
 

@@ -14,15 +14,72 @@ from src import constants
 from src.Models.Game_Classifier import tester
 
 
-def merge_text(file_1, file_2):
+def merge_text(filepath_1, filepath_2):
     """
 
+    merges two text files
 
-
-    :param file_1:
-    :param file_2:
+    :param filepath_1: path to the first file
+    :param filepath_2: path to the second file
     :return:
     """
+
+    base = file_to_dict(filepath_1)
+    experimental = file_to_dict(filepath_2)
+
+    keys = sorted(base.keys())
+
+    # combine the dictionaries
+    for key in keys:
+
+        # merge the lines
+        base[key] = [key] + base[key] + experimental[key]
+
+        # if we find the first row, store it for later
+        if key.isalpha():
+            first_row = key
+
+    # put the key into the first position
+    keys.remove(first_row)
+    keys.insert(0, first_row)
+
+    # write the output document
+    with open("output.txt") as file:
+        for key in keys:
+
+            # write the line
+            file.write(constants.delimiter.join(base[key]))
+
+            # write the newline
+            file.write("\n")
+
+
+def file_to_dict(filepath):
+    """
+
+    tokenizes each line by coma space parse and create a dictionary that maps from the first item
+    to the remaining items
+
+    :param filepath: path to the file
+    :return: dictionary that maps from the first token to a list of the remaining tokens
+    """
+
+    result = dict()
+
+    with open(filepath) as file:
+
+        # go through all the lines of the file
+
+        for line in file:
+
+            # tokenize the line
+            line = line.strip()
+            line = line.split(constants.delimiter)
+
+            # add the line to the dictionary
+            result[line[0]] = line[1:]
+
+    return result
 
 
 def main():
@@ -40,14 +97,14 @@ def main():
     base = "master" + constants.learning_curve_extension
     experimental = branch + constants.learning_curve_extension
 
-    # check if we have the stats from master
+    # run learning curves on this branch
+    if not os.path.exists(experimental):
+        tester.compute_learning_curves(branch)
 
+    # if the master file exists, merge the files
     if os.path.exists(base):
 
         # check to see if we have the stats from this branch
-
-        if not os.path.exists(experimental):
-            tester.compute_learning_curves(branch)
 
         # merge the files
         merge_text(base, experimental)
