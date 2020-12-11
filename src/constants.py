@@ -6,7 +6,7 @@ Author: Arthur wesley, Gregory Ghiroli
 
 """
 
-common video resolutions
+Common video resolutions
 
 """
 res_1080p = (1920, 1080)
@@ -17,6 +17,19 @@ res_160p = (284, 160)
 
 # dimensions of our images
 dimensions = res_360p
+
+"""
+
+Neural Network Parameters
+
+"""
+
+accuracy_objective = 0.99
+
+# learning curve parameters
+test_repeats = 10
+# dataset fractions
+dataset_fractions = [0.1 * i for i in range(10)]
 
 
 def size(res):

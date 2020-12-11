@@ -35,11 +35,11 @@ def init_nn():
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(dropout3)
     dense = layers.Dense(units=200, activation="relu")(flatten)
-    dense2 = layers.Dense(units=200, activation="relu")(dense)
+    dense2 = layers.Dense(units=100, activation="relu")(dense)
     dense3 = layers.Dense(units=5, activation="relu")(dense2)
     output = layers.Softmax()(dense3)
 
-    model = keras.Model(inputs=input_layer, outputs=output, name="Game Classifier")
+    model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
     model.compile(loss="mse", optimizer="adam", metrics=["accuracy"])
 
     return model
@@ -67,7 +67,7 @@ def main():
     :return:
     """
 
-    result = import_image("../../Design Docs/Resources/Case 2: Gameplay.jpg")
+    result = import_image("Design Docs/Resources/Case 2: Gameplay.jpg")
     print(result.shape)
 
     model = init_nn()
