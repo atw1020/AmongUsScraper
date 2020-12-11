@@ -5,7 +5,6 @@ Author: Arthur Wesley
 """
 
 from tensorflow.keras import backend as K
-from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 from src.Models.Game_Classifier import initalizer
 

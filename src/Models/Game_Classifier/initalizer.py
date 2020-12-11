@@ -40,7 +40,7 @@ def init_nn():
     output = layers.Softmax()(dense3)
 
     model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
-    model.compile(loss="mse", optimizer="adam", metrics=["accuracy"])
+    model.compile(loss="mse", lr=0.03, optimizer="adam", metrics=["accuracy"])
 
     return model
 
