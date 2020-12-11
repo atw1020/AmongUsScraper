@@ -10,12 +10,12 @@ from tensorflow.keras.preprocessing import image_dataset_from_directory
 from src.Models.Game_Classifier import initalizer
 
 
-def train_model(data_limit):
+def train_model(dataset):
     """
 
     creates and trains a model on a limited number of training examples
 
-    :param data_limit: maximum number of training examples (for making learning curves)
+    :param dataset: dataset to train on
     :return: trained model
     """
 
@@ -25,10 +25,7 @@ def train_model(data_limit):
     # initialize the model
     model = initalizer.init_nn()
 
-    # initialize the dataset
-    dataset = image_dataset_from_directory("Data/Game Classifier/Training Data")
-
     # fit the model
-    model.fit(dataset.take(data_limit), epochs=100)
+    model.fit(dataset, epochs=100)
 
     return model

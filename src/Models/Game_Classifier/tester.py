@@ -4,17 +4,48 @@ Author: Arthur Wesley
 
 """
 
-from src import constants
+from tensorflow.keras.preprocessing import image_dataset_from_directory
 
+from src import constants
 from src.Models.Game_Classifier import trainer
 
 
-def run_learning_curves(name):
+def compute_learning_curves(name):
     """
 
+    computes the learning curves of the current architecture and outputs them into a text file
 
-
-    :param name:
+    :param name: name of the architecture being tested
     :return:
     """
 
+    # initialize the training data
+    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data")
+    test_data = image_dataset_from_directory("Data/Game Classifier/Test Data")
+
+    # number of training examples
+    N = training_data.cardinality().numpy()
+
+    # file heading
+    file = open(name + " test data.txt")
+
+    file.write("Data Size, " + name + " training accuracy, " + name + " test accuracy " + "\n")
+
+    # iterate over all the different dataset fractions
+
+    for dataset_fraction in constants.dataset_fractions:
+
+        # repeat the training the specified number of times
+        sample_size = int(dataset_fraction * N)
+        sample = training_data.take(sample_size)
+
+        for i in range(constants.test_repeats):
+
+            model = trainer.train_model(sample)
+
+            training_acc = model.evaluate(sample, metrics=["acc"])
+            test_acc = model.evaluate(test_data, metrics=["acc"])
+
+            file.write(str(sample_size) + ", " + str(training_acc) + ", "+ str(test_acc) + "\n")
+
+    file.close()
