@@ -10,6 +10,8 @@ from tensorflow.keras.preprocessing import image
 
 from src import constants
 
+import os
+
 
 def init_nn():
     """
@@ -23,24 +25,25 @@ def init_nn():
     input_layer = layers.Input(shape=constants.dimensions + (3,))
 
     # 2D convolutions
-    convolution =   layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(input_layer)
+    convolution =   layers.Conv2D(filters=8, kernel_size=11, strides=5, activation="relu", padding="same")(input_layer)
     dropout     =   layers.Dropout(rate=0.2)(convolution)
-    pooling     =   layers.MaxPooling2D(pool_size=3)(dropout)
+    pooling     =   layers.MaxPooling2D(pool_size=2)(dropout)
     convolution2=   layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(pooling)
     dropout2    =   layers.Dropout(rate=0.2)(convolution2)
-    pooling2    =   layers.MaxPooling2D(pool_size=2)(dropout2)
-    convolution3=   layers.Conv2D(filters=32, kernel_size=11, strides=5, activation="relu", padding="same")(pooling2)
+    convolution3=   layers.Conv2D(filters=32, kernel_size=11, strides=5, activation="relu", padding="same")(dropout2)
     dropout3    =   layers.Dropout(rate=0.2)(convolution3)
 
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(dropout3)
     dense = layers.Dense(units=200, activation="relu")(flatten)
-    dense2 = layers.Dense(units=100, activation="relu")(dense)
-    dense3 = layers.Dense(units=5, activation="relu")(dense2)
+    dropout4 = layers.Dropout(0.2)(dense)
+    dense2 = layers.Dense(units=100, activation="relu")(dropout4)
+    dropout5 = layers.Dropout(0.2)(dense2)
+    dense3 = layers.Dense(units=5, activation="relu")(dropout5)
     output = layers.Softmax()(dense3)
 
     model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
-    model.compile(loss="mse", lr=0.03, optimizer="adam", metrics=["accuracy"])
+    model.compile(loss="mse", optimizer="adam", metrics=["accuracy"])
 
     return model
 
@@ -66,6 +69,8 @@ def main():
 
     :return:
     """
+
+    print(os.getcwd())
 
     result = import_image("Design Docs/Resources/Case 2: Gameplay.jpg")
     print(result.shape)

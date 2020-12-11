@@ -27,13 +27,24 @@ def merge_text(filepath_1, filepath_2):
     base = file_to_dict(filepath_1)
     experimental = file_to_dict(filepath_2)
 
-    keys = sorted(base.keys())
+    # combine the keys into a set
+    keys = set(base.keys())
+    keys.add(set(experimental.keys()))
+
+    keys = sorted(list(keys))
 
     # combine the dictionaries
     for key in keys:
 
-        # merge the lines
-        base[key] = [key] + base[key] + experimental[key]
+        if key not in base:
+            # add in blanks for the base if missing
+            base[key] = [key] + ["", ""] + experimental[key]
+        elif key not in experimental:
+            # add in blanks for the experimental if missing
+            base[key] = [key] + base[key] + ["", ""]
+        else:
+            # merge the lines
+            base[key] = [key] + base[key] + experimental[key]
 
         # if we find the first row, store it for later
         if key.isalpha():
