@@ -15,8 +15,8 @@ def compute_learning_curves(name):
 
     computes the learning curves of the current architecture and outputs them into a text file
 
-    :param name: name of the architecture being tested
-    :return:
+    :param name: name of the learning curve
+    :return: None
     """
 
     # initialize the training data
@@ -27,7 +27,7 @@ def compute_learning_curves(name):
     N = training_data.cardinality().numpy()
 
     # file heading
-    file = open(name + " test data.txt")
+    file = open(name + constants.learning_curve_extension)
 
     file.write("Data Size, " + name + " training accuracy, " + name + " test accuracy " + "\n")
 

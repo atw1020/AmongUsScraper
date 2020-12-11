@@ -31,6 +31,8 @@ test_repeats = 10
 # dataset fractions
 dataset_fractions = [0.1 * i for i in range(10)]
 
+learning_curve_extension = " test data.txt"
+
 
 def size(res):
     """
