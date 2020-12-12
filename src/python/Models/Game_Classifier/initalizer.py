@@ -8,7 +8,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.preprocessing import image
 
-from src import constants
+from src.python import constants
 
 import os
 

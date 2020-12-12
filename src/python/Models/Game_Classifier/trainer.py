@@ -6,7 +6,7 @@ Author: Arthur Wesley
 
 from tensorflow.keras import backend as K
 
-from src.Models.Game_Classifier import initalizer
+from src.python.Models.Game_Classifier import initalizer
 
 
 def train_model(dataset):

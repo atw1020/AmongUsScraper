@@ -6,8 +6,8 @@ Author: Arthur Wesley
 
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
-from src import constants
-from src.Models.Game_Classifier import trainer
+from src.python import constants
+from src.python.Models.Game_Classifier import trainer
 
 
 def compute_learning_curves(name):
