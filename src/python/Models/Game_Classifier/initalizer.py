@@ -26,19 +26,19 @@ def init_nn():
 
     # 2D convolutions
     convolution =   layers.Conv2D(filters=8, kernel_size=11, strides=5, activation="relu", padding="same")(input_layer)
-    dropout     =   layers.Dropout(rate=0.2)(convolution)
+    dropout     =   layers.Dropout(rate=constants.dropout)(convolution)
     pooling     =   layers.MaxPooling2D(pool_size=2)(dropout)
     convolution2=   layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(pooling)
-    dropout2    =   layers.Dropout(rate=0.2)(convolution2)
+    dropout2    =   layers.Dropout(rate=constants.dropout)(convolution2)
     convolution3=   layers.Conv2D(filters=32, kernel_size=11, strides=5, activation="relu", padding="same")(dropout2)
-    dropout3    =   layers.Dropout(rate=0.2)(convolution3)
+    dropout3    =   layers.Dropout(rate=constants.dropout)(convolution3)
 
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(dropout3)
     dense = layers.Dense(units=200, activation="relu")(flatten)
-    dropout4 = layers.Dropout(0.2)(dense)
+    dropout4 = layers.Dropout(rate=constants.dropout)(dense)
     dense2 = layers.Dense(units=100, activation="relu")(dropout4)
-    dropout5 = layers.Dropout(0.2)(dense2)
+    dropout5 = layers.Dropout(rate=constants.dropout)(dense2)
     dense3 = layers.Dense(units=5, activation="relu")(dropout5)
     output = layers.Softmax()(dense3)
 
