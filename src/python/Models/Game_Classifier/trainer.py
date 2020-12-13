@@ -5,8 +5,11 @@ Author: Arthur Wesley
 """
 
 from tensorflow.keras import backend as K
+from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 from src.python.Models.Game_Classifier import initalizer
+
+import os
 
 
 def train_model(dataset):
@@ -28,3 +31,21 @@ def train_model(dataset):
     model.fit(dataset, lr=0.03, epochs=100)
 
     return model
+
+
+def main():
+    """
+
+    main method
+
+    :return: None
+    """
+
+    # print(os.path.exists("Data/Game Classifier/Training Data"))
+
+    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data")
+    train_model(training_data)
+
+
+if __name__ == "__main__":
+    main()
