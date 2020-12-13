@@ -1,0 +1,1 @@
+Data that has been labeled but does not have even proportions (ie some cases are more frequent than others)
