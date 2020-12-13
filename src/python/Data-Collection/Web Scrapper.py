@@ -2,51 +2,45 @@
 
 Author: Arthur wesley, Gregory Ghiroli
 
-https://medium.com/swlh/scraping-live-stream-video-with-python-b7154b1fedde
+https://github.com/ihabunek/twitch-dl/blob/master/twitchdl/download.py
 
 """
 
-from src.python import constants
+import requests
+import os
 
-from bs4 import BeautifulSoup
+from requests import RequestException
 
-from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
-
-def init_webdriver():
-    """
-
-    initializes the selenium webdriver
-
-    :return:
-    """
-
-    dimensions = str(constants.dimensions[0]) + ", " + str(constants.dimensions[1])
-
-    caps = DesiredCapabilities.CHROME
-    caps["goog:loggingPrefs"] = {"performance": "ALL"}
-
-    options = webdriver.ChromeOptions()
-    options.add_argument("--window-size=" + dimensions)
-    options.add_argument("headless")
-
-    driver = webdriver.Chrome(desired_capabilities=caps, options=options)
-    driver.get("twitch.tv")
-
-    return driver
+CHUNK_SIZE = 1024
+CONNECT_TIMEOUT = 5
+RETRY_COUNT = 5
 
 
-def main():
-    """
-
-    main method
-
-    :return: None
-    """
-
-    driver = init_webdriver()
+class DownloadFailed(Exception):
+    pass
 
 
-if __name__ == "__main__":
-    main()
+def _download(url, path):
+    tmp_path = path + ".tmp"
+    response = requests.get(url, stream=True, timeout=CONNECT_TIMEOUT)
+    size = 0
+    with open(tmp_path, 'wb') as target:
+        for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+            target.write(chunk)
+            size += len(chunk)
+
+    os.rename(tmp_path, path)
+    return size
+
+
+def download_file(url, path, retries=RETRY_COUNT):
+    if os.path.exists(path):
+        return os.path.getsize(path)
+
+    for _ in range(retries):
+        try:
+            return _download(url, path)
+        except RequestException:
+            pass
+
+    raise DownloadFailed(":(")
