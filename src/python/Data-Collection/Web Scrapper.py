@@ -10,6 +10,8 @@ import m3u8
 import requests
 import re
 
+import cv2
+
 from src.python import constants
 
 from twitchdl import twitch
@@ -87,6 +89,22 @@ def get_video(url):
     return size
 
 
+def get_still_frame(url, output_file):
+    """
+
+    get a still frame from a video url
+
+    :param output_file: output file
+    :param url: URL to the video
+    :return: None (saves still frame
+    """
+
+    vidObj = cv2.VideoCapture(url)
+
+    success, image = vidObj.read()
+    cv2.imwrite(output_file, image)
+
+
 def main():
     """
 
@@ -99,11 +117,10 @@ def main():
     access_token = twitch.get_access_token(video_id)
 
     base_url = get_base_url(video_id, access_token)
+    vods = get_vods(video_id, access_token)
 
-    print("url of video", video_id, get_base_url(video_id, access_token))
-    print("vods", get_vods(video_id, access_token))
-
-    get_video(base_url + "0.ts")
+    for vod in vods:
+        get_still_frame(base_url + vod, vod + ".jpg")
 
 
 if __name__ == "__main__":
