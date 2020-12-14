@@ -19,6 +19,8 @@ res_160p = (284, 160)
 dimensions = res_360p
 quality = str(dimensions[1]) + "p"
 
+sampling_rate = 10
+
 """
 
 Neural Network Parameters

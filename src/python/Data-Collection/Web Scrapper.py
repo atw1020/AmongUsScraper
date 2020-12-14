@@ -105,6 +105,28 @@ def get_still_frame(url, output_file):
     cv2.imwrite(output_file, image)
 
 
+def get_training_data(video_id, sampling_rate=constants.sampling_rate):
+    """
+
+    generates a set of images from a video ID
+
+    :param video_id: ID of the video
+    :param sampling_rate: number of items to skip over
+    :return: None
+    """
+
+    access_token = twitch.get_access_token(video_id)
+
+    base_url = get_base_url(video_id, access_token)
+    vods = get_vods(video_id, access_token)
+
+    for i, vod in enumerate(vods):
+
+        # only take 1 in ten frames
+        if i % sampling_rate == 0:
+            get_still_frame(base_url + vod, "Data/images/" + video_id + "-" + str(i) + ".jpg")
+
+
 def main():
     """
 
@@ -113,14 +135,10 @@ def main():
     :return:
     """
 
-    video_id = "829611887"
-    access_token = twitch.get_access_token(video_id)
+    IDs = ["832831965", "826807014", "829611887", "834868121"]
 
-    base_url = get_base_url(video_id, access_token)
-    vods = get_vods(video_id, access_token)
-
-    for vod in vods:
-        get_still_frame(base_url + vod, vod + ".jpg")
+    for ID in IDs:
+        get_training_data(ID)
 
 
 if __name__ == "__main__":
