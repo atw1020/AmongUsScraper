@@ -91,12 +91,11 @@ def get_video(url):
     return size
 
 
-def get_still_frame(url, output_file):
+def get_still_frame(url):
     """
 
     get a still frame from a video url
 
-    :param output_file: output file
     :param url: URL to the video
     :return: None (saves still frame
     """
@@ -104,7 +103,8 @@ def get_still_frame(url, output_file):
     vidObj = cv2.VideoCapture(url)
 
     success, image = vidObj.read()
-    cv2.imwrite(output_file, image)
+
+    return image
 
 
 def get_training_data(video_id, sampling_rate=constants.sampling_rate):
@@ -126,7 +126,8 @@ def get_training_data(video_id, sampling_rate=constants.sampling_rate):
 
         # only take 1 in ten frames
         if i % sampling_rate == 0:
-            get_still_frame(base_url + vod, "Data/images/" + video_id + "-" + str(i) + ".jpg")
+            image = get_still_frame(base_url + vod)
+            cv2.imwrite("Data/images/" + video_id + "-" + str(i) + ".jpg", image)
 
 
 def main():
