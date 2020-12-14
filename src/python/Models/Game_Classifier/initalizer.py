@@ -72,7 +72,7 @@ def main():
 
     print(os.getcwd())
 
-    result = import_image("Design Docs/Resources/Case 2: Gameplay.jpg")
+    result = import_image("Design Docs/Resources/Case 2 Gameplay.jpg")
     print(result.shape)
 
     model = init_nn()
