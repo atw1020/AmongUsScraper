@@ -6,44 +6,59 @@ https://github.com/ihabunek/twitch-dl/blob/master/twitchdl/download.py
 
 """
 
+import m3u8
 import requests
-import os
+import re
 
-from requests import RequestException
+from src.python import constants
 
-CHUNK_SIZE = 1024
-CONNECT_TIMEOUT = 5
-RETRY_COUNT = 5
-
-
-class DownloadFailed(Exception):
-    pass
+from twitchdl import twitch
+from twitchdl.commands import _parse_playlists, _get_playlist_by_name, _get_vod_paths
 
 
-def _download(url, path):
-    tmp_path = path + ".tmp"
-    response = requests.get(url, stream=True, timeout=CONNECT_TIMEOUT)
-    size = 0
-    with open(tmp_path, 'wb') as target:
-        for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
-            target.write(chunk)
-            size += len(chunk)
+def get_base_url(video_id):
+    """
 
-    os.rename(tmp_path, path)
-    return size
+    generates the URL of a video with a given ID
+
+    :param video_id: ID of the video
+    :return: generated URL
+    """
+
+    # print_out("<dim>Fetching access token...</dim>")
+    access_token = twitch.get_access_token(video_id)
+
+    # print_out("<dim>Fetching playlists...</dim>")
+    playlists_m3u8 = twitch.get_playlists(video_id, access_token)
+    playlists = list(_parse_playlists(playlists_m3u8))
+    playlist_uri = _get_playlist_by_name(playlists, constants.quality)
+
+    return re.sub("/[^/]+$", "/", playlist_uri)
 
 
-def download_file(url, path, retries=RETRY_COUNT):
-    if os.path.exists(path):
-        return os.path.getsize(path)
+def get_vods(video_id):
+    """
 
-    for _ in range(retries):
-        try:
-            return _download(url, path)
-        except RequestException:
-            pass
+    generates a list of all the vods for the video
 
-    raise DownloadFailed(":(")
+    :param video_id:
+    :return:
+    """
+
+    start = None
+    end = None
+
+    access_token = twitch.get_access_token(video_id)
+
+    playlists_m3u8 = twitch.get_playlists(video_id, access_token)
+    playlists = list(_parse_playlists(playlists_m3u8))
+    playlist_uri = _get_playlist_by_name(playlists, constants.quality)
+
+    response = requests.get(playlist_uri)
+    response.raise_for_status()
+    playlist = m3u8.loads(response.text)
+
+    return _get_vod_paths(playlist, start, end)
 
 
 def main():
@@ -54,9 +69,10 @@ def main():
     :return:
     """
 
-    download_file("https://www.twitch.tv/videos/829611887", "shofu.mp4")
+    video_id = "829611887"
 
-    pass
+    print("url of video", video_id, get_base_url(video_id))
+    print("vods", get_vods(video_id))
 
 
 if __name__ == "__main__":

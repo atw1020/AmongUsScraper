@@ -17,6 +17,7 @@ res_160p = (284, 160)
 
 # dimensions of our images
 dimensions = res_360p
+quality = str(dimensions[1]) + "p"
 
 """
 
