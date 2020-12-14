@@ -44,3 +44,20 @@ def download_file(url, path, retries=RETRY_COUNT):
             pass
 
     raise DownloadFailed(":(")
+
+
+def main():
+    """
+
+    main method
+
+    :return:
+    """
+
+    download_file("https://www.twitch.tv/videos/829611887", "shofu.mp4")
+
+    pass
+
+
+if __name__ == "__main__":
+    main()
