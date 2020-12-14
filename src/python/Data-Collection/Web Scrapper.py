@@ -72,7 +72,9 @@ def get_video(url):
 
     gets the video from a url
 
-    :param url:
+    https://docs.opencv.org/master/d8/dfe/classcv_1_1VideoCapture.html#ac4107fb146a762454a8a87715d9b7c96
+
+    :param url: url the video is at
     :return: size of the video in bytes
     """
 
@@ -135,7 +137,9 @@ def main():
     :return:
     """
 
-    IDs = ["832831965", "826807014", "829611887", "834868121"]
+    # ~ 1 in 20 still frames are wins in shofu's stream
+
+    IDs = ["829611887"]  # ["832831965", "826807014", "829611887", "834868121"]
 
     for ID in IDs:
         get_training_data(ID)
