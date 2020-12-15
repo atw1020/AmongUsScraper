@@ -22,7 +22,7 @@ def init_nn():
     """
 
     # input layer
-    input_layer = layers.Input(shape=constants.dimensions + (3,))
+    input_layer = layers.Input(shape=(256, 256, 3))
 
     # 2D convolutions
     convolution =   layers.Conv2D(filters=8, kernel_size=11, strides=5, activation="relu", padding="same")(input_layer)

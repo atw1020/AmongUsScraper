@@ -22,13 +22,13 @@ def train_model(dataset):
     """
 
     # clear the session so that we can train more than one model
-    K.clear_session()
+    # K.clear_session()
 
     # initialize the model
     model = initalizer.init_nn()
 
     # fit the model
-    model.fit(dataset, lr=0.03, epochs=100)
+    model.fit(dataset, epochs=10)
 
     return model
 
