@@ -43,10 +43,10 @@ def init_nn():
     dense3 = layers.Dense(units=5, activation="relu")(dropout5)
     output = layers.Softmax()(dense3)
 
-    opt = Adam(learning_rate=0.0001)
+    opt = Adam(learning_rate=0.001)
 
     model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
-    model.compile(loss="mse", optimizer=opt, metrics=["accuracy"])
+    model.compile(loss="sparse_categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
     return model
 
