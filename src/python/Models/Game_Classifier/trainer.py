@@ -4,6 +4,8 @@ Author: Arthur Wesley
 
 """
 
+from src.python import constants
+
 from tensorflow.keras import backend as K
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
@@ -28,7 +30,7 @@ def train_model(dataset):
     model = initalizer.init_nn()
 
     # fit the model
-    model.fit(dataset, epochs=10)
+    model.fit(dataset, epochs=30)
 
     return model
 
@@ -43,7 +45,8 @@ def main():
 
     # print(os.path.exists("Data/Game Classifier/Training Data"))
 
-    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data")
+    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data",
+                                                 image_size=constants.dimensions)
     train_model(training_data)
 
 
