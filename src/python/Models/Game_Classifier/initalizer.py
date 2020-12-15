@@ -53,7 +53,7 @@ def import_image(file_path):
 
     converts an image from a file path to a numpy array
 
-     https://machinelearningmastery.com/how-to-normalize-center-and-standardize-images-with-the-imagedatagenerator-in-keras/
+    https://machinelearningmastery.com/how-to-normalize-center-and-standardize-images-with-the-imagedatagenerator-in-keras/
 
     :param file_path: path to the image
     :return: numpy array representation of the image
