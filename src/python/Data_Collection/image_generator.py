@@ -27,6 +27,8 @@ class ImageGenerator:
     starting_frame = 0
     ending_frame = 0
 
+    previous_kind = "lobby"
+
     def __init__(self, video_id):
         """
 
@@ -54,6 +56,20 @@ class ImageGenerator:
         if self.looking_for_end_screen:
             pass
         else:
+
+            # first check to see if the we just entered a lobby from gameplay or meeting
+
+            if image_kind == "Lobby" and self.previous_kind == "Gameplay" or "Meeting":
+
+                # if we go from gameplay or a meeting into a lobby it means the game ended
+                # and we switch to the looking for end screen state
+
+                self.looking_for_end_screen = True
+                return self.next_image(image_kind)
+            else:
+
+                # otherwise, update the previous image
+                self.previous_kind = image_kind
 
             step = vod_steps[image_kind]
 

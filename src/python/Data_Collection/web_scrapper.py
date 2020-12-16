@@ -105,7 +105,7 @@ def get_still_frame(url, index=0):
 
     success = True
 
-    while index > 0 and success:
+    while index >= 0 and success:
         index -= 1
         success, image = vidObj.read()
 
