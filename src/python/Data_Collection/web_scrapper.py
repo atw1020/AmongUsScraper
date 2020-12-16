@@ -67,6 +67,18 @@ def get_vods(video_id, access_token=None):
     return _get_vod_paths(playlist, start, end)
 
 
+def count_frames(url):
+    """
+
+    counts the number of frames in the image at the specified URL
+
+    :param url: URL to the image
+    :return: number of frames in that image
+    """
+
+    return len(list(cv2.VideoCapture(url)))
+
+
 def get_video(url):
     """
 
@@ -98,7 +110,7 @@ def get_still_frame(url, index=0):
 
     :param index: index of the still frame
     :param url: URL to the video
-    :return: None (saves still frame
+    :return: image
     """
 
     vidObj = cv2.VideoCapture(url)

@@ -44,6 +44,16 @@ class ImageGenerator:
 
         self.end_index = len(self.vods)
 
+    def get_url(self):
+        """
+
+        gets the URL of the current (first) vod
+
+        :return: URL to the current video
+        """
+
+        return self.base_url + self.vods[self.start_index]
+
     def mid_frame(self):
         """
 
@@ -81,9 +91,8 @@ class ImageGenerator:
 
             # check to see if an ending frame currently exists
             if self.ending_frame is None:
-                # todo: get the last frame in the sequence
                 self.starting_frame = 0
-                self.ending_frame = 0
+                self.ending_frame = web_scrapper.count_frames(self.get_url())
                 pass
             elif self.end_index - self.start_index < min_frame_step * 2:
                 # stop searching for the end screen
@@ -95,7 +104,7 @@ class ImageGenerator:
             else:
                 self.starting_frame = self.mid_frame()
 
-            url = self.base_url + self.vods[self.start_index]
+            url = self.get_url()
 
             # return the frame
             return web_scrapper.get_still_frame(url, self.mid_frame())
@@ -108,7 +117,7 @@ class ImageGenerator:
             else:
                 self.start_index = self.mid_index()
 
-            url = self.base_url + self.vods[self.mid_index()]
+            url = self.get_url()
 
             return web_scrapper.get_still_frame(url)
 
@@ -161,7 +170,7 @@ class ImageGenerator:
 
             # first check to see if the we just entered a lobby from gameplay or meeting
 
-            if image_kind == "Lobby" and self.previous_kind == "Gameplay" or "Meeting":
+            if image_kind == "Lobby" and (self.previous_kind == "Gameplay" or "Meeting"):
 
                 # if we go from gameplay or a meeting into a lobby it means the game ended
                 # and we switch to the looking for end screen state
@@ -185,6 +194,25 @@ class ImageGenerator:
 
             self.start_index += step
 
-            url = self.base_url + self.vods[self.start_index]
+            url = self.get_url()
 
             return web_scrapper.get_still_frame(url)
+
+
+def main():
+    """
+
+    main testing method
+
+    :return:
+    """
+
+    video_id = "829611887"
+
+    generator = ImageGenerator(video_id)
+
+    image = generator.next_image("Other")
+
+
+if __name__ == "__main__":
+    main()
