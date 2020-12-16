@@ -64,7 +64,7 @@ class ImageGenerator:
 
         return (self.start_index + self.end_index) / 2
 
-    def search(self, first_half=True):
+    def search(self, first_half):
         """
 
         update the limits on the vod or frame index and return the image halfway through them
@@ -126,16 +126,34 @@ class ImageGenerator:
             # check to see if we reached the over screen
             if image_kind == "Over":
                 if self.previous_kind == "Lobby":
-                    pass
+
+                    # update the previous kind of image now that we've used it
+                    self.previous_kind = image_kind
+
+                    return self.search(True)
                 if self.previous_kind == "Gameplay" or "Meeting":
-                    pass
+
+                    # update the previous kind of image now that we've used it
+                    self.previous_kind = image_kind
+
+                    return self.search(False)
             elif image_kind == "Lobby":
-                # if we
-                pass
+
+                # update the previous kind of image now that we've used it
+                self.previous_kind = image_kind
+
+                return self.search(True)
             elif image_kind == "Gameplay" or "Meeting":
-                pass
+
+                # update the previous kind of image now that we've used it
+                self.previous_kind = image_kind
+
+                return self.search(False)
             else:
-                pass
+
+                # this is a strange case that may result from quickly switching
+                # between streams. return something in the first half
+                return self.search(True)
 
         else:
 
