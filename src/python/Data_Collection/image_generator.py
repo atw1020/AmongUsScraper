@@ -1,6 +1,6 @@
 """
 
-Arthur Wesley
+Author: Arthur Wesley
 
 """
 
@@ -8,12 +8,24 @@ from twitchdl import twitch
 
 from src.python.Data_Collection import web_scrapper
 
+max_frame_sep = 20
+
+vod_steps = {
+    "Gameplay": 5,
+    "Lobby": 5,
+    "Meeting": 5,
+    "Over": 5,
+    "Other": 20
+}
+
 
 class ImageGenerator:
 
     start_index = 0
     looking_for_end_screen = False
-    max_frame_sep = 20
+
+    starting_frame = 0
+    ending_frame = 0
 
     def __init__(self, video_id):
         """
@@ -40,6 +52,6 @@ class ImageGenerator:
         """
 
         if self.looking_for_end_screen:
-            pass
+
         else:
             pass
