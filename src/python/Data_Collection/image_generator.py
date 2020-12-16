@@ -4,29 +4,42 @@ Arthur Wesley
 
 """
 
-from enum import Enum
-
 from twitchdl import twitch
 
 from src.python.Data_Collection import web_scrapper
 
-#
-# constants
-#
-
 
 class ImageGenerator:
 
-    index = 0
+    start_index = 0
     looking_for_end_screen = False
+    max_frame_sep = 20
 
     def __init__(self, video_id):
+        """
+
+        initializes the image generator
+
+        :param video_id: video ID to generate images for
+        """
 
         access_token = twitch.get_access_token(video_id)
 
         self.base_url = web_scrapper.get_base_url(video_id, access_token)
         self.vods = web_scrapper.get_vods(video_id, access_token)
 
-    def next_image(self, image_kind):
+        self.end_index = len(self.vods)
 
-        pass
+    def next_image(self, image_kind):
+        """
+
+        get the next image based on what kind of image this image was
+
+        :param image_kind: kind of image this was
+        :return: the next image in the sequence
+        """
+
+        if self.looking_for_end_screen:
+            pass
+        else:
+            pass
