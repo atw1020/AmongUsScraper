@@ -2,13 +2,6 @@
 
 Author: Arthur wesley
 
+https://pythonbasics.org/webserver/
+
 """
-
-from http.server import BaseHTTPRequestHandler
-
-
-class GetGameClassifierHandler(BaseHTTPRequestHandler):
-
-    command = "GET"
-    path = "/game-classifier"
-
