@@ -16,7 +16,7 @@ vod_steps = {
     "Gameplay": 5,
     "Lobby": 5,
     "Meeting": 5,
-    "Over": 5,
+    "Over": 1,
     "Other": 20
 }
 
@@ -102,11 +102,9 @@ class ImageGenerator:
                 self.starting_frame = 0
                 self.ending_frame = web_scrapper.count_frames(self.get_url())
                 pass
-            elif self.end_index - self.start_index < min_frame_step * 2:
+            elif self.ending_frame - self.starting_frame < min_frame_step:
                 # stop searching for the end screen
                 self.looking_for_end_screen = False
-
-            print("EVERYONE, GET IN HERE!")
 
             # update the range
             if first_half:
@@ -115,6 +113,8 @@ class ImageGenerator:
                 self.starting_frame = self.mid_frame()
 
             url = self.get_url()
+
+            print("saving image at index", self.mid_index(), "frame", self.mid_frame())
 
             # return the frame
             return web_scrapper.get_still_frame(url, self.mid_frame())
@@ -271,6 +271,33 @@ def test():
     image = generator.next_image("Over")
 
     cv2.imwrite("17.png", image)
+    image = generator.next_image("Over")
+
+    cv2.imwrite("18.png", image)
+    image = generator.next_image("Over")
+
+    cv2.imwrite("19.png", image)
+    image = generator.next_image("Over")
+
+    cv2.imwrite("20.png", image)
+    image = generator.next_image("Over")
+
+    cv2.imwrite("21.png", image)
+    image = generator.next_image("Over")
+
+    cv2.imwrite("22.png", image)
+    image = generator.next_image("Over")
+
+    cv2.imwrite("23.png", image)
+    image = generator.next_image("Over")
+
+    cv2.imwrite("24.png", image)
+    image = generator.next_image("Lobby")
+
+    cv2.imwrite("25.png", image)
+    image = generator.next_image("Gameplay")
+
+    cv2.imwrite("26.png", image)
 
 
 def main():

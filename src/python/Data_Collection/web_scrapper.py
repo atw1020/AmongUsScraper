@@ -78,7 +78,14 @@ def count_frames(url):
 
     vidObj = cv2.VideoCapture(url)
 
-    return int(vidObj.get(cv2.CAP_PROP_FRAME_COUNT))
+    success = True
+    frames = 0
+
+    while success:
+        success, image = vidObj.read()
+        frames += 1
+
+    return frames
 
 
 def get_video(url):
@@ -123,7 +130,8 @@ def get_still_frame(url, index=0):
         index -= 1
         success, image = vidObj.read()
 
-    print(index)
+    if not success:
+        raise IndexError("index out of bounds " + str(index) + " for getting frame at " + url)
 
     return image
 
