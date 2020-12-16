@@ -91,18 +91,23 @@ def get_video(url):
     return size
 
 
-def get_still_frame(url):
+def get_still_frame(url, index=0):
     """
 
     get a still frame from a video url
 
+    :param index: index of the still frame
     :param url: URL to the video
     :return: None (saves still frame
     """
 
     vidObj = cv2.VideoCapture(url)
 
-    success, image = vidObj.read()
+    success = True
+
+    while index > 0 and success:
+        index -= 1
+        success, image = vidObj.read()
 
     return image
 

@@ -52,6 +52,16 @@ class ImageGenerator:
         """
 
         if self.looking_for_end_screen:
-
-        else:
             pass
+        else:
+
+            step = vod_steps[image_kind]
+
+            if step is None:
+                step = 10
+
+            self.start_index += step
+
+            url = self.base_url + self.vods[self.start_index]
+
+            return web_scrapper.get_still_frame(url)
