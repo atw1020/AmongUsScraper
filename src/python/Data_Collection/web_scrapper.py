@@ -76,7 +76,9 @@ def count_frames(url):
     :return: number of frames in that image
     """
 
-    return len(list(cv2.VideoCapture(url)))
+    vidObj = cv2.VideoCapture(url)
+
+    return int(vidObj.get(cv2.CAP_PROP_FRAME_COUNT))
 
 
 def get_video(url):
@@ -120,6 +122,8 @@ def get_still_frame(url, index=0):
     while index >= 0 and success:
         index -= 1
         success, image = vidObj.read()
+
+    print(index)
 
     return image
 
