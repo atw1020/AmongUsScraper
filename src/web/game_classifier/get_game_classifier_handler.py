@@ -9,5 +9,6 @@ from http.server import BaseHTTPRequestHandler
 
 class GetGameClassifierHandler(BaseHTTPRequestHandler):
 
-    def handle(self):
-        pass
+    command = "GET"
+    path = "/game-classifier"
+
