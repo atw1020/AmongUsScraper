@@ -15,13 +15,12 @@ vod_steps = {
     "Lobby": 5,
     "Meeting": 5,
     "Over": 1,
-    "Other": 20
+    "Other": 40
 }
 
 
 class ImageGenerator:
 
-    start_index = 0
     looking_for_end_screen = False
 
     starting_frame = 0
@@ -29,7 +28,7 @@ class ImageGenerator:
 
     previous_kind = "lobby"
 
-    def __init__(self, video_id):
+    def __init__(self, video_id, starting_index=0):
         """
 
         initializes the image generator
@@ -37,6 +36,7 @@ class ImageGenerator:
         :param video_id: video ID to generate images for
         """
 
+        self.start_index = starting_index
         access_token = twitch.get_access_token(video_id)
 
         self.base_url = web_scrapper.get_base_url(video_id, access_token)
@@ -99,16 +99,18 @@ class ImageGenerator:
             if self.ending_frame is None:
                 self.starting_frame = 0
                 self.ending_frame = web_scrapper.count_frames(self.get_url())
-                pass
-            elif self.ending_frame - self.starting_frame < min_frame_step:
-                # stop searching for the end screen
-                self.looking_for_end_screen = False
-
-            # update the range
-            if first_half:
-                self.ending_frame = self.mid_frame()
             else:
-                self.starting_frame = self.mid_frame()
+
+                # update the range
+
+                if first_half:
+                    self.ending_frame = self.mid_frame()
+                else:
+                    self.starting_frame = self.mid_frame()
+
+                if self.ending_frame - self.starting_frame < min_frame_step * 2:
+                    # stop searching for the end screen
+                    self.looking_for_end_screen = False
 
             url = self.get_url()
 
@@ -149,6 +151,13 @@ class ImageGenerator:
                     self.previous_kind = image_kind
 
                     return self.search(True)
+                else:
+
+                    # update the previous kind of image now that we've used it
+                    self.previous_kind = image_kind
+
+                    return self.search(True)
+
             elif image_kind == "Lobby":
 
                 # update the previous kind of image now that we've used it

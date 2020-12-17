@@ -85,7 +85,7 @@ def count_frames(url):
         success, image = vidObj.read()
         frames += 1
 
-    return frames
+    return frames - 1
 
 
 def get_video(url):
