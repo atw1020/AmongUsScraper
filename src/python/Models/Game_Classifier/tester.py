@@ -27,7 +27,7 @@ def compute_learning_curves(name):
     N = training_data.cardinality().numpy()
 
     # file heading
-    file = open(name + constants.learning_curve_extension)
+    file = open(name + constants.learning_curve_extension, "w+")
 
     file.write("Data Size" + constants.delimiter +
                name + " training accuracy" + constants.delimiter +
@@ -51,3 +51,18 @@ def compute_learning_curves(name):
             file.write(str(sample_size) + ", " + str(training_acc) + ", "+ str(test_acc) + "\n")
 
     file.close()
+
+
+def main():
+    """
+
+    main method
+
+    :return:
+    """
+
+    compute_learning_curves("test")
+
+
+if __name__ == "__main__":
+    main()

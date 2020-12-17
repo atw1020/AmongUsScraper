@@ -47,7 +47,12 @@ def main():
 
     training_data = image_dataset_from_directory("Data/Game Classifier/Training Data",
                                                  image_size=constants.dimensions)
-    train_model(training_data)
+    model = train_model(training_data)
+
+    test_data = image_dataset_from_directory("Data/Game Classifier/Test Data",
+                                                 image_size=constants.dimensions)
+
+    model.evaluate(test_data)
 
 
 if __name__ == "__main__":
