@@ -11,8 +11,6 @@ from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 from src.python.Models.Game_Classifier import initalizer
 
-import os
-
 
 def train_model(dataset):
     """
@@ -24,7 +22,7 @@ def train_model(dataset):
     """
 
     # clear the session so that we can train more than one model
-    # K.clear_session()
+    K.clear_session()
 
     # initialize the model
     model = initalizer.init_nn()

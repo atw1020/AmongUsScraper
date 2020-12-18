@@ -5,6 +5,7 @@ Author: Arthur Wesley
 """
 
 from twitchdl import twitch
+import cv2
 
 from src.python.Data_Collection import web_scrapper
 
@@ -36,6 +37,7 @@ class ImageGenerator:
         :param video_id: video ID to generate images for
         """
 
+        self.video_id = video_id
         self.start_index = starting_index
         access_token = twitch.get_access_token(video_id)
 
@@ -43,6 +45,8 @@ class ImageGenerator:
         self.vods = web_scrapper.get_vods(video_id, access_token)
 
         self.end_index = len(self.vods)
+
+        self.image = None  # initally None
 
     def get_url(self):
         """
@@ -93,6 +97,7 @@ class ImageGenerator:
 
         # check to see if we are looking at frames or indices
 
+        # todo: fix bug with this binary searcher
         if self.start_index == self.mid_index():
 
             # check to see if an ending frame currently exists
@@ -116,15 +121,19 @@ class ImageGenerator:
 
             print("saving image at index", self.mid_index(), "frame", self.mid_frame())
 
+            self.image = web_scrapper.get_still_frame(url, self.mid_frame())
             # return the frame
-            return web_scrapper.get_still_frame(url, self.mid_frame())
+            return self.image
 
         else:
 
             url = self.base_url + self.vods[self.mid_index()]
 
             print("saving image at index", self.mid_index())
-            return web_scrapper.get_still_frame(url)
+
+            self.image = web_scrapper.get_still_frame(url)
+
+            return self.image
 
     def next_image(self, image_kind):
         """
@@ -212,4 +221,31 @@ class ImageGenerator:
             url = self.get_url()
             print("saving image at index", self.start_index)
 
-            return web_scrapper.get_still_frame(url)
+            self.image = web_scrapper.get_still_frame(url)
+
+            return self.image
+
+    def save_next(self, image_kind):
+        """
+
+        save the next image of the specified kind
+
+        :param image_kind: kind of image to save
+        :return: None (saves image)
+        """
+
+        output = image_kind + "-" + self.video_id + "-"
+
+        if not self.start_index == self.mid_index() and self.looking_for_end_screen:
+            output += str(self.mid_index())
+        else:
+            output += str(self.start_index)
+
+        if self.ending_frame is None:
+            output += ".jpg"
+        else:
+            output += "-" + str(self.mid_frame()) + ".jpg"
+
+        cv2.imwrite(output, self.image)
+
+        self.next_image(image_kind)

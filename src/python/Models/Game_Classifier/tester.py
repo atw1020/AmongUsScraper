@@ -4,6 +4,8 @@ Author: Arthur Wesley
 
 """
 
+import tensorflow as tf
+
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 from src.python import constants
@@ -40,6 +42,9 @@ def compute_learning_curves(name):
         # repeat the training the specified number of times
         sample_size = int(dataset_fraction * N)
         sample = training_data.take(sample_size)
+
+        print(type(training_data))
+        print(type(sample))
 
         for i in range(constants.test_repeats):
 

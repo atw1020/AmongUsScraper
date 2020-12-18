@@ -19,9 +19,9 @@ def test():
 
     video_id = "838589696"
 
-    generator = ImageGenerator(video_id, 1400)
+    generator = ImageGenerator(video_id, 1567)
     # """
-    image = generator.next_image("Other")
+    generator.next_image("Meeting")
     """
     cv2.imwrite("Other-" + video_id + "-40.jpg", image)
     image = generator.next_image("Other")
@@ -127,7 +127,6 @@ def test():
 
     cv2.imwrite("Other-" + video_id + "-1400.jpg", image)
     image = generator.next_image("Other")
-    #"""
 
     cv2.imwrite("Lobby-" + video_id + "-1440.jpg", image)
     image = generator.next_image("Lobby")
@@ -224,8 +223,43 @@ def test():
 
     cv2.imwrite("Meeting-" + video_id + "-1562.jpg", image)
     image = generator.next_image("Meeting")
+    
 
     cv2.imwrite("Meeting-" + video_id + "-1567.jpg", image)
+    image = generator.next_image("Meeting")
+    #"""
+
+    generator.save_next("Gameplay")
+    generator.save_next("Gameplay")
+    generator.save_next("Meeting")
+    generator.save_next("Meeting")
+    generator.save_next("Meeting")
+    generator.save_next("Gameplay")
+    generator.save_next("Gameplay")
+    generator.save_next("Lobby")
+    generator.save_next("Over")
+    generator.save_next("Over")
+    generator.save_next("Over")
+    generator.save_next("Over")
+    generator.save_next("Over")
+    generator.save_next("Lobby")
+    generator.save_next("Lobby")
+    generator.save_next("Gameplay")
+    generator.save_next("Gameplay")
+    generator.save_next("Meeting")
+    generator.save_next("Meeting")
+    generator.save_next("Gameplay")
+    generator.save_next("Meeting")
+    generator.save_next("Meeting")
+    generator.save_next("Gameplay")
+    generator.save_next("Gameplay")
+    generator.save_next("Gameplay")
+    generator.save_next("Meeting")
+    generator.save_next("Meeting")
+    generator.save_next("Lobby")
+    generator.save_next("Meeting")
+    generator.save_next("Meeting")
+    generator.save_next("Meeting")
 
 
 def main():
