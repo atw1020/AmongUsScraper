@@ -89,12 +89,6 @@ class ImageGenerator:
         :return: frame halfway thorough new range
         """
 
-        # update the range
-        if first_half:
-            self.end_index = self.mid_index()
-        else:
-            self.start_index = self.mid_index()
-
         # check to see if we are looking at frames or indices
 
         # todo: fix bug with this binary searcher
@@ -126,6 +120,16 @@ class ImageGenerator:
             return self.image
 
         else:
+
+            # update the range
+            if first_half:
+                self.end_index = self.mid_index()
+            else:
+                self.start_index = self.mid_index()
+
+            print("start", self.start_index)
+            print("end", self.end_index)
+            print("middle", self.mid_index())
 
             url = self.base_url + self.vods[self.mid_index()]
 
@@ -194,6 +198,8 @@ class ImageGenerator:
             if image_kind == "Lobby" and (self.previous_kind == "Gameplay"
                                           or self.previous_kind == "Meeting"):
 
+                url = self.get_url()
+
                 # if we go from gameplay or a meeting into a lobby it means the game ended
                 # and we switch to the looking for end screen state
 
@@ -203,7 +209,10 @@ class ImageGenerator:
                 self.end_index = self.start_index
                 self.start_index = self.start_index - vod_steps[self.previous_kind]
 
-                return self.next_image(image_kind)
+                self.image = web_scrapper.get_still_frame(url)
+
+                return self.image
+
             else:
 
                 # otherwise, update the previous image

@@ -19,7 +19,7 @@ def test():
 
     video_id = "838589696"
 
-    generator = ImageGenerator(video_id, 1567)
+    generator = ImageGenerator(video_id, 1644)
     # """
     generator.next_image("Meeting")
     """
@@ -230,36 +230,6 @@ def test():
     #"""
 
     generator.save_next("Gameplay")
-    generator.save_next("Gameplay")
-    generator.save_next("Meeting")
-    generator.save_next("Meeting")
-    generator.save_next("Meeting")
-    generator.save_next("Gameplay")
-    generator.save_next("Gameplay")
-    generator.save_next("Lobby")
-    generator.save_next("Over")
-    generator.save_next("Over")
-    generator.save_next("Over")
-    generator.save_next("Over")
-    generator.save_next("Over")
-    generator.save_next("Lobby")
-    generator.save_next("Lobby")
-    generator.save_next("Gameplay")
-    generator.save_next("Gameplay")
-    generator.save_next("Meeting")
-    generator.save_next("Meeting")
-    generator.save_next("Gameplay")
-    generator.save_next("Meeting")
-    generator.save_next("Meeting")
-    generator.save_next("Gameplay")
-    generator.save_next("Gameplay")
-    generator.save_next("Gameplay")
-    generator.save_next("Meeting")
-    generator.save_next("Meeting")
-    generator.save_next("Lobby")
-    generator.save_next("Meeting")
-    generator.save_next("Meeting")
-    generator.save_next("Meeting")
 
 
 def main():
