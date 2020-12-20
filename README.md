@@ -6,6 +6,9 @@ Authors
 - Arthur Wesley
 - Gregory Ghiroli
 
+Current training accuracy: 97.16%
+Current test accuracy: 98.77%
+
 ## Trello
 
 https://trello.com/b/4s0w43oE/data-collection-ml
