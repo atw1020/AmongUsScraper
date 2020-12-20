@@ -4,6 +4,9 @@ Author: Arthur Wesley
 
 """
 
+import os
+
+import numpy as np
 import tensorflow as tf
 
 from tensorflow.keras.preprocessing import image_dataset_from_directory
@@ -24,13 +27,30 @@ def get_failed_training_images():
     model = tf.keras.models.load_model("Game Classifier.h5")
 
     # load the data
-    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data",
-                                                 image_size=constants.dimensions)
-    test_data = image_dataset_from_directory("Data/Game Classifier/Test Data",
-                                             image_size=constants.dimensions)
+    training_data, files = image_dataset_from_directory("Data/Game Classifier/Test Data",
+                                                        image_size=constants.dimensions,
+                                                        shuffle=False,
+                                                        return_filepaths=True)
 
-    model.evaluate(training_data)
-    model.evaluate(test_data)
+    step = 32
+    index = 0
+
+    # make the predictions
+    for X, y in training_data:
+
+        # predict and get the softmax
+        y_pred = model.predict(X)
+        y_pred = np.argmax(y_pred, axis=-1)
+
+        # convert the input tensor to a numpy array
+        y = y.numpy()
+
+        if not np.array_equal(y, y_pred):
+            for i in range(len(y_pred)):
+                if y_pred[i] != y[i]:
+                    print("miss-classification of image", files[index + i])
+
+        index += step
 
 
 def compute_learning_curves(name):

@@ -6,8 +6,8 @@ Authors
 - Arthur Wesley
 - Gregory Ghiroli
 
-Current training accuracy: 97.16%
-Current test accuracy: 98.77%
+Current training accuracy: 98.97%
+Current test accuracy: 98.95%
 
 ## Trello
 
