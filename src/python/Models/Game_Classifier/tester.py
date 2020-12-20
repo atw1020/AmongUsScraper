@@ -24,10 +24,13 @@ def get_failed_training_images():
     model = tf.keras.models.load_model("Game Classifier.h5")
 
     # load the data
-    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data")
+    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data",
+                                                 image_size=constants.dimensions)
+    test_data = image_dataset_from_directory("Data/Game Classifier/Test Data",
+                                             image_size=constants.dimensions)
 
-    # get the predicted y
-    y_pred = model.predict(training_data)
+    model.evaluate(training_data)
+    model.evaluate(test_data)
 
 
 def compute_learning_curves(name):
@@ -85,6 +88,7 @@ def main():
     """
 
     # compute_learning_curves("test")
+    get_failed_training_images()
 
 
 if __name__ == "__main__":
