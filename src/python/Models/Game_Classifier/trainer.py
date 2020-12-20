@@ -51,6 +51,7 @@ def main():
                                                  image_size=constants.dimensions)
 
     model.evaluate(test_data)
+    model.save("Game Classifier")
 
 
 if __name__ == "__main__":
