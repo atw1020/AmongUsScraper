@@ -27,7 +27,7 @@ def get_failed_training_images():
     model = tf.keras.models.load_model("Game Classifier.h5")
 
     # load the data
-    training_data, files = image_dataset_from_directory("Data/Game Classifier/Test Data",
+    training_data, files = image_dataset_from_directory("Data/Game Classifier/Training Data",
                                                         image_size=constants.dimensions,
                                                         shuffle=False,
                                                         return_filepaths=True)
