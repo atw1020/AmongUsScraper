@@ -12,6 +12,24 @@ from src.python import constants
 from src.python.Models.Game_Classifier import trainer
 
 
+def get_failed_training_images():
+    """
+
+    prints a list of all the training images that the trained model classifies incorrectly
+
+    :return:
+    """
+
+    # load the model
+    model = tf.keras.models.load_model("Game Classifier.h5")
+
+    # load the data
+    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data")
+
+    # get the predicted y
+    y_pred = model.predict(training_data)
+
+
 def compute_learning_curves(name):
     """
 
@@ -66,7 +84,7 @@ def main():
     :return:
     """
 
-    compute_learning_curves("test")
+    # compute_learning_curves("test")
 
 
 if __name__ == "__main__":
