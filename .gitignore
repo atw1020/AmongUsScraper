@@ -1,4 +1,4 @@
 /venv/
-#/Data/Game Classifier/Test Data/
-#/Data/Game Classifier/Training Data/
-#/Data/Game Classifier/Crude Data/
+/Data/Game Classifier/Test Data/
+/Data/Game Classifier/Training Data/
+/Data/Game Classifier/Crude Data/
