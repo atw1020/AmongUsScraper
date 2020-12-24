@@ -1,3 +1,33 @@
+*************Specific Definitions of classifications*************************
+
 - Black images are classified as "Other"
 - Meetings and Reports are classified as "Gameplay"
 - Ejections are Classified as "Gameplay"
+
+*************Distribution of miss-classifications*************************
+
+Data points to include in training data:
+    -> More Black Screens
+    -> Greater number of Content Creators
+    -> More Eject Screens
+
+Data:
+
+Image Kind:
+    Black Screen: 4
+    Space Eject Scene: 2
+    Mira Eject Scene: 2
+    Other Game: 2
+    Stats Lobby Screen: 2 (w/e)
+    Cameras: 1
+    Faded Lobby: 1
+
+Content Creator
+    Jvckk:          3:1     (not in training data)
+    Scott:          4:1     (not in training data)
+    Shubble:        2:1     (not in training data)
+    Kara:           4:4
+    Pokimane:       2:1     (not in training data)
+
+in training:     error is 1.00 errors / vod
+not in training: error is 2.75 errors / vod
