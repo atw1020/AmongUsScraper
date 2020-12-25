@@ -35,8 +35,9 @@ test_repeats = 10
 # dataset fractions
 dataset_fractions = [0.1 * i for i in range(10)]
 
-# dropout rate
-dropout = 0.3  # 0.25
+# classifier_dropout rate
+classifier_dropout = 0.3  # 0.25
+winner_identifier_dropout = 0.2
 
 learning_curve_extension = " test data.txt"
 
