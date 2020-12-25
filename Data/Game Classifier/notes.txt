@@ -6,6 +6,30 @@
 
 *************Distribution of miss-classifications*************************
 
+12/24/2020
+
+-> updated dropout to 0.25
+-> added training data from Blaustoise and ihascupquake
+
+Image Kind:
+    Other games:       3
+    Polis Eject Scene: 2
+    Mira Eject Scene:  2
+    Stats Lobby Scene: 2 (w/e)
+    Black Screen:      1
+    Space Eject Scene: 1
+
+Content Creator
+    Jvckk:          2:1     (not in training data)
+    Scott:          3:1     (not in training data)
+    Masterfeind     1:1     (not in training data)
+    Kara            5:4
+
+in training:     error is 1.25 errors / vod
+not in training: error is 2.00 errors / vod
+
+12/23/2020
+
 Data points to include in training data:
     -> More Black Screens
     -> Greater number of Content Creators

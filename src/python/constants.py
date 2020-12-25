@@ -36,7 +36,7 @@ test_repeats = 10
 dataset_fractions = [0.1 * i for i in range(10)]
 
 # dropout rate
-dropout = 0.2
+dropout = 0.3  # 0.25
 
 learning_curve_extension = " test data.txt"
 
