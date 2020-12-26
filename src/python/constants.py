@@ -49,6 +49,21 @@ file I/O Constants
 
 delimiter = ", "
 
+color_codes = {
+    "RD": 0,
+    "BL": 1,
+    "GN": 2,
+    "PK": 3,
+    "OR": 4,
+    "YL": 5,
+    "BK": 6,
+    "WT": 7,
+    "PR": 8,
+    "BN": 9,
+    "CY": 10,
+    "LM": 11
+}
+
 
 def size(res):
     """

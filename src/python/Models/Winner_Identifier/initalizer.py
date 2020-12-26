@@ -39,12 +39,12 @@ def init_nn():
     dropout5 = layers.Dropout(rate=constants.winner_identifier_dropout)(dense2)
 
     # output layer: 12 dense units, one for each color
-    output = layers.Dense(units=12, activation="relu")(dropout5)
+    output = layers.Dense(units=12, activation="sigmoid")(dropout5)
 
     opt = Adam(learning_rate=0.0001)
 
     model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
-    model.compile(loss="mse", optimizer=opt, metrics=["accuracy"])
+    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
 
     return model
 
