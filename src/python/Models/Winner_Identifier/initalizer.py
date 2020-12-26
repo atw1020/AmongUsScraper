@@ -23,12 +23,12 @@ def init_nn():
     input_layer = layers.Input(shape=constants.dimensions + (3,))
 
     # 2D convolutions
-    convolution = layers.Conv2D(filters=8, kernel_size=11, strides=5, activation="relu", padding="same")(input_layer)
+    convolution = layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(input_layer)
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution)
     # pooling     =   layers.MaxPooling2D(pool_size=2)(dropout)
-    convolution2 = layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(dropout)
+    convolution2 = layers.Conv2D(filters=32, kernel_size=11, strides=5, activation="relu", padding="same")(dropout)
     dropout2 = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution2)
-    convolution3 = layers.Conv2D(filters=32, kernel_size=11, strides=5, activation="relu", padding="same")(dropout2)
+    convolution3 = layers.Conv2D(filters=64, kernel_size=11, strides=5, activation="relu", padding="same")(dropout2)
     dropout3 = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution3)
 
     # flatten & feed into fully connected layers
@@ -47,4 +47,20 @@ def init_nn():
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
 
     return model
+
+
+def main():
+    """
+
+    main
+
+    :return:
+    """
+
+    model = init_nn()
+    model.summary()
+
+
+if __name__ == "__main__":
+    main()
 
