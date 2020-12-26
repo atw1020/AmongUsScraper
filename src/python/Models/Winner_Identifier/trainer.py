@@ -7,8 +7,9 @@ Author: Arthur wesley
 import os
 
 import numpy as np
-from tensorflow.keras.preprocessing import image_dataset_from_directory
 import tensorflow.keras.backend as K
+from tensorflow.keras.preprocessing import image_dataset_from_directory
+from tensorflow.keras.preprocessing.image import save_img
 
 from src.python import constants
 from src.python.Models.Winner_Identifier import initalizer
@@ -62,7 +63,8 @@ def get_labels(directory):
     :return: labels in order, sorted by name
     """
 
-    files = sorted(os.listdir(os.path.join(directory, "ext")))
+    # files = sorted(os.listdir(os.path.join(directory, "ext")))
+    files = os.listdir(os.path.join(directory, "ext"))
 
     return list(map(numpy_from_filename, files))
 
@@ -112,14 +114,30 @@ def main():
     :return: None
     """
 
+    color_codes = {v: k for k, v in constants.color_codes.items()}
+
     training_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
 
+    x, y = next(iter(training_data))
+
+    save_img("test.jpg", x[0])
+
+    print(y[0])
+
+    for i, value in enumerate(y[0]):
+
+        # if we have this value
+        if value == 1:
+            print("color:", color_codes[i])
+
+    """
     model = train_model(training_data)
 
     test_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Test Data"))
 
     model.evaluate(test_data)
     model.save("Winner Identifier.h5")
+    """
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ Current test accuracy: 99.26%
 
 Theories for exceptionally poor training
 
-- Mislabeled Data (images do not have correct labels)
+- Mislabeled Data (images do not have correct labels) **conformed**
 - Bad Loss Function
 - High Variance
 
