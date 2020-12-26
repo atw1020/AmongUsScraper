@@ -19,6 +19,10 @@ Theories for exceptionally poor training
 - Bad Loss Function (replaced with binary crossentropy)
 - High Variance
 
+More Filters:
+Deeper Network:
+Wider Network:
+
 ## Trello
 
 https://trello.com/b/4s0w43oE/data-collection-ml
