@@ -6,8 +6,18 @@ Authors
 - Arthur Wesley
 - Gregory Ghiroli
 
+## Game Classifier
+
 Current training accuracy: 99.85%
 Current test accuracy: 99.26%
+
+## Winner Identifier
+
+Theories for exceptionally poor training
+
+- Mislabeled Data (images do not have correct labels)
+- Bad Loss Function
+- High Variance
 
 ## Trello
 
