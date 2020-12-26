@@ -118,7 +118,7 @@ def sort_winner_crude_data():
             data_set = "Training Data"
 
         os.rename(os.path.join(path, "Crude Data", file),
-                  os.path.join(path, data_set, file))
+                  os.path.join(path, data_set, "ext", file))
 
 
 def main():

@@ -37,7 +37,7 @@ def main():
 
     model = tf.keras.models.load_model("Winner Identifier.h5")
 
-    path = os.path.join("Data", "Winner identifier", "Training Data", "ext", "BKBN-829611887-434-150.jpg")
+    path = os.path.join("Data", "Winner identifier", "Training Data", "ext", "GNPK-838252205-687.jpg")
 
     image = load_image(path)
 

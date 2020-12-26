@@ -64,7 +64,7 @@ def get_labels(directory):
     """
 
     # files = sorted(os.listdir(os.path.join(directory, "ext")))
-    files = os.listdir(os.path.join(directory, "ext"))
+    files = sorted(os.listdir(os.path.join(directory, "ext")))
 
     return list(map(numpy_from_filename, files))
 
@@ -82,6 +82,7 @@ def gen_dataset(directory):
 
     return image_dataset_from_directory(directory,
                                         image_size=constants.dimensions,
+                                        shuffle=True,
                                         labels=labels)
 
 
@@ -114,30 +115,31 @@ def main():
     :return: None
     """
 
+    """
+
     color_codes = {v: k for k, v in constants.color_codes.items()}
 
     training_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
 
     x, y = next(iter(training_data))
 
-    save_img("test.jpg", x[0])
+    for i in range(32):
 
-    print(y[0])
+        color_strings = [color_codes[j] if value == 1 else ""
+                         for j, value in enumerate(y[i])]
 
-    for i, value in enumerate(y[0]):
-
-        # if we have this value
-        if value == 1:
-            print("color:", color_codes[i])
+        save_img("".join(color_strings) + str(i) + ".jpg", x[i])
 
     """
+
+    training_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
+
     model = train_model(training_data)
 
     test_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Test Data"))
 
     model.evaluate(test_data)
     model.save("Winner Identifier.h5")
-    """
 
 
 if __name__ == "__main__":

@@ -3,6 +3,9 @@
   <component name="ProjectPlainTextFileTypeManager">
     <file url="file://$PROJECT_DIR$/Data/Game Classifier/notes.txt" />
     <file url="file://$PROJECT_DIR$/Data/Winner Identifier/notes.txt" />
+    <file url="file://$PROJECT_DIR$/mislabeled/analyisis.txt" />
+    <file url="file://$PROJECT_DIR$/mislabeled/data.txt" />
+    <file url="file://$PROJECT_DIR$/test test data.txt" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8 (AmongUsScrapper)" project-jdk-type="Python SDK" />
 </project>
