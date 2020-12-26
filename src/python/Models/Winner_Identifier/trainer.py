@@ -8,8 +8,10 @@ import os
 
 import numpy as np
 from tensorflow.keras.preprocessing import image_dataset_from_directory
+import tensorflow.keras.backend as K
 
 from src.python import constants
+from src.python.Models.Winner_Identifier import initalizer
 
 
 def numpy_from_filename(filename):
@@ -81,6 +83,27 @@ def gen_dataset(directory):
                                         labels=labels)
 
 
+def train_model(dataset):
+    """
+
+    trains a tensorflow model using
+
+    :param dataset: dataset to train on
+    :return: trained model
+    """
+
+    # clear the session so that we can train more than one model
+    K.clear_session()
+
+    # initialize the model
+    model = initalizer.init_nn()
+
+    # fit the model
+    model.fit(dataset, epochs=100)
+
+    return model
+
+
 def main():
     """
 
@@ -89,11 +112,14 @@ def main():
     :return: None
     """
 
-    print(numpy_from_filename("RDBLPKORYLWTPRLM-846990283-2349.jpg"))
+    training_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
 
-    dataset = gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
+    model = train_model(training_data)
 
-    print(dataset)
+    test_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Test Data"))
+
+    model.evaluate(test_data)
+    model.save("Winner Identifier.h5")
 
 
 if __name__ == "__main__":
