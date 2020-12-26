@@ -19,9 +19,10 @@ Theories for exceptionally poor training
 - Bad Loss Function (replaced with binary crossentropy)
 - High Variance
 
-training loss: 0.04 - 0.11
+
 
 More Filters:
+- training loss: 0.04 - 0.11
 Deeper Network:
 Wider Network:
 
