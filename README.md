@@ -21,6 +21,10 @@ Theories for exceptionally poor training
 
 training loss: 0.04 - 0.11
 
+More Filters:
+Deeper Network:
+Wider Network:
+
 ## Trello
 
 https://trello.com/b/4s0w43oE/data-collection-ml
