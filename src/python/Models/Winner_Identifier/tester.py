@@ -9,8 +9,10 @@ import os
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
+from tensorflow.keras.losses import BinaryCrossentropy
 
 from src.python import constants
+from src.python.Models.Winner_Identifier import trainer
 
 
 def load_image(path):
@@ -35,13 +37,27 @@ def main():
     :return:
     """
 
+    filename = "BLPKYLBKWTBNCYLM-844335327-791-37.jpg"
+
     model = tf.keras.models.load_model("Winner Identifier.h5")
 
-    path = os.path.join("Data", "Winner identifier", "Training Data", "ext", "GNPK-838252205-687.jpg")
+    path = os.path.join("Data", "Winner identifier", "Test Data", "ext", filename)
 
     image = load_image(path)
 
-    print(model.predict(image))
+    prediction = model.predict(image)[0]
+    actual = trainer.numpy_from_filename(filename)
+
+    loss = actual * -np.log(prediction) + (1 - actual) * -np.log(1 - prediction)
+
+    print(loss)
+
+    loss = sum(loss) / len(loss)
+
+    print(loss)
+
+    bce = BinaryCrossentropy()
+    print(bce(actual, prediction).numpy())
 
 
 if __name__ == "__main__":
