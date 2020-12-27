@@ -8,12 +8,13 @@ Authors
 
 ## Game Classifier
 
-Current training accuracy: 99.85%
+Current training accuracy: 99.85% <br>
 Current test accuracy: 99.26%
 
 ## Winner Identifier
 
-Current training loss: 
+Current training accuracy: 99.39% <br>
+Current test accuracy: 63.37%
 
 ## Trello
 

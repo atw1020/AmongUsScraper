@@ -43,7 +43,7 @@ def main():
 
     # print(os.path.exists("Data/Game Classifier/Training Data"))
 
-    training_data = image_dataset_from_directory("Data/Game Classifier/Training Datb",
+    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data",
                                                  image_size=constants.dimensions)
     model = train_model(training_data)
 
