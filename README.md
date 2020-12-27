@@ -20,8 +20,8 @@ Theories for exceptionally poor training
 - High Variance
 
 Baseline: 0.1206 -> 0.1243 -> 0.1075
-More Filters:
-Deeper Network:
+More Filters: 0.0276 -> 0.0239 -> 0.0477
+Deeper Network: 
 Wider Network:
 
 ## Trello
