@@ -21,7 +21,7 @@ Theories for exceptionally poor training
 
 Baseline: 0.1206 -> 0.1243 -> 0.1075
 More Filters:
-Deeper Network:
+Deeper Network: 0.0930 -> 0.0860 -> 0.0978
 Wider Network:
 
 ## Trello
