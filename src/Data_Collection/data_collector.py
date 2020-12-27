@@ -7,10 +7,13 @@ data collection program
 """
 
 import os
+from multiprocessing import pool
 
 import cv2
+import numpy as np
 from twitchdl import twitch
 from tensorflow.keras import models
+from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 from src import constants
 from src.Data_Collection import web_scrapper
@@ -46,6 +49,9 @@ class DataCollector:
         # take every [step] vods
         self.vods = self.vods[::self.step]
 
+        # initalize the input tensor
+        self.vods_tensor = np.empty((len(self.vods),) + constants.dimensions + (3,))
+
     def get_predictions(self):
         """
 
@@ -55,14 +61,21 @@ class DataCollector:
         """
 
         # save all of the images into temp
-        self.save_images()
-
-
+        self.get_images()
 
         # clear temp when done
         clean_images(temp_images)
 
-    def save_images(self):
+    def get_image(self, index):
+        """
+
+        gets the image at the specified index and
+
+        :param index:
+        :return:
+        """
+
+    def get_images(self):
         """
 
         saves all of the images in the temporary directory
@@ -71,10 +84,19 @@ class DataCollector:
         """
 
         for i in range(len(self.vods)):
-            image = web_scrapper.get_still_frame(self.video_id + self.vods[i])
-            frame_id = self.video_id + "-" + str(i) + ".jpg"
 
-            cv2.imwrite(os.path.join(temp_images, frame_id), image)
+            # get the image and assign it
+            image = web_scrapper.get_still_frame(self.url + self.vods[i])
+
+            # reshape the tensor for tensorflow
+            image = image.transpose((1, 0, 2))
+            # cv2.imwrite("test.jpg", image)
+            self.vods_tensor[i] = image
+
+            if i % int(float(len(self.vods)) / 100) == 0:
+                print(int(float(i) / len(self.vods) * 100), "% complete", sep="")
+
+        print(self.vods_tensor.shape)
 
 
 def clean_images(path):
@@ -91,3 +113,18 @@ def clean_images(path):
     for file in files:
         os.remove(os.path.join(path, file))
 
+
+def main():
+    """
+
+    main method
+
+    :return:
+    """
+
+    collector = DataCollector("825004778")
+    collector.get_images()
+
+
+if __name__ == "__main__":
+    main()
