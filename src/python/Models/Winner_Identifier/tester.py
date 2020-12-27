@@ -39,7 +39,7 @@ def main():
 
     filename = "BLPKYLBKWTBNCYLM-844335327-791-37.jpg"
 
-    model = tf.keras.models.load_model("Winner Identifier.h5")
+    model = tf.keras.models.load_model(constants.winner_identifier)
 
     path = os.path.join("Data", "Winner identifier", "Test Data", "ext", filename)
 

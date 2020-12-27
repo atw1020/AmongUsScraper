@@ -6,6 +6,15 @@ Author: Arthur wesley, Gregory Ghiroli
 
 """
 
+Neural Network names
+
+"""
+
+game_classifier = "Game Classifier.h5"
+winner_identifier = "Winner Identifier.h5"
+
+"""
+
 Common video resolutions
 
 """
@@ -37,7 +46,7 @@ dataset_fractions = [0.1 * i for i in range(10)]
 
 # classifier_dropout rate
 classifier_dropout = 0.3  # 0.25
-winner_identifier_dropout = 0.3
+winner_identifier_dropout = 0.2
 
 learning_curve_extension = " test data.txt"
 
