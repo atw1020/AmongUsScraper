@@ -13,7 +13,7 @@ import cv2
 import numpy as np
 from twitchdl import twitch
 from tensorflow.keras import models
-from tensorflow.keras.preprocessing import image_dataset_from_directory
+from tensorflow.keras.preprocessing.image import save_img
 
 from src import constants
 from src.Data_Collection import web_scrapper
@@ -49,31 +49,28 @@ class DataCollector:
         # take every [step] vods
         self.vods = self.vods[::self.step]
 
-        # initalize the input tensor
-        self.vods_tensor = np.empty((len(self.vods),) + constants.dimensions + (3,))
+        # initialize the input tensor
+        self.vods_tensor = None
 
-    def get_predictions(self):
-        """
-
-        labels all of the images in the video
-
-        :return:
-        """
-
-        # save all of the images into temp
-        self.get_images()
-
-        # clear temp when done
-        clean_images(temp_images)
+        # initalize the predictions
+        self.predictions = None
 
     def get_image(self, index):
         """
 
-        gets the image at the specified index and
+        gets the image at the specified index and puts it into the vods tensor
 
-        :param index:
-        :return:
+        :param index: index to insert get the image for
+        :return: None
         """
+
+        # get the image and assign it
+        image = web_scrapper.get_still_frame(self.url + self.vods[index])
+
+        # transpose the image
+        image = image.transpose((1, 0, 2))
+
+        self.vods_tensor[index] = image
 
     def get_images(self):
         """
@@ -83,35 +80,51 @@ class DataCollector:
         :return:
         """
 
+        self.vods_tensor = np.empty((len(self.vods),) + constants.dimensions + (3,))
+
         for i in range(len(self.vods)):
 
-            # get the image and assign it
-            image = web_scrapper.get_still_frame(self.url + self.vods[i])
-
-            # reshape the tensor for tensorflow
-            image = image.transpose((1, 0, 2))
-            # cv2.imwrite("test.jpg", image)
-            self.vods_tensor[i] = image
+            self.get_image(i)
 
             if i % int(float(len(self.vods)) / 100) == 0:
                 print(int(float(i) / len(self.vods) * 100), "% complete", sep="")
 
         print(self.vods_tensor.shape)
 
+    def classify_images(self):
+        """
 
-def clean_images(path):
-    """
+        classify the images in the vods tensor
 
-    removes all the images from the specified directory
+        :return: None (updates state
+        """
 
-    :return: None
-    """
+        if self.vods_tensor is None:
+            self.get_images()
 
-    # clear the directory
-    files = os.listdir(path)
+        self.predictions = self.classifier.predict(self.vods_tensor)
 
-    for file in files:
-        os.remove(os.path.join(path, file))
+        print(self.predictions[0] == self.predictions[1])
+        print(self.predictions[0] is self.predictions[1])
+
+        print(self.predictions[0])
+        print(self.predictions[1])
+
+        # use the classifier to predict
+        self.predictions = np.argmax(self.predictions, axis=1)
+
+        print(self.predictions)
+
+    def save_predictions(self):
+        """
+
+        save the predictions
+
+        :return:
+        """
+
+        if self.predictions is None:
+            self.classify_images()
 
 
 def main():
@@ -123,7 +136,7 @@ def main():
     """
 
     collector = DataCollector("825004778")
-    collector.get_images()
+    collector.classify_images()
 
 
 if __name__ == "__main__":
