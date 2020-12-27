@@ -4,7 +4,7 @@ Author: Arthur Wesley
 
 """
 
-from src.python import constants
+from src import constants
 
 from tensorflow import keras
 from tensorflow.keras import layers

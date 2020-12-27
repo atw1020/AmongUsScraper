@@ -10,8 +10,8 @@ import os
 
 from git.repo.base import Repo
 
-from src.python import constants
-from src.python.Models.Game_Classifier import tester
+from src import constants
+from src.Models.Game_Classifier import tester
 
 
 def merge_text(filepath_1, filepath_2):

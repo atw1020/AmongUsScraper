@@ -11,8 +11,8 @@ import numpy as np
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from tensorflow.keras.losses import BinaryCrossentropy
 
-from src.python import constants
-from src.python.Models.Winner_Identifier import trainer
+from src import constants
+from src.Models.Winner_Identifier import trainer
 
 
 def load_image(path):

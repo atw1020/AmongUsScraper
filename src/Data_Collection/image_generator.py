@@ -7,7 +7,7 @@ Author: Arthur Wesley
 from twitchdl import twitch
 import cv2
 
-from src.python.Data_Collection import web_scrapper
+from src.Data_Collection import web_scrapper
 
 min_frame_step = 20
 

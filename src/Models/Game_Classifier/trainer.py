@@ -4,12 +4,12 @@ Author: Arthur Wesley
 
 """
 
-from src.python import constants
+from src import constants
 
 from tensorflow.keras import backend as K
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
-from src.python.Models.Game_Classifier import initalizer
+from src.Models.Game_Classifier import initalizer
 
 
 def train_model(dataset):
@@ -48,7 +48,7 @@ def main():
     model = train_model(training_data)
 
     test_data = image_dataset_from_directory("Data/Game Classifier/Test Data",
-                                                 image_size=constants.dimensions)
+                                             image_size=constants.dimensions)
 
     model.evaluate(test_data)
     model.save("Game Classifier.h5")

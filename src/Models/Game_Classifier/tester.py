@@ -4,15 +4,13 @@ Author: Arthur Wesley
 
 """
 
-import os
-
 import numpy as np
 import tensorflow as tf
 
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
-from src.python import constants
-from src.python.Models.Game_Classifier import trainer
+from src import constants
+from src.Models.Game_Classifier import trainer
 
 
 def get_failed_training_images():

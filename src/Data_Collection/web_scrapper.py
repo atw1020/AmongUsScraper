@@ -12,7 +12,7 @@ import re
 
 import cv2
 
-from src.python import constants
+from src import constants
 
 from twitchdl import twitch
 from twitchdl import download

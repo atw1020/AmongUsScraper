@@ -9,7 +9,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing import image
 
-from src.python import constants
+from src import constants
 
 import os
 

@@ -9,10 +9,9 @@ import os
 import numpy as np
 import tensorflow.keras.backend as K
 from tensorflow.keras.preprocessing import image_dataset_from_directory
-from tensorflow.keras.preprocessing.image import save_img
 
-from src.python import constants
-from src.python.Models.Winner_Identifier import initalizer
+from src import constants
+from src.Models.Winner_Identifier import initalizer
 
 
 def numpy_from_filename(filename):

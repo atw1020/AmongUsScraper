@@ -12,9 +12,8 @@ import cv2
 from twitchdl import twitch
 from tensorflow.keras import models
 
-from src.python import constants
-from src.python.Data_Collection import web_scrapper
-
+from src import constants
+from src.Data_Collection import web_scrapper
 
 temp_images = os.path.join("Data", "Temp Images", "ext")
 
