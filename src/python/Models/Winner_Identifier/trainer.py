@@ -102,7 +102,7 @@ def train_model(dataset):
     model = initalizer.init_nn()
 
     # fit the model
-    model.fit(dataset, epochs=100)
+    model.fit(dataset, epochs=500)
 
     return model
 

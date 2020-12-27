@@ -16,8 +16,13 @@ Current test accuracy: 99.26%
 Theories for exceptionally poor training
 
 - Mislabeled Data (images do not have correct labels) **conformed**, **fixed**
-- Bad Loss Function
+- Bad Loss Function (replaced with binary crossentropy)
 - High Variance
+
+Baseline: 0.1206 -> 0.1243 -> 0.1075
+More Filters:
+Deeper Network:
+Wider Network:
 
 ## Trello
 
