@@ -18,11 +18,11 @@ winner_identifier = "Winner Identifier.h5"
 Common video resolutions
 
 """
-res_1080p = (1920, 1080)
-res_720p = (1280, 720)
-res_480p = (852, 480)
-res_360p = (640, 360)
-res_160p = (284, 160)
+res_1080p = (1080, 1920)
+res_720p = (720, 1280)
+res_480p = (480, 852)
+res_360p = (360, 640)
+res_160p = (160, 284)
 
 # dimensions of our images
 dimensions = res_360p

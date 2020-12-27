@@ -70,6 +70,11 @@ class DataCollector:
         # transpose the image
         image = image.transpose((1, 0, 2))
 
+        # flip the image to the correct orientation
+        image = np.flip(image, axis=1)
+
+        save_img("test.jpg", image)
+
         self.vods_tensor[index] = image
 
     def get_images(self):
@@ -102,16 +107,8 @@ class DataCollector:
         if self.vods_tensor is None:
             self.get_images()
 
-        self.predictions = self.classifier.predict(self.vods_tensor)
-
-        print(self.predictions[0] == self.predictions[1])
-        print(self.predictions[0] is self.predictions[1])
-
-        print(self.predictions[0])
-        print(self.predictions[1])
-
         # use the classifier to predict
-        self.predictions = np.argmax(self.predictions, axis=1)
+        self.predictions = np.argmax(self.classifier.predict(self.vods_tensor), axis=1)
 
         print(self.predictions)
 
