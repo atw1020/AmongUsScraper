@@ -9,7 +9,6 @@ data collection program
 import os
 from multiprocessing import pool
 
-import cv2
 import numpy as np
 from twitchdl import twitch
 from tensorflow.keras import models
@@ -18,7 +17,7 @@ from tensorflow.keras.preprocessing.image import save_img
 from src import constants
 from src.Data_Collection import web_scrapper
 
-temp_images = os.path.join("Data", "Temp Images", "ext")
+temp_images = os.path.join("Data", "Temp Images")
 
 
 class DataCollector:
@@ -66,15 +65,6 @@ class DataCollector:
 
         # get the image and assign it
         image = web_scrapper.get_still_frame(self.url + self.vods[index])
-
-        # transpose the image
-        image = image.transpose((1, 0, 2))
-
-        # flip the image to the correct orientation
-        image = np.flip(image, axis=1)
-
-        save_img("test.jpg", image)
-
         self.vods_tensor[index] = image
 
     def get_images(self):
@@ -110,8 +100,6 @@ class DataCollector:
         # use the classifier to predict
         self.predictions = np.argmax(self.classifier.predict(self.vods_tensor), axis=1)
 
-        print(self.predictions)
-
     def save_predictions(self):
         """
 
@@ -123,6 +111,14 @@ class DataCollector:
         if self.predictions is None:
             self.classify_images()
 
+        for i in range(len(self.vods)):
+
+            output_path = constants.label_ids[self.predictions[i]] + "-" \
+                          + self.video_id + "-" \
+                          + str(i) + ".jpg"
+
+            save_img(os.path.join(temp_images, output_path), self.vods_tensor[i])
+
 
 def main():
     """
@@ -133,7 +129,7 @@ def main():
     """
 
     collector = DataCollector("825004778")
-    collector.classify_images()
+    collector.save_predictions()
 
 
 if __name__ == "__main__":

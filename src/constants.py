@@ -26,7 +26,7 @@ res_160p = (160, 284)
 
 # dimensions of our images
 dimensions = res_360p
-quality = str(dimensions[1]) + "p"
+quality = str(dimensions[0]) + "p"
 
 sampling_rate = 1
 
@@ -71,6 +71,14 @@ color_codes = {
     "BN": 9,
     "CY": 10,
     "LM": 11
+}
+
+label_ids = {
+    0: "Gameplay",
+    1: "Lobby",
+    2: "Meeting",
+    3: "Other",
+    4: "Over"
 }
 
 
