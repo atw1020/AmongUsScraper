@@ -48,11 +48,16 @@ class DataCollector:
         # take every [step] vods
         self.vods = self.vods[::self.step]
 
+        self.vods = [(vod, 0) for vod in self.vods]
+
         # initialize the input tensor
         self.vods_tensor = None
 
-        # initalize the predictions
+        # initialize the predictions
         self.predictions = None
+
+        # initialize the indices of games
+        self.transitions = None
 
     def get_image(self, index):
         """
@@ -64,7 +69,8 @@ class DataCollector:
         """
 
         # get the image and assign it
-        image = web_scrapper.get_still_frame(self.url + self.vods[index])
+        image = web_scrapper.get_still_frame(self.url + self.vods[index][0],
+                                             self.vods[index][1])
         self.vods_tensor[index] = image
 
     def get_images(self):
@@ -77,6 +83,8 @@ class DataCollector:
 
         self.vods_tensor = np.empty((len(self.vods),) + constants.dimensions + (3,))
 
+        # todo: implement with a thread pool
+
         for i in range(len(self.vods)):
 
             self.get_image(i)
@@ -84,7 +92,7 @@ class DataCollector:
             if i % int(float(len(self.vods)) / 100) == 0:
                 print(int(float(i) / len(self.vods) * 100), "% complete", sep="")
 
-        print(self.vods_tensor.shape)
+        return self.vods_tensor
 
     def classify_images(self):
         """
@@ -99,6 +107,8 @@ class DataCollector:
 
         # use the classifier to predict
         self.predictions = np.argmax(self.classifier.predict(self.vods_tensor), axis=1)
+
+        return self.predictions
 
     def save_predictions(self):
         """
@@ -115,9 +125,31 @@ class DataCollector:
 
             output_path = constants.label_ids[self.predictions[i]] + "-" \
                           + self.video_id + "-" \
-                          + str(i) + ".jpg"
+                          + str(i * self.step) + ".jpg"
 
             save_img(os.path.join(temp_images, output_path), self.vods_tensor[i])
+
+    def get_game_transitions(self):
+        """
+
+        gets the indices of the transitions
+
+        :return:
+        """
+
+        if self.predictions is None:
+            self.classify_images()
+
+        self.transitions = list()
+
+        # go thorough all the predictions
+        for i in range(len(self.predictions)):
+
+            # if we hit a lobby and just hit gameplay or meeting,
+            if self.predictions[i] == 1 and self.predictions[i - 1] in (0, 2, 4):
+                self.transitions.append(i)
+
+        return self.transitions
 
 
 def main():
@@ -129,7 +161,9 @@ def main():
     """
 
     collector = DataCollector("825004778")
-    collector.save_predictions()
+    transitions = collector.get_game_transitions()
+
+    print("transition indices: ", transitions)
 
 
 if __name__ == "__main__":
