@@ -1,0 +1,4 @@
+Pools, Batches, Steps, Run Time, Transitions, games
+1,     No,      4,     715.11,   484,         58
+1,     No,      2,     1374.98,  553,         56
+1,     No,      1,     2855.52,  610,         54

@@ -7,6 +7,7 @@ data collection program
 """
 
 import os
+import sys
 from multiprocessing import pool
 
 import numpy as np
@@ -22,7 +23,7 @@ temp_images = os.path.join("Data", "Temp Images")
 
 class DataCollector:
 
-    def __init__(self, video_id, step=2):
+    def __init__(self, video_id, step=2, verbose=True):
         """
 
         initializes a DataCollector from a specified video ID
@@ -59,6 +60,8 @@ class DataCollector:
         # initialize the indices of games
         self.transitions = None
 
+        self.verbose = verbose
+
     def get_image(self, index):
         """
 
@@ -89,10 +92,10 @@ class DataCollector:
 
             self.get_image(i)
 
-            if i % int(float(len(self.vods)) / 100) == 0:
+            if i % int(float(len(self.vods)) / 20) == 0 and self.verbose:
                 print(int(float(i) / len(self.vods) * 100), "% complete", sep="")
 
-        return self.vods_tensor
+        print(sys.getsizeof(self.vods_tensor))
 
     def classify_images(self):
         """
@@ -143,11 +146,11 @@ class DataCollector:
         self.transitions = list()
 
         # go thorough all the predictions
-        for i in range(len(self.predictions)):
+        for i in range(len(self.predictions) - 1):
 
             # if we hit a lobby and just hit gameplay or meeting,
-            if self.predictions[i] == 1 and self.predictions[i - 1] in (0, 2, 4):
-                self.transitions.append(i)
+            if self.predictions[i] != self.predictions[i - 1]:
+                self.transitions.append((constants.label_ids[self.predictions[i]], i))
 
         return self.transitions
 
