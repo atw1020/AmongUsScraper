@@ -78,9 +78,8 @@ def main():
     :return:
     """
 
-    get_step_data(4)
-    get_step_data(2)
-    get_step_data(1)
+    get_step_data(8)
+    get_step_data(16)
 
 
 if __name__ == "__main__":

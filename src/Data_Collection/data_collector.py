@@ -107,9 +107,11 @@ class DataCollector:
         :return:
         """
 
-        vods_tensor = np.empty((len(batch),) + constants.dimensions + (3,))
+        # with pool.Pool() as p:
+        #    vods_tensor = p.map(self.get_image,
+        #                        range(start_index, start_index + len(batch)))
 
-        # todo: implement with a thread pool
+        vods_tensor = np.empty((len(batch),) + constants.dimensions + (3,))
 
         for i in range(len(batch)):
             vods_tensor[i] = self.get_image(start_index + i)
@@ -134,9 +136,32 @@ class DataCollector:
 
             # if we experianced a transition
             if self.predictions[i] != self.predictions[i - 1]:
-                transitions.append((constants.label_ids[self.predictions[i]], i))
+                transitions.append((constants.label_ids[self.predictions[i]],
+                                    i * self.step))
 
         return transitions
+
+    def save_predictions(self):
+        """
+
+        saves the predictions into temp_images
+
+        :return:
+        """
+
+        if self.predictions is None:
+            self.get_images_batch()
+
+        for i in range(len(self.vods)):
+
+            # get the image at the specified index
+            image = self.get_image(i)
+
+            name = constants.label_ids[self.predictions[i]] + "-" + \
+                   self.video_id + "-" + \
+                   str(i * self.step) + ".jpg"
+
+            save_img(os.path.join(temp_images, name), image)
 
 
 def main():
@@ -148,7 +173,7 @@ def main():
     """
 
     collector = DataCollector("825004778")
-    collector.get_images_batch()
+    collector.save_predictions()
 
 
 if __name__ == "__main__":
