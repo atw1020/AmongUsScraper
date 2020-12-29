@@ -92,7 +92,7 @@ class DataCollector:
             end_index = start_index + len(batch)
 
             # get the tensor
-            vods_tensor = self.get_batch(batch, self.step * index)
+            vods_tensor = self.get_batch(batch, start_index)
 
             # update the predictions
             self.predictions[start_index:end_index] = np.argmax(self.classifier.predict(vods_tensor), axis=1)
