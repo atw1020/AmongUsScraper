@@ -7,6 +7,7 @@ data collection program
 """
 
 import os
+import time as t
 
 import numpy as np
 from twitchdl import twitch
@@ -88,6 +89,8 @@ class DataCollector:
         :return:
         """
 
+        t0 = t.time()
+
         self.batches = [self.vods[i:i + self.batch_size]
                         for i in range(0, len(self.vods), self.batch_size)]
 
@@ -103,6 +106,9 @@ class DataCollector:
 
             # update the predictions
             self.predictions[start_index:end_index] = np.argmax(self.classifier.predict(vods_tensor), axis=1)
+
+        t1 = t.time()
+        print("downloading the images took", t1 - t0)
 
     def get_batch(self, batch):
         """
@@ -132,6 +138,8 @@ class DataCollector:
         if self.predictions is None:
             self.get_images_batch()
 
+        t0 = t.time()
+
         self.transitions = list()
 
         for i in range(len(self.predictions)):
@@ -140,6 +148,9 @@ class DataCollector:
             if self.predictions[i] != self.predictions[i - 1]:
                 self.transitions.append((constants.label_ids[self.predictions[i]],
                                          i * self.step))
+
+        t1 = t.time()
+        print("finding the transitions took", t1 - t0)
 
     def get_game_transitions(self):
         """
@@ -153,6 +164,8 @@ class DataCollector:
         if self.transitions is None:
             self.get_transitions()
 
+        t0 = t.time()
+
         game_transitions = []
 
         for i in range(len(self.transitions)):
@@ -160,6 +173,9 @@ class DataCollector:
             # if this image is a lobby and the last image was not a lobby or other
             if self.transitions[i][0] == "Lobby" and self.transitions[i - 1][0] in ("Gameplay", "Meeting", "Over"):
                 game_transitions.append(self.transitions[i - 1])
+
+        t1 = t.time()
+        print("finding the game transitions took", t1 - t0, "seconds")
 
         return game_transitions
 
@@ -195,6 +211,8 @@ class DataCollector:
 
         game_transitions = self.get_game_transitions()
 
+        t0 = t.time()
+
         tensors = []
 
         for transition in game_transitions:
@@ -202,6 +220,9 @@ class DataCollector:
 
         self.transition_tensor = np.concatenate(tensors)
         self.transition_predictions = np.argmax(self.classifier.predict(self.transition_tensor), axis=1)
+
+        t1 = t.time()
+        print("classifying the transition images took", t1 - t0, "seconds")
 
     def save_predictions(self):
         """
@@ -236,6 +257,8 @@ class DataCollector:
         if self.transition_predictions is None:
             self.get_transition_predictions()
 
+        t0 = t.time()
+
         game_transitions = self.get_game_transitions()
 
         # number of frames that each transition yields
@@ -264,6 +287,9 @@ class DataCollector:
 
                     save_img(os.path.join(temp_images, name), image)
 
+        t1 = t.time()
+        print("saving", index, "images took", t1 - t0, "seconds")
+
 
 def main():
     """
@@ -273,8 +299,18 @@ def main():
     :return:
     """
 
-    collector = DataCollector("825004778", step=2)
-    collector.save_transition_predictions()
+    games = ["846620679", "856780019"
+             "854056599", "853223047", "851848563",
+             "850756118", "849641849", "848842241",
+             "847668825", "856779292", "848975164",
+             "844688434", "839991024", "838705684",
+             "836360400", "835464426", "833813315",
+             "832789243", "831651710"]
+
+    for game in games:
+        collector = DataCollector(game, step=8)
+        collector.save_transition_predictions()
+        print("saved images for", game)
 
 
 if __name__ == "__main__":
