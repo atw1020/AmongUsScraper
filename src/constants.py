@@ -82,6 +82,16 @@ label_ids = {
 }
 
 
+"""
+
+frame constants
+
+"""
+
+end_transition_step = 50
+frames_per_vod = 300
+
+
 def size(res):
     """
 

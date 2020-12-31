@@ -55,8 +55,17 @@ class DataCollector:
         # batches object (initially None)
         self.batches = None
 
+        # transitions object
+        self.transitions = None
+
         # predictions object
         self.predictions = None
+
+        # transition tensor
+        self.transition_tensor = None
+
+        # transition predictions
+        self.transition_predictions = None
 
     def get_image(self, vod):
         """
@@ -123,35 +132,34 @@ class DataCollector:
         if self.predictions is None:
             self.get_images_batch()
 
-        transitions = list()
+        self.transitions = list()
 
         for i in range(len(self.predictions)):
 
             # if we experienced a transition
             if self.predictions[i] != self.predictions[i - 1]:
-                transitions.append((constants.label_ids[self.predictions[i]],
-                                    i * self.step))
-
-        return transitions
+                self.transitions.append((constants.label_ids[self.predictions[i]],
+                                         i * self.step))
 
     def get_game_transitions(self):
         """
 
         get the transitions between different kinds of images
 
-        :return: list of transitoins for each game
+        :return: list of transitions for each game
         """
 
         # get the number of transitions
-        transitions = self.get_transitions()
+        if self.transitions is None:
+            self.get_transitions()
 
         game_transitions = []
 
-        for i in range(len(transitions)):
+        for i in range(len(self.transitions)):
 
             # if this image is a lobby and the last image was not a lobby or other
-            if transitions[i][0] == "Lobby" and transitions[i - 1][0] in ("Gameplay", "Meeting", "Over"):
-                game_transitions.append(transitions[i - 1])
+            if self.transitions[i][0] == "Lobby" and self.transitions[i - 1][0] in ("Gameplay", "Meeting", "Over"):
+                game_transitions.append(self.transitions[i - 1])
 
         return game_transitions
 
@@ -171,7 +179,9 @@ class DataCollector:
         items = []
 
         for vod in vods:
-            items.append(web_scrapper.get_still_frames(self.url + vod, 50, 300))
+            items.append(web_scrapper.get_still_frames(self.url + vod,
+                                                       constants.end_transition_step,
+                                                       constants.frames_per_vod))
 
         return np.concatenate(items)
 
@@ -184,17 +194,14 @@ class DataCollector:
         """
 
         game_transitions = self.get_game_transitions()
-        print(game_transitions)
 
         tensors = []
 
         for transition in game_transitions:
             tensors.append(self.get_transition_images(transition))
 
-        tensor = np.concatenate(tensors)
-        predictions = np.argmax(self.classifier.predict(tensor), axis=1)
-
-        print(predictions)
+        self.transition_tensor = np.concatenate(tensors)
+        self.transition_predictions = np.argmax(self.classifier.predict(self.transition_tensor), axis=1)
 
     def save_predictions(self):
         """
@@ -218,6 +225,45 @@ class DataCollector:
 
             save_img(os.path.join(temp_images, name), image)
 
+    def save_transition_predictions(self):
+        """
+
+        saves predictions made about the transition images into temp_images
+
+        :return: None
+        """
+
+        if self.transition_predictions is None:
+            self.get_transition_predictions()
+
+        game_transitions = self.get_game_transitions()
+
+        # number of frames that each transition yields
+        frames_per_transition = int(2 * self.step * constants.frames_per_vod / constants.end_transition_step)
+
+        # go through the game transitions
+        for game_transition_index, (vod_kind, vod_start_index) in enumerate(game_transitions):
+
+            # go through all the vods within the next step
+            for i in range(2 * self.step):
+
+                # go through all the frames in each vod
+                for frame in range(0, constants.frames_per_vod, constants.end_transition_step):
+
+                    vod_index = vod_start_index + i
+
+                    frame_offset = int((i * constants.frames_per_vod + frame)
+                                       / constants.end_transition_step)
+
+                    index = game_transition_index * frames_per_transition + frame_offset
+
+                    image = self.transition_tensor[index]
+                    name = constants.label_ids[self.transition_predictions[index]] + "-" + \
+                           self.video_id + "-" + \
+                           str(vod_index) + "-" + str(frame) + ".jpg"
+
+                    save_img(os.path.join(temp_images, name), image)
+
 
 def main():
     """
@@ -228,7 +274,7 @@ def main():
     """
 
     collector = DataCollector("825004778", step=2)
-    collector.get_transition_predictions()
+    collector.save_transition_predictions()
 
 
 if __name__ == "__main__":

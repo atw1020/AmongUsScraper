@@ -166,7 +166,7 @@ def get_still_frames(url, step=50, frames=300):
         success, image = vidObj.read()
 
         if index in frame_set:
-            images.append(image)
+            images.append(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
         index += 1
 
