@@ -9,25 +9,6 @@ import time
 import data_collector
 
 
-def count_game_transitions(games):
-    """
-
-    count the number of game transitions
-
-    :return: number of game transitions
-    """
-
-    count = 0
-
-    for i in range(len(games)):
-
-        # if this image is a lobby and the last image was not a lobby or other
-        if games[i][0] == "Lobby" and games[i -1][0] in ("Gameplay", "Meeting", "Over"):
-            count += 1
-
-    return count
-
-
 def get_step_data(steps, batch_size=32):
     """
 
@@ -38,6 +19,7 @@ def get_step_data(steps, batch_size=32):
     :return: None (prints summary)
     """
 
+    transitions = []
     games = []
 
     t0 = time.time()
@@ -46,24 +28,28 @@ def get_step_data(steps, batch_size=32):
                                              step=steps,
                                              verbose=False,
                                              batch_size=batch_size)
+    transitions = transitions + collector.get_transitions()
     games = games + collector.get_game_transitions()
     del collector
     collector = data_collector.DataCollector("846990283",
                                              step=steps,
                                              verbose=False,
                                              batch_size=batch_size)
+    transitions = transitions + collector.get_transitions()
     games = games + collector.get_game_transitions()
     del collector
     collector = data_collector.DataCollector("839936889",
                                              step=steps,
                                              verbose=False,
                                              batch_size=batch_size)
+    transitions = transitions + collector.get_transitions()
     games = games + collector.get_game_transitions()
     del collector
     collector = data_collector.DataCollector("837588827",
                                              step=steps,
                                              verbose=False,
                                              batch_size=batch_size)
+    transitions = transitions + collector.get_transitions()
     games = games + collector.get_game_transitions()
     del collector
 
@@ -71,8 +57,8 @@ def get_step_data(steps, batch_size=32):
 
     print("data for", steps, "steps")
     print("running took", t1 - t0, "seconds")
+    print("found", len(transitions), "transitions")
     print("found", len(games), "transitions")
-    print("found", count_game_transitions(games), "games")
 
 
 def main():

@@ -58,18 +58,18 @@ class DataCollector:
         # predictions object
         self.predictions = None
 
-    def get_image(self, index):
+    def get_image(self, vod):
         """
 
         gets the image at the specified index and puts it into the vods tensor
 
-        :param index: index to insert get the image for
+        :param vod: vod to get
         :return: None
         """
 
         # get the image and assign it
-        return web_scrapper.get_still_frame(self.url + self.vods[index][0],
-                                             self.vods[index][1])
+        return web_scrapper.get_still_frame(self.url + vod[0],
+                                             vod[1])
 
     def get_images_batch(self):
         """
@@ -80,7 +80,7 @@ class DataCollector:
         """
 
         self.batches = [self.vods[i:i + self.batch_size]
-                   for i in range(0, len(self.vods), self.batch_size)]
+                        for i in range(0, len(self.vods), self.batch_size)]
 
         self.predictions = np.empty((len(self.vods)))
 
@@ -90,29 +90,28 @@ class DataCollector:
             end_index = start_index + len(batch)
 
             # get the tensor
-            vods_tensor = self.get_batch(batch, self.step * index)
+            vods_tensor = self.get_batch(batch)
 
             # update the predictions
             self.predictions[start_index:end_index] = np.argmax(self.classifier.predict(vods_tensor), axis=1)
 
-    def get_batch(self, batch, start_index):
+    def get_batch(self, batch):
         """
 
         put the specified batch into the vods_tensor
 
         :param batch: batch to put into the vods tensor
-        :param start_index: index of the start of the batch
         :return:
         """
 
         vods_tensor = np.empty((len(batch),) + constants.dimensions + (3,))
 
-        for i in range(len(batch)):
-            vods_tensor[i] = self.get_image(start_index + i)
+        for i, vod in enumerate(batch):
+            vods_tensor[i] = self.get_image(vod)
 
         return vods_tensor
 
-    def get_game_transitions(self):
+    def get_transitions(self):
         """
 
         generates a list of every transition in the game
@@ -135,6 +134,27 @@ class DataCollector:
 
         return transitions
 
+    def get_game_transitions(self):
+        """
+
+        get the transitions between different kinds of images
+
+        :return: list of transitoins for each game
+        """
+
+        # get the number of transitions
+        transitions = self.get_transitions()
+
+        game_transitions = []
+
+        for i in range(len(transitions)):
+
+            # if this image is a lobby and the last image was not a lobby or other
+            if transitions[i][0] == "Lobby" and transitions[i - 1][0] in ("Gameplay", "Meeting", "Over"):
+                game_transitions.append(transitions[i - 1])
+
+        return game_transitions
+
     def save_predictions(self):
         """
 
@@ -146,10 +166,10 @@ class DataCollector:
         if self.predictions is None:
             self.get_images_batch()
 
-        for i in range(len(self.vods)):
+        for i, vod in enumerate(self.vods):
 
             # get the image at the specified index
-            image = self.get_image(i)
+            image = self.get_image(vod)
 
             name = constants.label_ids[self.predictions[i]] + "-" + \
                    self.video_id + "-" + \
@@ -166,8 +186,14 @@ def main():
     :return:
     """
 
-    collector = DataCollector("825004778")
-    collector.get_game_transitions()
+    collector = DataCollector("825004778", step=2)
+    print(collector.get_game_transitions())
+
+    collector = DataCollector("825004778", step=4)
+    print(collector.get_game_transitions())
+
+    collector = DataCollector("825004778", step=8)
+    print(collector.get_game_transitions())
 
 
 if __name__ == "__main__":
