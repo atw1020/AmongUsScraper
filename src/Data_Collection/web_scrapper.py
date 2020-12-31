@@ -132,7 +132,7 @@ def get_still_frame(url, index=0):
         success, image = vidObj.read()
 
     if not success:
-        raise IndexError("index out of bounds " + str(index) + " for getting frame at " + url)
+        raise IndexError("index out of bounds " + str(index + 1) + " for getting frame at " + url)
 
     # convert to RGB
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

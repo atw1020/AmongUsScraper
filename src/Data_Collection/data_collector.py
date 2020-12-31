@@ -7,8 +7,6 @@ data collection program
 """
 
 import os
-import sys
-from multiprocessing import pool
 
 import numpy as np
 from twitchdl import twitch
@@ -92,7 +90,7 @@ class DataCollector:
             end_index = start_index + len(batch)
 
             # get the tensor
-            vods_tensor = self.get_batch(batch, start_index)
+            vods_tensor = self.get_batch(batch, self.step * index)
 
             # update the predictions
             self.predictions[start_index:end_index] = np.argmax(self.classifier.predict(vods_tensor), axis=1)
@@ -106,10 +104,6 @@ class DataCollector:
         :param start_index: index of the start of the batch
         :return:
         """
-
-        # with pool.Pool() as p:
-        #    vods_tensor = p.map(self.get_image,
-        #                        range(start_index, start_index + len(batch)))
 
         vods_tensor = np.empty((len(batch),) + constants.dimensions + (3,))
 
@@ -173,7 +167,7 @@ def main():
     """
 
     collector = DataCollector("825004778")
-    collector.save_predictions()
+    collector.get_game_transitions()
 
 
 if __name__ == "__main__":

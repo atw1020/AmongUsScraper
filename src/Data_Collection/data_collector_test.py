@@ -28,11 +28,12 @@ def count_game_transitions(games):
     return count
 
 
-def get_step_data(steps):
+def get_step_data(steps, batch_size=32):
     """
 
     gets run data from a given number of steps
 
+    :param batch_size: size of each batch
     :param steps: number of steps to take
     :return: None (prints summary)
     """
@@ -43,22 +44,26 @@ def get_step_data(steps):
 
     collector = data_collector.DataCollector("825004778",
                                              step=steps,
-                                             verbose=False)
+                                             verbose=False,
+                                             batch_size=batch_size)
     games = games + collector.get_game_transitions()
     del collector
     collector = data_collector.DataCollector("846990283",
                                              step=steps,
-                                             verbose=False)
+                                             verbose=False,
+                                             batch_size=batch_size)
     games = games + collector.get_game_transitions()
     del collector
     collector = data_collector.DataCollector("839936889",
                                              step=steps,
-                                             verbose=False)
+                                             verbose=False,
+                                             batch_size=batch_size)
     games = games + collector.get_game_transitions()
     del collector
     collector = data_collector.DataCollector("837588827",
                                              step=steps,
-                                             verbose=False)
+                                             verbose=False,
+                                             batch_size=batch_size)
     games = games + collector.get_game_transitions()
     del collector
 
@@ -78,7 +83,6 @@ def main():
     :return:
     """
 
-    get_step_data(8)
     get_step_data(16)
 
 
