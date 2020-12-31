@@ -11,11 +11,11 @@ import requests
 import re
 
 import cv2
-
-from src import constants
-
+import numpy as np
 from twitchdl import twitch
 from twitchdl import download
+
+from src import constants
 
 from twitchdl.commands import _parse_playlists, _get_playlist_by_name, _get_vod_paths
 
@@ -140,6 +140,42 @@ def get_still_frame(url, index=0):
     return image
 
 
+def get_still_frames(url, step=50, frames=300):
+    """
+
+    gets multiple still frames from a video
+
+    :param url: url to the vod
+    :param step: number of steps between frames
+    :param frames: number of frames in the vod (usually 300)
+    :return: tensor of still frames
+    """
+
+    vidObj = cv2.VideoCapture(url)
+
+    success = True
+
+    index = 0
+
+    images = []
+
+    frame_set = range(0, frames, step)
+
+    while index < frames and success:
+
+        success, image = vidObj.read()
+
+        if index in frame_set:
+            images.append(image)
+
+        index += 1
+
+    if not success:
+        raise Exception("Error: could not read data at ", url)
+
+    return np.array(images)
+
+
 def get_training_data(video_id, sampling_rate=constants.sampling_rate):
     """
 
@@ -173,10 +209,8 @@ def main():
 
     # ~ 1 in 20 still frames are wins in shofu's stream
 
-    IDs = ["829611887"]  # ["832831965", "826807014", "829611887", "834868121"]
-
-    for ID in IDs:
-        get_training_data(ID)
+    images = get_still_frames("http://dqrpb9wgowsf5.cloudfront.net/263b198d0bd2ccda59ad_thunderblunder777_40807505038_1607054997/360p30/0.ts")
+    print(images.shape)
 
 
 if __name__ == "__main__":

@@ -45,10 +45,10 @@ class DataCollector:
         self.access_token = twitch.get_access_token(video_id)
 
         self.url = web_scrapper.get_base_url(self.video_id, self.access_token)
-        self.vods = web_scrapper.get_vods(self.video_id, self.access_token)
+        self.full_vods = web_scrapper.get_vods(self.video_id, self.access_token)
 
         # take every [step] vods
-        self.vods = self.vods[::self.step]
+        self.vods = self.full_vods[::self.step]
 
         self.vods = [(vod, 0) for vod in self.vods]
 
@@ -127,7 +127,7 @@ class DataCollector:
 
         for i in range(len(self.predictions)):
 
-            # if we experianced a transition
+            # if we experienced a transition
             if self.predictions[i] != self.predictions[i - 1]:
                 transitions.append((constants.label_ids[self.predictions[i]],
                                     i * self.step))
@@ -154,6 +154,47 @@ class DataCollector:
                 game_transitions.append(transitions[i - 1])
 
         return game_transitions
+
+    def get_transition_images(self, ending_transition):
+        """
+
+        generate the images to check for an end screen given an ending transition
+
+        :param ending_transition: tuple (vod file, frame index)
+        :return: batch of frames that could contain the transition
+        """
+
+        # get the vods to scan
+        index = ending_transition[1]
+        vods = self.full_vods[index:index + 2 * self.step]
+
+        items = []
+
+        for vod in vods:
+            items.append(web_scrapper.get_still_frames(self.url + vod, 50, 300))
+
+        return np.concatenate(items)
+
+    def get_transition_predictions(self):
+        """
+
+        get the transition predictions
+
+        :return:
+        """
+
+        game_transitions = self.get_game_transitions()
+        print(game_transitions)
+
+        tensors = []
+
+        for transition in game_transitions:
+            tensors.append(self.get_transition_images(transition))
+
+        tensor = np.concatenate(tensors)
+        predictions = np.argmax(self.classifier.predict(tensor), axis=1)
+
+        print(predictions)
 
     def save_predictions(self):
         """
@@ -187,13 +228,7 @@ def main():
     """
 
     collector = DataCollector("825004778", step=2)
-    print(collector.get_game_transitions())
-
-    collector = DataCollector("825004778", step=4)
-    print(collector.get_game_transitions())
-
-    collector = DataCollector("825004778", step=8)
-    print(collector.get_game_transitions())
+    collector.get_transition_predictions()
 
 
 if __name__ == "__main__":
