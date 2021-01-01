@@ -246,11 +246,12 @@ class DataCollector:
 
             save_img(os.path.join(temp_images, name), image)
 
-    def save_transition_predictions(self):
+    def save_transition_predictions(self, over_only=False):
         """
 
         saves predictions made about the transition images into temp_images
 
+        :param over_only: whether or not to only save over images
         :return: None
         """
 
@@ -280,12 +281,14 @@ class DataCollector:
 
                     index = game_transition_index * frames_per_transition + frame_offset
 
-                    image = self.transition_tensor[index]
-                    name = constants.label_ids[self.transition_predictions[index]] + "-" + \
-                           self.video_id + "-" + \
-                           str(vod_index) + "-" + str(frame) + ".jpg"
+                    if not over_only or self.transition_predictions[index] == 4:
 
-                    save_img(os.path.join(temp_images, name), image)
+                        image = self.transition_tensor[index]
+                        name = constants.label_ids[self.transition_predictions[index]] + "-" + \
+                               self.video_id + "-" + \
+                               str(vod_index) + "-" + str(frame) + ".jpg"
+
+                        save_img(os.path.join(temp_images, name), image)
 
         t1 = t.time()
         print("saving", index, "images took", t1 - t0, "seconds")
@@ -299,18 +302,20 @@ def main():
     :return:
     """
 
-    games = ["846620679", "856780019"
-             "854056599", "853223047", "851848563",
-             "850756118", "849641849", "848842241",
-             "847668825", "856779292", "848975164",
-             "844688434", "839991024", "838705684",
-             "836360400", "835464426", "833813315",
-             "832789243", "831651710"]
+    # problem games: "844688434" (210.ts was not 300 frames long)
+    #                "839991024" (1496.ts was not 300 frames long
+
+    games = ["854705673", "854705960", "795375036",
+             "856248469", "854264128", "851948386",
+             "850543910", "849582421", "848563869",
+             "847450846", "846449518", "845189559",
+             "844881191"]
 
     for game in games:
-        collector = DataCollector(game, step=8)
-        collector.save_transition_predictions()
+        collector = DataCollector(game, step=2)
+        collector.save_transition_predictions(over_only=True)
         print("saved images for", game)
+        print()
 
 
 if __name__ == "__main__":

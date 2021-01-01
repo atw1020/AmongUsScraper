@@ -101,7 +101,7 @@ def train_model(dataset):
     model = initalizer.init_nn()
 
     # fit the model
-    model.fit(dataset, epochs=30)
+    model.fit(dataset, epochs=50)
 
     return model
 

@@ -1,0 +1,36 @@
+downloading the images took 65.42941117286682
+finding the transitions took 0.0001442432403564453
+finding the game transitions took 1.621246337890625e-05 seconds
+classifying the transition images took 130.25904393196106 seconds
+finding the game transitions took 2.8848648071289062e-05 seconds
+saving 1151 images took 0.20145606994628906 seconds
+saved images for 854056599
+
+downloading the images took 132.16339993476868
+finding the transitions took 0.00023794174194335938
+finding the game transitions took 2.4080276489257812e-05 seconds
+classifying the transition images took 87.43681907653809 seconds
+finding the game transitions took 3.504753112792969e-05 seconds
+saving 863 images took 0.1733410358428955 seconds
+saved images for 853223047
+
+downloading the images took 120.12539291381836
+finding the transitions took 0.00020003318786621094
+finding the game transitions took 1.621246337890625e-05 seconds
+classifying the transition images took 76.65813708305359 seconds
+finding the game transitions took 2.9087066650390625e-05 seconds
+saving 767 images took 0.25656867027282715 seconds
+saved images for 851848563
+
+downloading the images took 171.93895411491394
+finding the transitions took 0.0002582073211669922
+finding the game transitions took 1.5974044799804688e-05 seconds
+classifying the transition images took 101.59366393089294 seconds
+finding the game transitions took 2.8133392333984375e-05 seconds
+saving 959 images took 0.09536910057067871 seconds
+saved images for 850756118
+
+downloading image: 489.66
+finding transitions: 0.0008403
+finding the game: 0.00007247
+classifying: 395.95
