@@ -222,7 +222,7 @@ class DataCollector:
         self.transition_predictions = np.argmax(self.classifier.predict(self.transition_tensor), axis=1)
 
         t1 = t.time()
-        print("classifying the transition images took", t1 - t0, "seconds")
+        print("Downloading and classifying the transition images took", t1 - t0, "seconds")
 
     def save_predictions(self):
         """
@@ -304,12 +304,13 @@ def main():
 
     # problem games: "844688434" (210.ts was not 300 frames long)
     #                "839991024" (1496.ts was not 300 frames long
+    #                "795375036" (180.tx was not 300 frames long)
+    #                "855465677" (246.ts was not 300 frames long)
+    # processes images at 51x real time
 
-    games = ["854705673", "854705960", "795375036",
-             "856248469", "854264128", "851948386",
-             "850543910", "849582421", "848563869",
-             "847450846", "846449518", "845189559",
-             "844881191"]
+    games = ["854201708", "853013135",
+             "851681078", "850614286", "848748622",
+             "846543338", "844312094"]
 
     for game in games:
         collector = DataCollector(game, step=2)

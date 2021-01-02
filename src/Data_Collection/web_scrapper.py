@@ -171,7 +171,9 @@ def get_still_frames(url, step=50, frames=300):
         index += 1
 
     if not success:
-        raise Exception("Error: could not read data at ", url)
+        # try again with fewer frames
+        # return get_still_frames(url, step=step, frames=frames-step)
+        raise Exception("Could not read all frames from URL: ", url)
 
     return np.array(images)
 
