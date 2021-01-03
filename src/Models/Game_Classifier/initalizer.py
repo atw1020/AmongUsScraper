@@ -73,11 +73,6 @@ def main():
     :return:
     """
 
-    print(os.getcwd())
-
-    result = import_image("Design Docs/Resources/Case 2 Gameplay.jpg")
-    print(result.shape)
-
     model = init_nn()
     model.summary()
 
