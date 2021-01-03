@@ -29,6 +29,27 @@ def load_image(path):
     return np.array([img_to_array(image)])
 
 
+def print_predictions(model, filename):
+    """
+
+
+
+    :param model:
+    :param filename:
+    :return:
+    """
+
+    path = os.path.join("Data", "Winner identifier", "Training Data", "ext", filename)
+
+    image = load_image(path)
+
+    prediction = model.predict(image)[0]
+    actual = trainer.numpy_from_filename(filename)
+
+    print("Prediction", prediction)
+    print("Actual", actual)
+
+
 def main():
     """
 
@@ -37,27 +58,13 @@ def main():
     :return:
     """
 
-    filename = "BLPKYLBKWTBNCYLM-844335327-791-37.jpg"
-
     model = tf.keras.models.load_model(constants.winner_identifier)
 
-    path = os.path.join("Data", "Winner identifier", "Test Data", "ext", filename)
+    print_predictions(model, "BKBN-836760118-1044-0.jpg")
+    print_predictions(model, "BKPR-854056599-915-250.jpg")
 
-    image = load_image(path)
-
-    prediction = model.predict(image)[0]
-    actual = trainer.numpy_from_filename(filename)
-
-    loss = actual * -np.log(prediction) + (1 - actual) * -np.log(1 - prediction)
-
-    print(loss)
-
-    loss = sum(loss) / len(loss)
-
-    print(loss)
-
-    bce = BinaryCrossentropy()
-    print(bce(actual, prediction).numpy())
+    print_predictions(model, "BLGNORYLWTPRCYLM-856248469-2603-200.jpg")
+    print_predictions(model, "BLGNPKORYLBKPRBN-845650806-1000-112.jpg")
 
 
 if __name__ == "__main__":
