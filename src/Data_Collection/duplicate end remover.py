@@ -101,7 +101,11 @@ def remove_duplicates(directory):
 
                 # remove only if the duplicate is not the middle
                 if duplicate != middle:
-                    os.remove(os.path.join(directory, duplicate))
+                    try:
+                        os.remove(os.path.join(directory, duplicate))
+                    except FileNotFoundError:
+                        print(duplicates)
+                        print(middle)
 
             # record which files we processed
             processed_files += duplicates
