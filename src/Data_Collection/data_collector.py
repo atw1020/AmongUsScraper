@@ -308,10 +308,7 @@ def main():
     #                "855465677" (246.ts was not 300 frames long)
     # processes images at 51x real time
 
-    games = ["845344155", "846580963", "847734032",
-             "849730764", "850707162", "853056454",
-             "854279730", "855515037", "856715328",
-             "858940212"]
+    games = [line.strip() for line in open("../../games.txt")]
 
     for game in games:
         collector = DataCollector(game, step=2)
