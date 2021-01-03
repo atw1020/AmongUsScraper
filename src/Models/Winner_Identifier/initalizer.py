@@ -35,14 +35,18 @@ def init_nn():
 
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(pooling3)
-    dense = layers.Dense(units=1000, activation="relu")(flatten)
-    dense2 = layers.Dense(units=200, activation="relu")(dense)
-    dropout4 = layers.Dropout(rate=constants.winner_identifier_dropout)(dense2)
-    dense3 = layers.Dense(units=100, activation="relu")(dropout4)
-    dropout5 = layers.Dropout(rate=constants.winner_identifier_dropout)(dense3)
+    dropout4 = layers.Dropout(rate=constants.winner_identifier_dropout)(flatten)
+    dense = layers.Dense(units=1024, activation="relu")(dropout4)
+    dropout5 = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
+    dense2 = layers.Dense(units=1024, activation="relu")(dropout5)
+    dropout6 = layers.Dropout(rate=constants.winner_identifier_dropout)(dense2)
+    dense3 = layers.Dense(units=512, activation="relu")(dropout6)
+    dropout7 = layers.Dropout(rate=constants.winner_identifier_dropout)(dense3)
+    dense4 = layers.Dense(units=512, activation="relu")(dropout7)
+    dropout8 = layers.Dropout(rate=constants.winner_identifier_dropout)(dense4)
 
     # output layer: 12 dense units, one for each color
-    output = layers.Dense(units=12, activation="sigmoid")(dropout5)
+    output = layers.Dense(units=12, activation="sigmoid")(dropout8)
 
     opt = Adam(learning_rate=0.003)
 
