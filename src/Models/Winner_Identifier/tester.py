@@ -24,6 +24,8 @@ def save_filters(path):
     :return: None
     """
 
+    print(constants.winner_identifier)
+
     model = tf.keras.models.load_model(constants.winner_identifier)
 
     first_conv = Model(inputs=model.input, outputs=model.layers[4].output)

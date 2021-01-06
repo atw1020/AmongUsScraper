@@ -10,8 +10,8 @@ Neural Network names
 
 """
 
-game_classifier = "Game Classifier.h5"
-winner_identifier = "Winner Identifier.h5"
+game_classifier = "Models/Game Classifier.h5"
+winner_identifier = "Models/Winner Identifier.h5"
 
 """
 
