@@ -9,7 +9,7 @@ import os
 import tensorflow as tf
 import numpy as np
 from tensorflow.keras.preprocessing.image import save_img, load_img, img_to_array
-from tensorflow.keras.losses import BinaryCrossentropy
+from tensorflow.keras import Model
 
 from src import constants
 from src.Models.Winner_Identifier import trainer
@@ -23,6 +23,11 @@ def save_filters(path):
     :param path: path to the image
     :return: None
     """
+
+    model = tf.keras.models.load_model(constants.winner_identifier)
+
+    first_conv = Model(inputs=model.input, outputs=model.layers[4].output)
+    first_conv.summary()
 
     image = load_image(path)
 
