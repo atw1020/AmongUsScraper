@@ -8,11 +8,35 @@ import os
 
 import tensorflow as tf
 import numpy as np
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
+from tensorflow.keras.preprocessing.image import save_img, load_img, img_to_array
 from tensorflow.keras.losses import BinaryCrossentropy
 
 from src import constants
 from src.Models.Winner_Identifier import trainer
+
+
+def save_filters(path):
+    """
+
+    save the filters for a given image
+
+    :param path: path to the image
+    :return: None
+    """
+
+    image = load_image(path)
+
+    # "BLGNORYLWTPRCYLM-856248469-2603-200.jpg"))
+    prediction = first_conv.predict(image)[0]
+
+    x = prediction.shape[0]
+    y = prediction.shape[1]
+
+    print(prediction.shape)
+
+    # save the images
+    for i in range(prediction.shape[2]):
+        save_img("first filter " + str(i) + ".jpg", np.array(prediction[:, :, i]).reshape(x, y, 1))
 
 
 def load_image(path):
@@ -65,6 +89,9 @@ def main():
 
     print_predictions(model, "BLGNORYLWTPRCYLM-856248469-2603-200.jpg")
     print_predictions(model, "BLGNPKORYLBKPRBN-845650806-1000-112.jpg")
+
+    save_filters(os.path.join("Data", "Winner identifier", "Test Data", "ext",
+                                    "ORYLBKWTPRBNCY-838705684-1071-200.jpg"))
 
 
 if __name__ == "__main__":
