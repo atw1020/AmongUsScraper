@@ -130,7 +130,8 @@ def main():
     """
 
     sort_classifier_crude_data()
-    sort_winner_crude_data()
+    # sort_winner_crude_data() winner identifier crude data is not sorted by
+    # streamer
 
     """
     streamers = ["Blunder", "shofu", "Kara", "Pokimane", "5up", "captainsparklez",

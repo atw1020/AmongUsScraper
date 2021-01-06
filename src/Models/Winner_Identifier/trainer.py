@@ -82,7 +82,8 @@ def gen_dataset(directory):
     return image_dataset_from_directory(directory,
                                         image_size=constants.dimensions,
                                         shuffle=True,
-                                        labels=labels)
+                                        labels=labels,
+                                        validation_split=0.3)
 
 
 def train_model(dataset):
@@ -134,10 +135,6 @@ def main():
     training_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
 
     model = train_model(training_data)
-
-    test_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Test Data"))
-
-    model.evaluate(test_data)
     model.save("Winner Identifier.h5")
 
 
