@@ -8,8 +8,8 @@ import os
 
 import tensorflow as tf
 import numpy as np
-from tensorflow.keras.preprocessing.image import save_img, load_img, img_to_array
 from tensorflow.keras import Model
+from tensorflow.keras.preprocessing.image import save_img, load_img, img_to_array
 
 from src import constants
 from src.Models.Winner_Identifier import trainer
@@ -79,6 +79,52 @@ def print_predictions(model, filename):
 
     print("Prediction", prediction)
     print("Actual", actual)
+
+
+def compute_learning_curves(name):
+    """
+
+    computes the learning curves of the current architecture and outputs them into a text file
+
+    :param name: name of the learning curve
+    :return: None
+    """
+
+    # initialize the training data
+    training_data = trainer.gen_dataset("Data/Winner identifier/Training Data")
+    test_data = trainer.gen_dataset("Data/Winner identifier/Test Data")
+
+    # number of training examples
+    N = training_data.cardinality().numpy()
+
+    # file heading
+    file = open(name + constants.learning_curve_extension, "w+")
+
+    file.write("Data Size" + constants.delimiter +
+               name + " training accuracy" + constants.delimiter +
+               name + " test accuracy\n")
+
+    # iterate over all the different dataset fractions
+
+    for dataset_fraction in constants.dataset_fractions:
+
+        # repeat the training the specified number of times
+        sample_size = int(dataset_fraction * N)
+        sample = training_data.take(sample_size)
+
+        print(type(training_data))
+        print(type(sample))
+
+        for i in range(constants.test_repeats):
+
+            model = trainer.train_model(sample)
+
+            training_acc = model.evaluate(sample, metrics=["acc"])
+            test_acc = model.evaluate(test_data, metrics=["acc"])
+
+            file.write(str(sample_size) + ", " + str(training_acc) + ", "+ str(test_acc) + "\n")
+
+    file.close()
 
 
 def main():
