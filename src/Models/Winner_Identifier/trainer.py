@@ -135,7 +135,7 @@ def main():
     training_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
 
     model = train_model(training_data)
-    model.save("Winner Identifier.h5")
+    model.save(constants.winner_identifier)
 
 
 if __name__ == "__main__":
