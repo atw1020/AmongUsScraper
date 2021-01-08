@@ -100,6 +100,8 @@ class DataCollector:
 
             start_index = self.batch_size * index
             end_index = start_index + len(batch)
+            
+            print(start_index)
 
             # get the tensor
             vods_tensor = self.get_batch(batch)
