@@ -82,7 +82,7 @@ def init_nn():
     # output layer: 12 dense units, one for each color
     output = layers.Dense(units=12, activation="sigmoid")(dropout)
 
-    opt = Adam(learning_rate=0.003)
+    opt = Adam(learning_rate=0.0003)
 
     model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
     model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["binary_accuracy"])

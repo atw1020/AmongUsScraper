@@ -85,12 +85,14 @@ def gen_dataset(directory):
                                         labels=labels)
 
 
-def train_model(dataset):
+def train_model(dataset, test_data, epochs=50):
     """
 
     trains a tensorflow model using
 
     :param dataset: dataset to train on
+    :param test_data: data to test on
+    :param epochs: number of epochs to train for
     :return: trained model
     """
 
@@ -101,7 +103,8 @@ def train_model(dataset):
     model = initalizer.init_nn()
 
     # fit the model
-    model.fit(dataset, epochs=60)
+    model.fit(dataset, epochs=epochs,
+              validation_data=test_data)
 
     return model
 
