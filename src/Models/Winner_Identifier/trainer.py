@@ -82,8 +82,7 @@ def gen_dataset(directory):
     return image_dataset_from_directory(directory,
                                         image_size=constants.dimensions,
                                         shuffle=True,
-                                        labels=labels,
-                                        validation_split=0.3)
+                                        labels=labels)
 
 
 def train_model(dataset):
