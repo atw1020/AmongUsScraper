@@ -143,8 +143,14 @@ def main():
     print_predictions(model, "BLGNORYLWTPRCYLM-856248469-2603-200.jpg")
     print_predictions(model, "BLGNPKORYLBKPRBN-845650806-1000-112.jpg")
 
-    save_filters(os.path.join("Data", "Winner identifier", "Test Data", "ext",
-                                    "ORYLBKWTPRBNCY-838705684-1071-200.jpg"))
+    # save_filters(os.path.join("Data", "Winner identifier", "Test Data", "ext",
+    #                                "ORYLBKWTPRBNCY-838705684-1071-200.jpg"))
+
+    training_data = trainer.gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
+    test_data = trainer.gen_dataset(os.path.join("Data", "Winner Identifier", "Test Data"))
+
+    model.predict(training_data)
+    model.predict(test_data)
 
 
 if __name__ == "__main__":
