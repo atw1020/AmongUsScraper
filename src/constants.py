@@ -12,6 +12,7 @@ Neural Network names
 
 game_classifier = "Models/Game Classifier.h5"
 winner_identifier = "Models/Winner Identifier.h5"
+end_screen_classifier = "Models/End Screen Classifier.h5"
 
 """
 

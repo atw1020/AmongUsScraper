@@ -43,15 +43,15 @@ def main():
 
     # print(os.path.exists("Data/Game Classifier/Training Data"))
 
-    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data",
+    training_data = image_dataset_from_directory("Data/End Screen Classifier/Training Data",
                                                  image_size=constants.dimensions)
     model = train_model(training_data)
 
-    test_data = image_dataset_from_directory("Data/Game Classifier/Test Data",
+    test_data = image_dataset_from_directory("Data/End Screen Classifier/Test Data",
                                              image_size=constants.dimensions)
 
     model.evaluate(test_data)
-    model.save(constants.game_classifier)
+    model.save(constants.end_screen_classifier)
 
 
 if __name__ == "__main__":
