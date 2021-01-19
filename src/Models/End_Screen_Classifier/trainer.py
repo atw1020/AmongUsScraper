@@ -9,7 +9,7 @@ from src import constants
 from tensorflow.keras import backend as K
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
-from src.Models.Game_Classifier import initalizer
+from src.Models.End_Screen_Classifier import initalizer
 
 
 def train_model(dataset):
@@ -51,6 +51,8 @@ def main():
                                              image_size=constants.dimensions)
 
     model.evaluate(test_data)
+    model.evaluate(training_data)
+
     model.save(constants.end_screen_classifier)
 
 

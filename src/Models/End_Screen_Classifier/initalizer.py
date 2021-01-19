@@ -40,7 +40,7 @@ def init_nn():
     dropout4 = layers.Dropout(rate=constants.classifier_dropout)(dense)
     dense2 = layers.Dense(units=100, activation="relu")(dropout4)
     dropout5 = layers.Dropout(rate=constants.classifier_dropout)(dense2)
-    dense3 = layers.Dense(units=5, activation="relu")(dropout5)
+    dense3 = layers.Dense(units=2, activation="relu")(dropout5)
     output = layers.Softmax()(dense3)
 
     opt = Adam(learning_rate=0.0001)
