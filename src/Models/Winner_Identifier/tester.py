@@ -10,6 +10,7 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.keras import Model
 from tensorflow.keras.preprocessing.image import save_img, load_img, img_to_array
+from sklearn.metrics import classification_report
 
 from src import constants
 from src.Models.Winner_Identifier import trainer
@@ -137,11 +138,15 @@ def main():
 
     model = tf.keras.models.load_model(constants.winner_identifier)
 
+    """
+
     print_predictions(model, "BKBN-836760118-1044-0.jpg")
     print_predictions(model, "BKPR-854056599-915-250.jpg")
 
     print_predictions(model, "BLGNORYLWTPRCYLM-856248469-2603-200.jpg")
     print_predictions(model, "BLGNPKORYLBKPRBN-845650806-1000-112.jpg")
+    
+    #"""
 
     # save_filters(os.path.join("Data", "Winner identifier", "Test Data", "ext",
     #                                "ORYLBKWTPRBNCY-838705684-1071-200.jpg"))
@@ -149,8 +154,16 @@ def main():
     training_data = trainer.gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
     test_data = trainer.gen_dataset(os.path.join("Data", "Winner Identifier", "Test Data"))
 
-    model.predict(training_data)
-    model.predict(test_data)
+    labels = np.concatenate([labels for images, labels in training_data])
+    predictions = model.predict(training_data)
+
+    print(predictions.shape)
+    print(labels.shape)
+
+    y_true = labels > 0.5
+    y_pred = predictions > 0.5
+
+    print(classification_report(y_true, y_pred, target_names=list(constants.color_codes.keys())))
 
 
 if __name__ == "__main__":
