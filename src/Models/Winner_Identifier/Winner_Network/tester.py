@@ -13,7 +13,7 @@ from tensorflow.keras.preprocessing.image import save_img, load_img, img_to_arra
 from sklearn.metrics import classification_report
 
 from src import constants
-from src.Models.Winner_Identifier import trainer
+from src.Models.Winner_Identifier.Winner_Network import trainer
 
 
 def save_filters(path):

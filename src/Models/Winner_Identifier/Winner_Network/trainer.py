@@ -11,7 +11,7 @@ import tensorflow.keras.backend as K
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 from src import constants
-from src.Models.Winner_Identifier import initalizer
+from src.Models.Winner_Identifier.Winner_Network import initalizer
 
 
 def numpy_from_filename(filename):
