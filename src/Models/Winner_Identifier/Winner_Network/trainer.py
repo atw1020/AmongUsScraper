@@ -134,16 +134,19 @@ def main():
 
     """
 
-    training_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
-    test_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Test Data"))
-
-    split_data = training_data.take(len(training_data) // 2)
+    training_data = gen_dataset(os.path.join("Data",
+                                             "Winner Identifier",
+                                             "winning games",
+                                             "Training Data"))
+    test_data = gen_dataset(os.path.join("Data",
+                                         "Winner Identifier",
+                                         "winning games",
+                                         "Test Data"))
 
     # run for 200 epochs on training and test data
-    # train_model(split_data, test_data, epochs=200)
     model = train_model(training_data, test_data, epochs=15)
 
-    model.save(constants.winner_identifier)
+    model.save(constants.winning_winner_identifier)
 
 
 if __name__ == "__main__":

@@ -143,7 +143,7 @@ def main():
     # train_model(split_data, test_data, epochs=200)
     model = train_model(training_data, test_data, epochs=15)
 
-    model.save(constants.winner_identifier)
+    model.save(constants.losing_winner_identifier)
 
 
 if __name__ == "__main__":
