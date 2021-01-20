@@ -143,8 +143,11 @@ def main():
                                          "winning games",
                                          "Test Data"))
 
+    split_data = training_data.take(len(training_data) // 2)
+
     # run for 200 epochs on training and test data
-    model = train_model(training_data, test_data, epochs=15)
+    train_model(split_data, test_data, epochs=200)
+    model = train_model(training_data, test_data, epochs=200)
 
     model.save(constants.winning_winner_identifier)
 
