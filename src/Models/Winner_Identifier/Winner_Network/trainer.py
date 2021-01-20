@@ -135,19 +135,18 @@ def main():
     """
 
     training_data_wins = gen_dataset(os.path.join("Data",
-                                             "Winner Identifier",
-                                             "winning games",
-                                             "Training Data"))
+                                                  "Winner Identifier",
+                                                  "winning games",
+                                                  "Training Data"))
     test_data_wins = gen_dataset(os.path.join("Data",
-                                         "Winner Identifier",
-                                         "winning games",
-                                         "Test Data"))
+                                              "Winner Identifier",
+                                              "winning games",
+                                              "Test Data"))
 
     training_data_losses = gen_dataset(os.path.join("Data",
                                                     "Winner Identifier",
                                                     "winning games",
                                                     "Training Data"))
-
     test_data_losses = gen_dataset(os.path.join("Data",
                                                 "Winner Identifier",
                                                 "winning games",
