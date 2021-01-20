@@ -134,14 +134,27 @@ def main():
 
     """
 
-    training_data = gen_dataset(os.path.join("Data",
+    training_data_wins = gen_dataset(os.path.join("Data",
                                              "Winner Identifier",
                                              "winning games",
                                              "Training Data"))
-    test_data = gen_dataset(os.path.join("Data",
+    test_data_wins = gen_dataset(os.path.join("Data",
                                          "Winner Identifier",
                                          "winning games",
                                          "Test Data"))
+
+    training_data_losses = gen_dataset(os.path.join("Data",
+                                                    "Winner Identifier",
+                                                    "winning games",
+                                                    "Training Data"))
+
+    test_data_losses = gen_dataset(os.path.join("Data",
+                                                "Winner Identifier",
+                                                "winning games",
+                                                "Test Data"))
+
+    training_data = training_data_wins.concatanante(training_data_losses)
+    test_data = test_data_wins.concatanante(test_data_losses)
 
     split_data = training_data.take(len(training_data) // 2)
 
