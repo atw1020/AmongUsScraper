@@ -23,15 +23,12 @@ def init_nn():
     input_layer = layers.Input(shape=constants.dimensions + (3,))
 
     # 2D convolutions
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2,
-                                  padding="same")(input_layer)
     convolution = layers.Conv2D(filters=8,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(pooling)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution)
+                                padding="same")(input_layer)
+    dropout = layers.Dropout(rate=0.3)(convolution)
     pooling = layers.MaxPooling2D(pool_size=2,
                                   strides=2,
                                   padding="same")(dropout)
@@ -40,7 +37,7 @@ def init_nn():
                                 strides=2,
                                 activation="relu",
                                 padding="same")(pooling)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution)
+    dropout = layers.Dropout(rate=0.3)(convolution)
     pooling = layers.MaxPooling2D(pool_size=2,
                                   strides=2,
                                   padding="same")(dropout)
@@ -49,35 +46,35 @@ def init_nn():
                                 strides=2,
                                 activation="relu",
                                 padding="same")(pooling)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution)
+    dropout = layers.Dropout(rate=0.3)(convolution)
     pooling = layers.MaxPooling2D(pool_size=2,
                                   strides=2,
                                   padding="same")(dropout)
-    convolution = layers.Conv2D(filters=64,
+    convolution = layers.Conv2D(filters=128,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
                                 padding="same")(pooling)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution)
+    dropout = layers.Dropout(rate=0.5)(convolution)
     pooling = layers.MaxPooling2D(pool_size=2,
                                   strides=2,
                                   padding="same")(dropout)
 
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(pooling)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(flatten)
+    dropout = layers.Dropout(rate=0.4)(flatten)
     dense = layers.Dense(units=128,
                          activation="relu")(dropout)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
+    dropout = layers.Dropout(rate=0.3)(dense)
     dense = layers.Dense(units=128,
                          activation="relu")(dropout)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
+    dropout = layers.Dropout(rate=0.3)(dense)
     dense = layers.Dense(units=64,
                          activation="relu")(dropout)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
+    dropout = layers.Dropout(rate=0.3)(dense)
     dense = layers.Dense(units=64,
                          activation="relu")(dropout)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
+    dropout = layers.Dropout(rate=0.3)(dense)
 
     # output layer: 12 dense units, one for each color
     output = layers.Dense(units=12, activation="sigmoid")(dropout)
