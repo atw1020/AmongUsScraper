@@ -90,7 +90,7 @@ def init_nn():
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
 
     # output layer: 12 dense units, one for each color
-    output = layers.Dense(units=1, activation="sigmoid")(dropout)
+    output = layers.Dense(units=12, activation="sigmoid")(dropout)
 
     opt = Adam(learning_rate=0.0003)
 

@@ -113,7 +113,7 @@ def gen_dataset(directory, color="RD"):
     :return: winner identifier dataset
     """
 
-    labels = get_labels_color(directory, color)
+    labels = get_labels(directory)
 
     return image_dataset_from_directory(directory,
                                         image_size=constants.winner_identifier_dimensions,
