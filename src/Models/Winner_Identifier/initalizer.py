@@ -20,7 +20,7 @@ def init_nn():
     """
 
     # input layer
-    input_layer = layers.Input(shape=constants.winner_identifier_crop_dimensions + (3,))
+    input_layer = layers.Input(shape=constants.winner_identifier_dimensions + (3,))
 
     pooling = layers.MaxPooling2D(pool_size=2,
                                   strides=2,

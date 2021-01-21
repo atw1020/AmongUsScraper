@@ -25,7 +25,7 @@ def crop_image(path, output_path, start_size, box):
 
     im = Image.open(path)
 
-    assert start_size == tuple(reversed(im.size))
+    assert start_size == im.size
 
     im = im.crop(box)
 

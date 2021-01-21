@@ -116,7 +116,7 @@ def gen_dataset(directory, color="RD"):
     labels = get_labels_color(directory, color)
 
     return image_dataset_from_directory(directory,
-                                        image_size=constants.dimensions,
+                                        image_size=constants.winner_identifier_dimensions,
                                         shuffle=True,
                                         labels=labels)
 
