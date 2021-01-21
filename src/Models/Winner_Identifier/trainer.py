@@ -11,13 +11,13 @@ import tensorflow.keras.backend as K
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 from src import constants
-from src.Models.Winner_Identifier.Loser_Network import initalizer
+from src.Models.Winner_Identifier import initalizer
 
 
 def numpy_from_filename(filename):
     """
 
-    filename of a labeled image
+    generate a numpy label for a filename of a labeled image
 
     :param filename: name of the file that you want to get the label from
     :return: numpy array colors the file uses
@@ -68,16 +68,52 @@ def get_labels(directory):
     return list(map(numpy_from_filename, files))
 
 
-def gen_dataset(directory):
+def get_color_label(filename, color):
+    """
+
+    get a color label from the specified filename
+
+    :param filename: name of the file to get the color from
+    :param color: color to get a label for
+    :return: binary label for that file
+    """
+
+    # get the colors
+    color_string = filename.split("-")[0]
+    colors = colors_from_color_string(color_string)
+
+    if color in colors:
+        return 1
+    else:
+        return 0
+
+
+def get_labels_color(directory, color):
+    """
+
+    generates labels for a specific color from the files in the given directory
+
+    :param directory: directory containing the files
+    :param color: color to get labels for
+    :return: labels of the images in the directory
+    """
+
+    files = sorted(os.listdir(os.path.join(directory, "ext")))
+
+    return list(map(lambda file: get_color_label(file, color), files))
+
+
+def gen_dataset(directory, color="RD"):
     """
 
     generates a winner identifier dataset from a given directory
 
     :param directory: directory to generate ethe labels from
+    :param color: color to generate a dataset for
     :return: winner identifier dataset
     """
 
-    labels = get_labels(directory)
+    labels = get_labels_color(directory, color)
 
     return image_dataset_from_directory(directory,
                                         image_size=constants.dimensions,
@@ -134,16 +170,38 @@ def main():
 
     """
 
-    training_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Training Data"))
-    test_data = gen_dataset(os.path.join("Data", "Winner Identifier", "Test Data"))
+    training_data_wins = gen_dataset(os.path.join("Data",
+                                                  "Winner Identifier",
+                                                  "winning games",
+                                                  "Training Data"))
+    test_data_wins = gen_dataset(os.path.join("Data",
+                                              "Winner Identifier",
+                                              "winning games",
+                                              "Test Data"))
+
+    training_data_losses = gen_dataset(os.path.join("Data",
+                                                    "Winner Identifier",
+                                                    "winning games",
+                                                    "Training Data"))
+    test_data_losses = gen_dataset(os.path.join("Data",
+                                                "Winner Identifier",
+                                                "winning games",
+                                                "Test Data"))
+
+    training_data = training_data_wins.concatenate(training_data_losses)
+    test_data = test_data_wins.concatenate(test_data_losses)
+
+    # shuffle the data
+    training_data.shuffle(1000)
+    test_data.shuffle(1000)
 
     split_data = training_data.take(len(training_data) // 2)
 
     # run for 200 epochs on training and test data
     train_model(split_data, test_data, epochs=200)
-    model = train_model(training_data, test_data, epochs=15)
+    model = train_model(training_data, test_data, epochs=200)
 
-    model.save(constants.losing_winner_identifier)
+    model.save(constants.winning_winner_identifier)
 
 
 if __name__ == "__main__":

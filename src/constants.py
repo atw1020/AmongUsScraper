@@ -34,6 +34,14 @@ sampling_rate = 1
 
 """
 
+Cropping
+
+"""
+
+cropping = (40, 160, 610, 280)
+
+"""
+
 Neural Network Parameters
 
 """
