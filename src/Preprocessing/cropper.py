@@ -51,10 +51,12 @@ def crop_images(directory):
             crop_image(path,
                        path,
                        constants.dimensions,
-                       constants.cropping)
+                       constants.winner_identifier_cropping)
         except AssertionError:
             print("Error Image in " + file + " had incorrect dimensions")
             continue
+
+    print("finished cropping", directory)
 
 
 def main():
@@ -66,6 +68,30 @@ def main():
 
     :return:
     """
+
+    crop_images(os.path.join("Data",
+                             "Winner Identifier",
+                             "losing games",
+                             "Training Data",
+                             "ext"))
+
+    crop_images(os.path.join("Data",
+                             "Winner Identifier",
+                             "losing games",
+                             "Test Data",
+                             "ext"))
+
+    crop_images(os.path.join("Data",
+                             "Winner Identifier",
+                             "winning games",
+                             "Training Data",
+                             "ext"))
+
+    crop_images(os.path.join("Data",
+                             "Winner Identifier",
+                             "winning games",
+                             "Test Data",
+                             "ext"))
 
 
 if __name__ == "__main__":

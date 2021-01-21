@@ -38,7 +38,9 @@ Cropping
 
 """
 
-cropping = (40, 160, 610, 280)
+winner_identifier_cropping = (40, 160, 610, 280)
+winner_identifier_crop_dimensions = (winner_identifier_cropping[2] - winner_identifier_cropping[0],
+                                     winner_identifier_cropping[3] - winner_identifier_cropping[1])
 
 """
 
