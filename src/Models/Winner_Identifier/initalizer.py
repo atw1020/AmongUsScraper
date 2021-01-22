@@ -22,27 +22,19 @@ def init_nn():
     # input layer
     input_layer = layers.Input(shape=constants.winner_identifier_dimensions + (3,))
 
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2,
-                                  padding="same")(input_layer)
-
     # 2D convolutions
     convolution = layers.Conv2D(filters=8,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(pooling)
+                                padding="same")(input_layer)
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution)
-
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2,
-                                  padding="same")(dropout)
 
     convolution = layers.Conv2D(filters=16,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(pooling)
+                                padding="same")(dropout)
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution)
 
     pooling = layers.MaxPooling2D(pool_size=2,
@@ -56,16 +48,11 @@ def init_nn():
                                 padding="same")(pooling)
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution)
 
-
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2,
-                                  padding="same")(dropout)
-
     convolution = layers.Conv2D(filters=64,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(pooling)
+                                padding="same")(dropout)
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(convolution)
 
 
@@ -76,16 +63,16 @@ def init_nn():
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(pooling)
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(flatten)
-    dense = layers.Dense(units=128,
+    dense = layers.Dense(units=512,
+                         activation="relu")(dropout)
+    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
+    dense = layers.Dense(units=512,
                          activation="relu")(dropout)
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
     dense = layers.Dense(units=128,
                          activation="relu")(dropout)
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
-    dense = layers.Dense(units=32,
-                         activation="relu")(dropout)
-    dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
-    dense = layers.Dense(units=32,
+    dense = layers.Dense(units=128,
                          activation="relu")(dropout)
     dropout = layers.Dropout(rate=constants.winner_identifier_dropout)(dense)
 
