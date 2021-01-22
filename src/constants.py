@@ -14,6 +14,7 @@ game_classifier = "Models/Game Classifier.h5"
 losing_winner_identifier = "Models/Winner Identifier.h5"
 winning_winner_identifier = "Models/Winner Identifier.h5"
 end_screen_classifier = "Models/End Screen Classifier.h5"
+crewmate_detection = "Models/Crewmate Detection.h5"
 
 """
 
