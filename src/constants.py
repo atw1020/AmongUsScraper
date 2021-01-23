@@ -62,7 +62,7 @@ dataset_fractions = [0.1 * i for i in range(10)]
 # classifier_dropout rate
 classifier_dropout = 0.3  # 0.25
 winner_identifier_dropout = 0.3
-crewmate_identifier_dropout = 0.2
+crewmate_identifier_dropout = 0.3
 
 learning_curve_extension = " test data.txt"
 

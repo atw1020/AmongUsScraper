@@ -30,7 +30,7 @@ def train_model(training_data, test_data):
 
     # fit the model
     model.fit(training_data,
-              # validation_data=test_data,
+              validation_data=test_data,
               epochs=150)
 
     return model
@@ -49,10 +49,10 @@ def main():
     training_data = image_dataset_from_directory("Data/Crewmate Identifier/Training Data",
                                                  image_size=constants.crewmate_dimensions)
 
-    # test_data = image_dataset_from_directory("Data/Crewmate Identifier/Test Data",
-    #                                          image_size=constants.crewmate_dimensions)
+    test_data = image_dataset_from_directory("Data/Crewmate Identifier/Test Data",
+                                             image_size=constants.crewmate_dimensions)
 
-    model = train_model(training_data, None)  # test_data)
+    model = train_model(training_data, test_data)
     model.save(constants.crewmate_identifier)
 
 
