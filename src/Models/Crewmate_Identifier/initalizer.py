@@ -25,54 +25,73 @@ def init_nn():
     # input layer
     input_layer = layers.Input(shape=constants.crewmate_dimensions + (3,))
 
+    batch_norm  = layers.BatchNormalization()(input_layer)
+
     # 2D convolutions
     convolution =   layers.Conv2D(filters=8,
                                   kernel_size=9,
                                   strides=1,
                                   activation="relu",
-                                  padding="same")(input_layer)
+                                  padding="same")(batch_norm)
     dropout     =   layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
+    batch_norm = layers.BatchNormalization()(dropout)
 
     convolution =   layers.Conv2D(filters=16,
                                   kernel_size=9,
                                   strides=2,
                                   activation="relu",
-                                  padding="same")(dropout)
+                                  padding="same")(batch_norm)
     dropout     =   layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
+    batch_norm = layers.BatchNormalization()(dropout)
 
     convolution =   layers.Conv2D(filters=32,
                                   kernel_size=9,
                                   strides=2,
                                   activation="relu",
-                                  padding="same")(dropout)
+                                  padding="same")(batch_norm)
     dropout     =   layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
+    batch_norm = layers.BatchNormalization()(dropout)
 
     pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2)(dropout)
+                                  strides=2)(batch_norm)
 
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(pooling)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(flatten)
+    batch_norm = layers.BatchNormalization()(dropout)
+
     dense = layers.Dense(units=1024,
-                         activation="relu")(dropout)
+                         activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
+    batch_norm = layers.BatchNormalization()(dropout)
+
     dense = layers.Dense(units=1024,
-                         activation="relu")(dropout)
+                         activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
+    batch_norm = layers.BatchNormalization()(dropout)
+
     dense = layers.Dense(units=256,
-                 activation="relu")(dropout)
+                         activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
+    batch_norm = layers.BatchNormalization()(dropout)
+
     dense = layers.Dense(units=256,
-                         activation="relu")(dropout)
+                         activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
+    batch_norm = layers.BatchNormalization()(dropout)
+
     dense = layers.Dense(units=64,
-                         activation="relu")(dropout)
+                         activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
+    batch_norm = layers.BatchNormalization()(dropout)
+
     dense = layers.Dense(units=64,
-                         activation="relu")(dropout)
+                         activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
+    batch_norm = layers.BatchNormalization()(dropout)
+
     dense = layers.Dense(units=13,
-                         activation="relu")(dropout)
+                         activation="relu")(batch_norm)
     output = layers.Softmax()(dense)
 
     opt = Adam(learning_rate=0.0003)

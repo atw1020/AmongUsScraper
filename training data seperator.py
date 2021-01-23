@@ -157,7 +157,7 @@ def main():
 
     sort_crewmate_identifier_data(os.path.join("Data",
                                                "Crewmate Identifier",
-                                               "Test Data"))
+                                               "Training Data"))
 
     """
     streamers = ["Blunder", "shofu", "Kara", "Pokimane", "5up", "captainsparklez",
