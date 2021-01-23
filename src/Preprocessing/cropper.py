@@ -119,12 +119,11 @@ def main():
 
     crop_all_crewmates(os.path.join("Data",
                                     "Winner Identifier",
-                                    "Training Data",
+                                    "Test Data",
                                     "ext"),
                        os.path.join("Data",
                                     "Crewmate Identifier",
-                                    "Training Data",
-                                    "ext"))
+                                    "Crude Data"))
 
 
 if __name__ == "__main__":

@@ -104,15 +104,15 @@ def get_training_and_test_accuracy():
 
     """
 
-    model = tf.keras.models.load_model("Game Classifier.h5")
+    model = tf.keras.models.load_model(constants.crewmate_identifier)
 
-    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data",
-                                                 image_size=constants.dimensions)
-    test_data = image_dataset_from_directory("Data/Game Classifier/Test Data",
-                                             image_size=constants.dimensions)
+    training_data = image_dataset_from_directory("Data/Crewmate Identifier/Training Data",
+                                                 image_size=constants.crewmate_dimensions)
+    # test_data = image_dataset_from_directory("Data/Game Classifier/Test Data",
+    #                                          image_size=constants.dimensions)
 
     model.evaluate(training_data)
-    model.evaluate(test_data)
+    # model.evaluate(test_data)
 
 
 def main():
@@ -124,7 +124,7 @@ def main():
     """
 
     # compute_learning_curves("test")
-    get_failed_training_images()
+    # get_failed_training_images()
 
     get_training_and_test_accuracy()
 

@@ -26,46 +26,26 @@ def init_nn():
     input_layer = layers.Input(shape=constants.crewmate_dimensions + (3,))
 
     # 2D convolutions
-    convolution =   layers.Conv2D(filters=32,
-                                  kernel_size=1,
+    convolution =   layers.Conv2D(filters=8,
+                                  kernel_size=9,
                                   strides=1,
                                   activation="relu",
-                                  padding="valid")(input_layer)
+                                  padding="same")(input_layer)
+    dropout     =   layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
+
+    convolution =   layers.Conv2D(filters=16,
+                                  kernel_size=9,
+                                  strides=2,
+                                  activation="relu",
+                                  padding="same")(dropout)
     dropout     =   layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
 
     convolution =   layers.Conv2D(filters=32,
-                                  kernel_size=1,
-                                  strides=1,
+                                  kernel_size=9,
+                                  strides=2,
                                   activation="relu",
-                                  padding="valid")(dropout)
+                                  padding="same")(dropout)
     dropout     =   layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
-
-    convolution =   layers.Conv2D(filters=64,
-                                  kernel_size=5,
-                                  strides=1,
-                                  activation="relu",
-                                  padding="valid")(dropout)
-    dropout     =   layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
-
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2)(dropout)
-
-    convolution = layers.Conv2D(filters=128,
-                                kernel_size=5,
-                                strides=1,
-                                activation="relu",
-                                padding="valid")(pooling)
-    dropout     = layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
-
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2)(dropout)
-
-    convolution = layers.Conv2D(filters=256,
-                                kernel_size=5,
-                                strides=1,
-                                activation="relu",
-                                padding="valid")(pooling)
-    dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
 
     pooling = layers.MaxPooling2D(pool_size=2,
                                   strides=2)(dropout)
@@ -73,16 +53,22 @@ def init_nn():
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(pooling)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(flatten)
-    dense = layers.Dense(units=512,
+    dense = layers.Dense(units=1024,
                          activation="relu")(dropout)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
-    dense = layers.Dense(units=512,
+    dense = layers.Dense(units=1024,
                          activation="relu")(dropout)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
-    dense = layers.Dense(units=128,
+    dense = layers.Dense(units=256,
+                 activation="relu")(dropout)
+    dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
+    dense = layers.Dense(units=256,
                          activation="relu")(dropout)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
-    dense = layers.Dense(units=128,
+    dense = layers.Dense(units=64,
+                         activation="relu")(dropout)
+    dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
+    dense = layers.Dense(units=64,
                          activation="relu")(dropout)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
     dense = layers.Dense(units=13,
