@@ -11,7 +11,7 @@ from PIL import Image
 from src import constants
 
 
-def crop_image(path, output_path, start_size, box):
+def crop_end_screen(path, output_path, start_size, box):
     """
 
     crops an image down to just the cremates
@@ -32,6 +32,54 @@ def crop_image(path, output_path, start_size, box):
     im.save(output_path)
 
 
+def crop_crewmates(path, output_dir):
+    """
+
+    crop the crewmates out of the image
+
+    :param path: path to the image
+    :param output_dir: directory to output the images to
+    :return: None
+    """
+
+    im = Image.open(path)
+
+    boxes = [
+        (95, 15, 150, 90),
+        (140, 20, 195, 95),
+        (195, 25, 250, 100),
+        (260, 30, 315, 105),
+        (305, 25, 360, 100),
+        (365, 20, 420, 95),
+        (415, 10, 470, 85),
+        (460, 5, 515, 80)
+    ]
+
+    for i in range(len(boxes)):
+
+        temp = im.crop(boxes[i])
+
+        new_name = "Crewmate-" + str(i) + "-" + os.path.basename(path)
+
+        temp.save(os.path.join(output_dir, new_name))
+
+
+def crop_all_crewmates(directory, output_directory):
+    """
+
+    crops all of the crewmates in specified directory
+
+    :param directory: directory to get the images from
+    :param output_directory: directory to output the images to
+    :return: None
+    """
+
+    files = os.listdir(directory)
+
+    for file in files:
+        crop_crewmates(os.path.join(directory, file), output_directory)
+
+
 def crop_images(directory):
     """
 
@@ -48,10 +96,10 @@ def crop_images(directory):
         path = os.path.join(directory, file)
 
         try:
-            crop_image(path,
-                       path,
-                       constants.dimensions,
-                       constants.winner_identifier_cropping)
+            crop_end_screen(path,
+                            path,
+                            constants.dimensions,
+                            constants.winner_identifier_cropping)
         except AssertionError:
             print("Error Image in " + file + " had incorrect dimensions")
             continue
@@ -69,29 +117,14 @@ def main():
     :return:
     """
 
-    crop_images(os.path.join("Data",
-                             "Winner Identifier",
-                             "losing games",
-                             "Training Data",
-                             "ext"))
-
-    crop_images(os.path.join("Data",
-                             "Winner Identifier",
-                             "losing games",
-                             "Test Data",
-                             "ext"))
-
-    crop_images(os.path.join("Data",
-                             "Winner Identifier",
-                             "winning games",
-                             "Training Data",
-                             "ext"))
-
-    crop_images(os.path.join("Data",
-                             "Winner Identifier",
-                             "winning games",
-                             "Test Data",
-                             "ext"))
+    crop_all_crewmates(os.path.join("Data",
+                                    "Winner Identifier",
+                                    "Training Data",
+                                    "ext"),
+                       os.path.join("Data",
+                                    "Crewmate Identifier",
+                                    "Training Data",
+                                    "ext"))
 
 
 if __name__ == "__main__":

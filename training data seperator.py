@@ -9,6 +9,8 @@ import hashlib
 
 from twitchdl import twitch
 
+from src import constants
+
 
 def is_name_test(name):
     """
@@ -121,6 +123,27 @@ def sort_winner_crude_data():
                   os.path.join(path, data_set, "ext", file))
 
 
+def sort_crewmate_identifier_data(output_dir):
+    """
+
+    sorts the crewmate identifier data
+
+    :return:
+    """
+
+    path = os.path.join("Data", "Crewmate Identifier")
+
+    files = os.listdir(os.path.join(path, "Crude Data"))
+
+    for file in files:
+        label = file.split("-")[0]
+
+        label = constants.colors_dict[label]
+
+        os.rename(os.path.join(path, "Crude Data", file),
+                  os.path.join(output_dir, label, file))
+
+
 def main():
     """
 
@@ -131,6 +154,10 @@ def main():
 
     sort_classifier_crude_data()
     sort_winner_crude_data()
+
+    sort_crewmate_identifier_data(os.path.join("Data",
+                                               "Crewmate Identifier",
+                                               "Training Data"))
 
     """
     streamers = ["Blunder", "shofu", "Kara", "Pokimane", "5up", "captainsparklez",

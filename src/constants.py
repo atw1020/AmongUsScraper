@@ -86,6 +86,22 @@ color_codes = {
     "LM": 11
 }
 
+colors_dict = {
+    "": "other",
+    "RD": "red",
+    "BL": "blue",
+    "GN": "green",
+    "PK": "pink",
+    "OR": "orange",
+    "YL": "yellow",
+    "BK": "black",
+    "WT": "white",
+    "PR": "purple",
+    "BN": "brown",
+    "CY": "cyan",
+    "LM": "lime"
+}
+
 label_ids = {
     0: "Gameplay",
     1: "Lobby",
