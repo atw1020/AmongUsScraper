@@ -14,7 +14,7 @@ game_classifier = "Models/Game Classifier.h5"
 losing_winner_identifier = "Models/Winner Identifier.h5"
 winning_winner_identifier = "Models/Winner Identifier.h5"
 end_screen_classifier = "Models/End Screen Classifier.h5"
-crewmate_detection = "Models/Crewmate Detection.h5"
+crewmate_identifier = "Models/Crewmate Identifier.h5"
 
 """
 
@@ -43,6 +43,8 @@ winner_identifier_cropping = (40, 160, 610, 280)
 winner_identifier_dimensions = (winner_identifier_cropping[3] - winner_identifier_cropping[1],
                                 winner_identifier_cropping[2] - winner_identifier_cropping[0])
 
+crewmate_dimensions = (75, 55)
+
 """
 
 Neural Network Parameters
@@ -60,6 +62,7 @@ dataset_fractions = [0.1 * i for i in range(10)]
 # classifier_dropout rate
 classifier_dropout = 0.3  # 0.25
 winner_identifier_dropout = 0.3
+crewmate_identifier_dropout = 0.2
 
 learning_curve_extension = " test data.txt"
 
