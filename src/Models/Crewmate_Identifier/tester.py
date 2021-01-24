@@ -108,7 +108,7 @@ def get_training_and_test_accuracy():
 
     training_data = image_dataset_from_directory("Data/Crewmate Identifier/Training Data",
                                                  image_size=constants.crewmate_dimensions)
-    test_data = image_dataset_from_directory("Data/Game Classifier/Test Data",
+    test_data = image_dataset_from_directory("Data/Crewmate Identifier/Test Data",
                                              image_size=constants.crewmate_dimensions)
 
     model.evaluate(training_data)

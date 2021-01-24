@@ -52,7 +52,19 @@ def main():
     test_data = image_dataset_from_directory("Data/Crewmate Identifier/Test Data",
                                              image_size=constants.crewmate_dimensions)
 
+    split_data = training_data.take(len(training_data) // 2)
+
+    # run for 200 epochs on training and test data
+    model = train_model(split_data, test_data)
+
+    model.evaluate(training_data)
+    model.evaluate(test_data)
+
     model = train_model(training_data, test_data)
+
+    model.predict(training_data)
+    model.predict(test_data)
+
     model.save(constants.crewmate_identifier)
 
 
