@@ -4,6 +4,8 @@ Author: Arthur Wesley
 
 """
 
+import os
+
 import numpy as np
 import tensorflow as tf
 
@@ -21,11 +23,15 @@ def get_failed_training_images():
     :return:
     """
 
+    path = os.path.join("Data",
+                        "Crewmate Identifier",
+                        "Training Data")
+
     # load the model
-    model = tf.keras.models.load_model("Game Classifier.h5")
+    model = tf.keras.models.load_model(constants.crewmate_identifier)
 
     # load the data
-    training_data, files = image_dataset_from_directory("Data/Game Classifier/Test Data",
+    training_data, files = image_dataset_from_directory(path,
                                                         image_size=constants.dimensions,
                                                         shuffle=False,
                                                         return_filepaths=True)
@@ -46,7 +52,12 @@ def get_failed_training_images():
         if not np.array_equal(y, y_pred):
             for i in range(len(y_pred)):
                 if y_pred[i] != y[i]:
-                    print("miss-classification of image", files[index + i])
+                    # move the file up one directory
+                    os.rename(os.path.join(path,
+                                           files[index + i]),
+                              os.path.join(path,
+                                           "../",
+                                           files[index + i]))
 
         index += step
 
@@ -124,9 +135,9 @@ def main():
     """
 
     # compute_learning_curves("test")
-    # get_failed_training_images()
+    get_failed_training_images()
 
-    get_training_and_test_accuracy()
+    # get_training_and_test_accuracy()
 
 
 if __name__ == "__main__":

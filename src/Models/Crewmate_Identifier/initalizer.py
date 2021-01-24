@@ -60,22 +60,12 @@ def init_nn():
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(flatten)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    dense = layers.Dense(units=1024,
+    dense = layers.Dense(units=512,
                          activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    dense = layers.Dense(units=1024,
-                         activation="relu")(batch_norm)
-    dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
-    batch_norm = layers.BatchNormalization()(dropout)
-
-    dense = layers.Dense(units=256,
-                         activation="relu")(batch_norm)
-    dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
-    batch_norm = layers.BatchNormalization()(dropout)
-
-    dense = layers.Dense(units=256,
+    dense = layers.Dense(units=512,
                          activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
     batch_norm = layers.BatchNormalization()(dropout)
@@ -94,7 +84,7 @@ def init_nn():
                          activation="relu")(batch_norm)
     output = layers.Softmax()(dense)
 
-    opt = Adam(learning_rate=0.01)
+    opt = Adam(learning_rate=0.003)
 
     model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
     model.compile(loss="sparse_categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
