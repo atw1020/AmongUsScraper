@@ -84,7 +84,7 @@ def init_nn():
                          activation="relu")(batch_norm)
     output = layers.Softmax()(dense)
 
-    opt = Adam(learning_rate=0.003)
+    opt = Adam(learning_rate=0.001)
 
     model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
     model.compile(loss="sparse_categorical_crossentropy", optimizer=opt, metrics=["accuracy"])

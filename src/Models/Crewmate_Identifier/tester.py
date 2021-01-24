@@ -32,7 +32,7 @@ def get_failed_training_images():
 
     # load the data
     training_data, files = image_dataset_from_directory(path,
-                                                        image_size=constants.dimensions,
+                                                        image_size=constants.crewmate_dimensions,
                                                         shuffle=False,
                                                         return_filepaths=True)
 
@@ -53,11 +53,12 @@ def get_failed_training_images():
             for i in range(len(y_pred)):
                 if y_pred[i] != y[i]:
                     # move the file up one directory
-                    os.rename(os.path.join(path,
-                                           files[index + i]),
+
+                    basename = os.path.basename(files[index + i])
+
+                    os.rename(files[index + i],
                               os.path.join(path,
-                                           "../",
-                                           files[index + i]))
+                                           basename))
 
         index += step
 
@@ -135,9 +136,9 @@ def main():
     """
 
     # compute_learning_curves("test")
-    get_failed_training_images()
+    # get_failed_training_images()
 
-    # get_training_and_test_accuracy()
+    get_training_and_test_accuracy()
 
 
 if __name__ == "__main__":
