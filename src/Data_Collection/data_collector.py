@@ -10,12 +10,17 @@ import os
 import time as t
 
 import numpy as np
+
 from twitchdl import twitch
+
 from tensorflow.keras import models
 from tensorflow.keras.preprocessing.image import save_img
 
+from PIL import Image
+
 from src import constants
 from src.Data_Collection import web_scrapper
+from src.Preprocessing import cropper
 
 temp_images = os.path.join("Data", "Temp Images")
 
@@ -40,7 +45,7 @@ class DataCollector:
 
         # load NNs
         self.classifier = models.load_model(constants.game_classifier)
-        self.winner_identifier = models.load_model(constants.winner_identifier)
+        self.crewmate_identifier = models.load_model(constants.crewmate_identifier)
 
         # get video information & vods
         self.access_token = twitch.get_access_token(video_id)
@@ -59,8 +64,11 @@ class DataCollector:
         # transitions object
         self.transitions = None
 
-        # predictions object
-        self.predictions = None
+        # game_classifier_predictions object
+        self.game_classifier_predictions = None
+
+        # object containing all of the games in the stream
+        self.games = None
 
         # transition tensor
         self.transition_tensor = None
@@ -81,7 +89,7 @@ class DataCollector:
         return web_scrapper.get_still_frame(self.url + vod[0],
                                              vod[1])
 
-    def get_images_batch(self):
+    def get_game_class_batch(self):
         """
 
         puts all of the images into the vods tensor
@@ -94,7 +102,7 @@ class DataCollector:
         self.batches = [self.vods[i:i + self.batch_size]
                         for i in range(0, len(self.vods), self.batch_size)]
 
-        self.predictions = np.empty((len(self.vods)))
+        self.game_classifier_predictions = np.empty((len(self.vods)))
 
         for index, batch in enumerate(self.batches):
 
@@ -104,8 +112,8 @@ class DataCollector:
             # get the tensor
             vods_tensor = self.get_batch(batch)
 
-            # update the predictions
-            self.predictions[start_index:end_index] = np.argmax(self.classifier.predict(vods_tensor), axis=1)
+            # update the game classifier predictions
+            self.game_classifier_predictions[start_index:end_index] = np.argmax(self.classifier.predict(vods_tensor), axis=1)
 
         t1 = t.time()
         print("downloading the images took", t1 - t0)
@@ -134,19 +142,19 @@ class DataCollector:
         :return: list of each transition in the game
         """
 
-        # get the predictions if we don't have them
-        if self.predictions is None:
-            self.get_images_batch()
+        # get the game classifier predictions if we don't have them
+        if self.game_classifier_predictions is None:
+            self.get_game_class_batch()
 
         t0 = t.time()
 
         self.transitions = list()
 
-        for i in range(len(self.predictions)):
+        for i in range(len(self.game_classifier_predictions)):
 
             # if we experienced a transition
-            if self.predictions[i] != self.predictions[i - 1]:
-                self.transitions.append((constants.label_ids[self.predictions[i]],
+            if self.game_classifier_predictions[i] != self.game_classifier_predictions[i - 1]:
+                self.transitions.append((constants.label_ids[self.game_classifier_predictions[i]],
                                          i * self.step))
 
         t1 = t.time()
@@ -227,20 +235,20 @@ class DataCollector:
     def save_predictions(self):
         """
 
-        saves the predictions into temp_images
+        saves the game_classifier_predictions into temp_images
 
         :return:
         """
 
-        if self.predictions is None:
-            self.get_images_batch()
+        if self.game_classifier_predictions is None:
+            self.get_game_class_batch()
 
         for i, vod in enumerate(self.vods):
 
             # get the image at the specified index
             image = self.get_image(vod)
 
-            name = constants.label_ids[self.predictions[i]] + "-" + \
+            name = constants.label_ids[self.game_classifier_predictions[i]] + "-" + \
                    self.video_id + "-" + \
                    str(i * self.step) + ".jpg"
 
@@ -249,7 +257,7 @@ class DataCollector:
     def save_transition_predictions(self, over_only=False):
         """
 
-        saves predictions made about the transition images into temp_images
+        saves images located at the predicted ends of games
 
         :param over_only: whether or not to only save over images
         :return: None
@@ -293,6 +301,69 @@ class DataCollector:
         t1 = t.time()
         print("saving", index, "images took", t1 - t0, "seconds")
 
+    def get_winners(self, verbose=True):
+        """
+
+        generates a list containing all of the winning colors in
+        a given video
+
+        :return:
+        """
+
+        if self.transition_predictions is None:
+            self.get_transition_predictions()
+
+        game_transitions = self.get_game_transitions()
+
+        winners = []
+
+        frames_per_transition = int(2 * self.step * constants.frames_per_vod / constants.end_transition_step)
+
+        t0 = t.time()
+
+        # go through all the game transitions
+        for game_transition_index, (vod_kind, vod_start_index) in enumerate(game_transitions):
+
+            # go through all the vods within the next step
+            for i in range(2 * self.step):
+
+                # go through all the frames in each vod
+                for frame in range(0, constants.frames_per_vod, constants.end_transition_step):
+
+                    frame_offset = int((i * constants.frames_per_vod + frame)
+                                       / constants.end_transition_step)
+
+                    index = game_transition_index * frames_per_transition + frame_offset
+
+                    # make sure that this is an over screen
+                    if self.transition_predictions[index] == 4:
+
+                        # convert the vod tensor to PIL
+                        image = Image.fromarray(np.uint8(self.transition_tensor[index]))
+
+                        # crop the images
+                        cropped = image.crop(constants.winner_identifier_cropping)
+
+                        # crop the image into individual crewmates
+                        crops = np.array(cropper.crop_crewmates(cropped))
+
+                        winners.append(np.argmax(self.crewmate_identifier.predict(crops), axis=1))
+
+            # print a summary
+            if verbose:
+
+                # print a summary
+                print("game #", game_transition_index + 1, sep="")
+                print("the following players won")
+
+                for winner in winners[-1]:
+                    if winner != 7:
+                        print(constants.crewmate_color_ids[winner])
+
+        t1 = t.time()
+
+        print("identifying the winners took", t1 - t0, "seconds")
+
 
 def main():
     """
@@ -308,6 +379,7 @@ def main():
     #                "855465677" (246.ts was not 300 frames long)
     # processes images at 51x real time
 
+    """
     games = [line.strip() for line in open("../../games.txt")]
 
     for game in games:
@@ -315,6 +387,10 @@ def main():
         collector.save_transition_predictions(over_only=True)
         print("saved images for", game)
         print()
+    """
+
+    collector = DataCollector("874833883", step=5)
+    collector.get_winners()
 
 
 if __name__ == "__main__":

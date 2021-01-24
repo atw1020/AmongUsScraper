@@ -25,7 +25,7 @@ def get_failed_training_images():
 
     path = os.path.join("Data",
                         "Crewmate Identifier",
-                        "Training Data")
+                        "Test Data")
 
     # load the model
     model = tf.keras.models.load_model(constants.crewmate_identifier)
@@ -39,7 +39,7 @@ def get_failed_training_images():
     step = 32
     index = 0
 
-    # make the predictions
+    # make the game_classifier_predictions
     for X, y in training_data:
 
         # predict and get the softmax
@@ -136,9 +136,9 @@ def main():
     """
 
     # compute_learning_curves("test")
-    # get_failed_training_images()
+    get_failed_training_images()
 
-    get_training_and_test_accuracy()
+    # get_training_and_test_accuracy()
 
 
 if __name__ == "__main__":

@@ -11,16 +11,15 @@ from PIL import Image
 from src import constants
 
 
-def crop_end_screen(path, output_path, start_size, box):
+def crop_end_screen(path, start_size, box):
     """
 
     crops an image down to just the cremates
 
     :param path: path to the PIL image
-    :param output_path: path to the output image
     :param start_size: initial size of the image
     :param box: the box to crop the image
-    :return: None (saves cropped image
+    :return: Cropped PIL image
     """
 
     im = Image.open(path)
@@ -29,20 +28,17 @@ def crop_end_screen(path, output_path, start_size, box):
 
     im = im.crop(box)
 
-    im.save(output_path)
+    return im
 
 
-def crop_crewmates(path, output_dir):
+def crop_crewmates(image):
     """
 
     crop the crewmates out of the image
 
-    :param path: path to the image
-    :param output_dir: directory to output the images to
-    :return: None
+    :param image: image to crop
+    :return: List of Cropped images
     """
-
-    im = Image.open(path)
 
     boxes = [
         (95, 15, 150, 90),
@@ -55,13 +51,13 @@ def crop_crewmates(path, output_dir):
         (460, 5, 515, 80)
     ]
 
+    crops = []
+
     for i in range(len(boxes)):
 
-        temp = im.crop(boxes[i])
+        crops.append(image.crop(boxes[i]))
 
-        new_name = "Crewmate-" + str(i) + "-" + os.path.basename(path)
-
-        temp.save(os.path.join(output_dir, new_name))
+    return crops
 
 
 def crop_all_crewmates(directory, output_directory):
@@ -77,7 +73,18 @@ def crop_all_crewmates(directory, output_directory):
     files = os.listdir(directory)
 
     for file in files:
-        crop_crewmates(os.path.join(directory, file), output_directory)
+
+        path = os.path.join(directory, file)
+
+        im = Image.open(path)
+
+        crops = crop_crewmates(im)
+
+        for i in range(len(crops)):
+
+            new_name = "Crewmate-" + str(i) + "-" + os.path.basename(path)
+
+            crops[i].save(os.path.join(output_directory, new_name))
 
 
 def crop_images(directory):

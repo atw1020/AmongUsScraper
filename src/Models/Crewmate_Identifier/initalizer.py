@@ -30,7 +30,7 @@ def init_nn():
     # 2D convolutions
     convolution =   layers.Conv2D(filters=8,
                                   kernel_size=9,
-                                  strides=1,
+                                  strides=2,
                                   activation="relu",
                                   padding="same")(batch_norm)
     dropout     =   layers.Dropout(rate=constants.crewmate_identifier_dropout)(convolution)
@@ -60,12 +60,12 @@ def init_nn():
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(flatten)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    dense = layers.Dense(units=512,
+    dense = layers.Dense(units=256,
                          activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    dense = layers.Dense(units=512,
+    dense = layers.Dense(units=256,
                          activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.crewmate_identifier_dropout)(dense)
     batch_norm = layers.BatchNormalization()(dropout)

@@ -61,8 +61,7 @@ dataset_fractions = [0.1 * i for i in range(10)]
 
 # classifier_dropout rate
 classifier_dropout = 0.3  # 0.25
-winner_identifier_dropout = 0.3
-crewmate_identifier_dropout = 0.3
+crewmate_identifier_dropout = 0.4
 
 learning_curve_extension = " test data.txt"
 
@@ -111,6 +110,22 @@ label_ids = {
     2: "Meeting",
     3: "Other",
     4: "Over"
+}
+
+crewmate_color_ids = {
+    0: "black",
+    1: "blue",
+    2: "brown",
+    3: "cyan",
+    4: "green",
+    5: "lime",
+    6: "orange",
+    7: "other",
+    8: "pink",
+    9: "purple",
+    10: "red",
+    11: "white",
+    12: "yellow"
 }
 
 
