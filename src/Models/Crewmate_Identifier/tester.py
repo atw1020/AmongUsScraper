@@ -7,9 +7,11 @@ Author: Arthur Wesley
 import os
 
 import numpy as np
-import tensorflow as tf
 
+import tensorflow as tf
 from tensorflow.keras.preprocessing import image_dataset_from_directory
+
+from sklearn.metrics import classification_report
 
 from src import constants
 from src.Models.Game_Classifier import trainer
@@ -25,7 +27,7 @@ def get_failed_training_images():
 
     path = os.path.join("Data",
                         "Crewmate Identifier",
-                        "Test Data")
+                        "Training Data")
 
     # load the model
     model = tf.keras.models.load_model(constants.crewmate_identifier)
@@ -139,6 +141,19 @@ def main():
     get_failed_training_images()
 
     # get_training_and_test_accuracy()
+
+    test_data = image_dataset_from_directory("Data/Crewmate Identifier/Test Data",
+                                             shuffle=False,
+                                             image_size=constants.crewmate_dimensions)
+
+    model = tf.keras.models.load_model(constants.crewmate_identifier)
+
+    labels = np.concatenate([labels for images, labels in test_data])
+    predictions = np.argmax(model.predict(test_data), axis=1)
+
+    print(classification_report(predictions,
+                                labels,
+                                target_names=constants.crewmate_color_ids))
 
 
 if __name__ == "__main__":

@@ -82,47 +82,6 @@ def sort_classifier_crude_data():
         os.rename(start_path + file, output)
 
 
-def sort_winner_crude_data():
-    """
-
-    sorts through the data for the winner identifier and sorts it into training and test
-    data
-
-    :return: None (renames files)
-    """
-
-    path = os.path.join("Data", "Winner Identifier")
-
-    files = os.listdir(os.path.join(path, "Crude Data"))
-
-    player_names = dict()
-
-    for file in files:
-
-        items = file.split("-")
-
-        video_id = items[1]
-
-        if video_id in player_names:
-            # if we already have the player name cached, use it
-            player_name = player_names[video_id]
-        else:
-            # otherwise, get the player name from the video ID
-            video = twitch.get_video(video_id)
-            player_name = video['channel']['display_name']
-
-            # cache the player name
-            player_names[video_id] = player_name
-
-        if is_name_test(player_name):
-            data_set = "Test Data"
-        else:
-            data_set = "Training Data"
-
-        os.rename(os.path.join(path, "Crude Data", file),
-                  os.path.join(path, data_set, "ext", file))
-
-
 def sort_crewmate_identifier_data(output_dir):
     """
 
@@ -153,7 +112,6 @@ def main():
     """
 
     sort_classifier_crude_data()
-    sort_winner_crude_data()
 
     sort_crewmate_identifier_data(os.path.join("Data",
                                                "Crewmate Identifier",

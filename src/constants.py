@@ -112,21 +112,23 @@ label_ids = {
     4: "Over"
 }
 
-crewmate_color_ids = {
-    0: "black",
-    1: "blue",
-    2: "brown",
-    3: "cyan",
-    4: "green",
-    5: "lime",
-    6: "orange",
-    7: "other",
-    8: "pink",
-    9: "purple",
-    10: "red",
-    11: "white",
-    12: "yellow"
-}
+crewmate_color_ids = [
+    "black",
+    "blue",
+    "brown",
+    "cyan",
+    "green",
+    "lime",
+    "orange",
+    "other",
+    "pink",
+    "purple",
+    "red",
+    "white",
+    "yellow",
+]
+
+assert len(crewmate_color_ids) == 13
 
 
 """

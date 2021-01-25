@@ -27,7 +27,7 @@ def get_failed_training_images():
     model = tf.keras.models.load_model("Game Classifier.h5")
 
     # load the data
-    training_data, files = image_dataset_from_directory("Data/Game Classifier/Test Data",
+    training_data, files = image_dataset_from_directory("Data/Game Classifier/Training Data",
                                                         image_size=constants.dimensions,
                                                         shuffle=False,
                                                         return_filepaths=True)
@@ -130,16 +130,7 @@ def main():
 
     # get_training_and_test_accuracy()
 
-    test_data = image_dataset_from_directory("Data/Crewmate Identifier/Test Data",
-                                             shuffle=False,
-                                             image_size=constants.crewmate_dimensions)
 
-    model = tf.keras.models.load_model(constants.crewmate_identifier)
-
-    labels = np.concatenate([labels for images, labels in test_data])
-    predictions = np.argmax(model.predict(test_data), axis=1)
-
-    print(classification_report(predictions, labels))
 
 
 if __name__ == "__main__":
