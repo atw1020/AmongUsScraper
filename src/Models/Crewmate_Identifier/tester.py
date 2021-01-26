@@ -27,7 +27,7 @@ def get_failed_training_images():
 
     path = os.path.join("Data",
                         "Crewmate Identifier",
-                        "Training Data")
+                        "Test Data")
 
     # load the model
     model = tf.keras.models.load_model(constants.crewmate_identifier)
@@ -138,7 +138,7 @@ def main():
     """
 
     # compute_learning_curves("test")
-    get_failed_training_images()
+    # get_failed_training_images()
 
     # get_training_and_test_accuracy()
 

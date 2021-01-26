@@ -317,12 +317,16 @@ class DataCollector:
 
         winners = []
 
+        game_index = 0
+
         frames_per_transition = int(2 * self.step * constants.frames_per_vod / constants.end_transition_step)
 
         t0 = t.time()
 
+        print(self.transition_predictions)
+
         # go through all the game transitions
-        for game_transition_index, (vod_kind, vod_start_index) in enumerate(game_transitions):
+        for game_transition_index in range(len(game_transitions)):
 
             # go through all the vods within the next step
             for i in range(2 * self.step):
@@ -341,6 +345,10 @@ class DataCollector:
                         # convert the vod tensor to PIL
                         image = Image.fromarray(np.uint8(self.transition_tensor[index]))
 
+                        # save the image
+                        game_index += 1
+                        image.save("game " + str(game_index) + ".jpg")
+
                         # crop the images
                         cropped = image.crop(constants.winner_identifier_cropping)
 
@@ -349,16 +357,7 @@ class DataCollector:
 
                         winners.append(np.argmax(self.crewmate_identifier.predict(crops), axis=1))
 
-            # print a summary
-            if verbose:
-
-                # print a summary
-                print("game #", game_transition_index + 1, sep="")
-                print("the following players won")
-
-                for winner in winners[-1]:
-                    if winner != 7:
-                        print(constants.crewmate_color_ids[winner])
+        print(winners)
 
         t1 = t.time()
 
