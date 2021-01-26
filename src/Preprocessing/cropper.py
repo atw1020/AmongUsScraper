@@ -8,6 +8,8 @@ import os
 
 from PIL import Image
 
+import pytesseract
+
 from src import constants
 
 
@@ -173,7 +175,9 @@ def main():
     crops = crop_meeting(image)
 
     for i in range(len(crops)):
-        crops[i].save("image " + str(i) + ".jpg")
+        crops[i].save("image " + str(i) + ".png")
+        print("image", i)
+        print(pytesseract.image_to_string(crops[i]))
 
 
 if __name__ == "__main__":
