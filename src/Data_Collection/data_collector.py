@@ -33,7 +33,6 @@ class DataCollector:
                  video_id,
                  step=2,
                  end_transition_step=constants.end_transition_step,
-                 end_screen_samples=constants.end_screen_samples,
                  verbose=True,
                  batch_size=32):
         """
@@ -47,13 +46,12 @@ class DataCollector:
 
         # copy the parameters into the object
         self.video_id = video_id
-
-        self.step = step
-        self.end_transition_step = end_transition_step
-        self.end_screen_samples = end_screen_samples
-
         self.verbose = verbose
         self.batch_size = batch_size
+
+        # set the steps
+        self.step = step
+        self.end_transition_step = end_transition_step
 
         # load NNs
         self.classifier = models.load_model(constants.game_classifier)
@@ -323,7 +321,7 @@ class DataCollector:
         if self.verbose:
             print("saving", index, "images took", t1 - t0, "seconds")
 
-    def get_winners(self, verbose=True):
+    def get_winners(self):
         """
 
         generates a list containing all of the winning colors in
@@ -360,7 +358,7 @@ class DataCollector:
         for end_set in end_sets:
 
             # take a random sample
-            sample = random.sample(end_set, min(self.end_screen_samples,
+            sample = random.sample(end_set, min(constants.end_screen_samples,
                                                 len(end_set)))
 
             predictions = []
@@ -373,6 +371,7 @@ class DataCollector:
                 cropped = image.crop(constants.winner_identifier_cropping)
 
                 # crop the image into individual crewmates
+                print(type(cropper.crop_crewmates(cropped)[0]))
                 crops = np.array(cropper.crop_crewmates(cropped))
 
                 predictions.append(np.argmax(self.crewmate_identifier.predict(crops), axis=1))
@@ -413,7 +412,7 @@ def main():
     """
 
     collector = DataCollector("874833883",
-                              step=5)
+                              step=20)
     collector.get_winners()
 
 

@@ -172,8 +172,8 @@ def get_still_frames(url, step=50, frames=300):
 
     if not success:
         # try again with fewer frames
-        # return get_still_frames(url, step=step, frames=frames-step)
-        raise Exception("Could not read all frames from URL: ", url)
+        return get_still_frames(url, step=step, frames=frames-step)
+        # raise Exception("Could not read all frames from URL: ", url)
 
     return np.array(images)
 
