@@ -371,8 +371,7 @@ class DataCollector:
                 cropped = image.crop(constants.winner_identifier_cropping)
 
                 # crop the image into individual crewmates
-                print(type(cropper.crop_crewmates(cropped)[0]))
-                crops = np.array(cropper.crop_crewmates(cropped))
+                crops = np.array([np.array(item) for item in cropper.crop_crewmates(cropped)])
 
                 predictions.append(np.argmax(self.crewmate_identifier.predict(crops), axis=1))
 
@@ -412,7 +411,8 @@ def main():
     """
 
     collector = DataCollector("874833883",
-                              step=20)
+                              step=20,
+                              end_transition_step=300)
     collector.get_winners()
 
 
