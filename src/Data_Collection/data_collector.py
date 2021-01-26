@@ -319,51 +319,38 @@ class DataCollector:
 
         game_index = 0
 
-        frames_per_transition = int(2 * self.step * constants.frames_per_vod / constants.end_transition_step)
-
         t0 = t.time()
 
-        print(self.transition_predictions)
+        # print the transition predictions
 
-        # go through all the game transitions
-        for game_transition_index in range(len(game_transitions)):
+        for i in range(len(self.transition_predictions)):
 
-            # go through all the vods within the next step
-            for i in range(2 * self.step):
+            # make sure that this is an over screen
+            if self.transition_predictions[i] == 4:
 
-                # go through all the frames in each vod
-                for frame in range(0, constants.frames_per_vod, constants.end_transition_step):
+                # convert the vod tensor to PIL
+                image = Image.fromarray(np.uint8(self.transition_tensor[i]))
 
-                    frame_offset = int((i * constants.frames_per_vod + frame)
-                                       / constants.end_transition_step)
+                # crop the images
+                cropped = image.crop(constants.winner_identifier_cropping)
 
-                    index = game_transition_index * frames_per_transition + frame_offset
+                # crop the image into individual crewmates
+                crops = np.array(cropper.crop_crewmates(cropped))
 
-                    # make sure that this is an over screen
-                    if self.transition_predictions[index] == 4:
+                winners.append(np.argmax(self.crewmate_identifier.predict(crops), axis=1))
+            elif self.transition_predictions[i - 1] == 4:
 
-                        # convert the vod tensor to PIL
-                        image = Image.fromarray(np.uint8(self.transition_tensor[index]))
+                # save the image
+                game_index += 1
+                image.save("game " + str(game_index) + ".jpg")
 
-                        # crop the images
-                        cropped = image.crop(constants.winner_identifier_cropping)
+                # print the winners data
 
-                        # crop the image into individual crewmates
-                        crops = np.array(cropper.crop_crewmates(cropped))
+                print("game #", str(game_index), sep="")
 
-                        winners.append(np.argmax(self.crewmate_identifier.predict(crops), axis=1))
-                    elif self.transition_predictions[index - 1] == 4:
-
-                        # save the image
-                        game_index += 1
-                        image.save("game " + str(game_index) + ".jpg")
-
-                        # print the winners data
-
-                        print("game #", str(game_index), sep="")
-
-                        for winner in winners:
-                            print(constants.crewmate_color_ids[winner])
+                for game in winners:
+                    for player in game:
+                        print(constants.crewmate_color_ids[player])
 
         t1 = t.time()
 
