@@ -138,8 +138,8 @@ frame constants
 """
 
 end_transition_step = 50
-frames_per_vod = 300
 end_screen_samples = 3
+frames_per_vod = 300
 
 
 def size(res):

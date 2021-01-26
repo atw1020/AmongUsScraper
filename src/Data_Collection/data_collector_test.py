@@ -5,60 +5,41 @@ runs timing tests on the data collector
 """
 
 import time
+import random
 
-import data_collector
+from src.Data_Collection import data_collector
+from src import constants
 
 
-def get_step_data(steps, batch_size=32):
+def collection_parameter_search(limits,
+                                reps):
     """
 
-    gets run data from a given number of steps
 
-    :param batch_size: size of each batch
-    :param steps: number of steps to take
-    :return: None (prints summary)
+
+    :param limits: tuple
+    :param reps: the number of times to repeat random sampling
+    :return:
     """
 
-    transitions = []
-    games = []
+    step_seed_min, step_seed_max, \
+    end_transition_seed_min, end_transition_seed_max = limits
 
-    t0 = time.time()
+    step_seed_range = step_seed_max - step_seed_min
 
-    collector = data_collector.DataCollector("825004778",
-                                             step=steps,
-                                             verbose=False,
-                                             batch_size=batch_size)
-    transitions = transitions + collector.get_transitions()
-    games = games + collector.get_game_transitions()
-    del collector
-    collector = data_collector.DataCollector("846990283",
-                                             step=steps,
-                                             verbose=False,
-                                             batch_size=batch_size)
-    transitions = transitions + collector.get_transitions()
-    games = games + collector.get_game_transitions()
-    del collector
-    collector = data_collector.DataCollector("839936889",
-                                             step=steps,
-                                             verbose=False,
-                                             batch_size=batch_size)
-    transitions = transitions + collector.get_transitions()
-    games = games + collector.get_game_transitions()
-    del collector
-    collector = data_collector.DataCollector("837588827",
-                                             step=steps,
-                                             verbose=False,
-                                             batch_size=batch_size)
-    transitions = transitions + collector.get_transitions()
-    games = games + collector.get_game_transitions()
-    del collector
 
-    t1 = time.time()
+    for i in range(reps):
 
-    print("data for", steps, "steps")
-    print("running took", t1 - t0, "seconds")
-    print("found", len(transitions), "transitions")
-    print("found", len(games), "transitions")
+        # random number in the specified step seed range
+        step_seed = random.random() * step_seed_range + step_seed_min
+        step = int(1 / step_seed)
+
+        print("chose a step of", step)
+
+        end_transition_seed = random.randint(end_transition_seed_min, end_transition_seed_max)
+        end_transition_step = constants.frames_per_vod / end_transition_seed
+
+        print("chose an end transition step of", end_transition_step)
 
 
 def main():
@@ -69,7 +50,7 @@ def main():
     :return:
     """
 
-    get_step_data(16)
+
 
 
 if __name__ == "__main__":

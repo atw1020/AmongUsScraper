@@ -29,7 +29,13 @@ temp_images = os.path.join("Data", "Temp Images")
 
 class DataCollector:
 
-    def __init__(self, video_id, step=2, verbose=True, batch_size=32):
+    def __init__(self,
+                 video_id,
+                 step=2,
+                 end_transition_step=constants.end_transition_step,
+                 end_screen_samples=constants.end_screen_samples,
+                 verbose=True,
+                 batch_size=32):
         """
 
         initializes a DataCollector from a specified video ID
@@ -41,7 +47,11 @@ class DataCollector:
 
         # copy the parameters into the object
         self.video_id = video_id
+
         self.step = step
+        self.end_transition_step = end_transition_step
+        self.end_screen_samples = end_screen_samples
+
         self.verbose = verbose
         self.batch_size = batch_size
 
@@ -118,7 +128,9 @@ class DataCollector:
             self.game_classifier_predictions[start_index:end_index] = np.argmax(self.classifier.predict(vods_tensor), axis=1)
 
         t1 = t.time()
-        print("downloading the images took", t1 - t0)
+
+        if self.verbose:
+            print("downloading the images took", t1 - t0)
 
     def get_batch(self, batch):
         """
@@ -160,7 +172,9 @@ class DataCollector:
                                          i * self.step))
 
         t1 = t.time()
-        print("finding the transitions took", t1 - t0)
+
+        if self.verbose:
+            print("finding the transitions took", t1 - t0)
 
     def get_game_transitions(self):
         """
@@ -185,7 +199,9 @@ class DataCollector:
                 game_transitions.append(self.transitions[i - 1])
 
         t1 = t.time()
-        print("finding the game transitions took", t1 - t0, "seconds")
+
+        if self.verbose:
+            print("finding the game transitions took", t1 - t0, "seconds")
 
         return game_transitions
 
@@ -206,7 +222,7 @@ class DataCollector:
 
         for vod in vods:
             items.append(web_scrapper.get_still_frames(self.url + vod,
-                                                       constants.end_transition_step,
+                                                       self.end_transition_step,
                                                        constants.frames_per_vod))
 
         return np.concatenate(items)
@@ -232,7 +248,9 @@ class DataCollector:
         self.transition_predictions = np.argmax(self.classifier.predict(self.transition_tensor), axis=1)
 
         t1 = t.time()
-        print("Downloading and classifying the transition images took", t1 - t0, "seconds")
+
+        if self.verbose:
+            print("Downloading and classifying the transition images took", t1 - t0, "seconds")
 
     def save_predictions(self):
         """
@@ -273,7 +291,7 @@ class DataCollector:
         game_transitions = self.get_game_transitions()
 
         # number of frames that each transition yields
-        frames_per_transition = int(2 * self.step * constants.frames_per_vod / constants.end_transition_step)
+        frames_per_transition = int(2 * self.step * constants.frames_per_vod / self.end_transition_step)
 
         # go through the game transitions
         for game_transition_index, (vod_kind, vod_start_index) in enumerate(game_transitions):
@@ -282,12 +300,12 @@ class DataCollector:
             for i in range(2 * self.step):
 
                 # go through all the frames in each vod
-                for frame in range(0, constants.frames_per_vod, constants.end_transition_step):
+                for frame in range(0, constants.frames_per_vod, self.end_transition_step):
 
                     vod_index = vod_start_index + i
 
                     frame_offset = int((i * constants.frames_per_vod + frame)
-                                       / constants.end_transition_step)
+                                       / self.end_transition_step)
 
                     index = game_transition_index * frames_per_transition + frame_offset
 
@@ -301,7 +319,9 @@ class DataCollector:
                         save_img(os.path.join(temp_images, name), image)
 
         t1 = t.time()
-        print("saving", index, "images took", t1 - t0, "seconds")
+
+        if self.verbose:
+            print("saving", index, "images took", t1 - t0, "seconds")
 
     def get_winners(self, verbose=True):
         """
@@ -340,7 +360,7 @@ class DataCollector:
         for end_set in end_sets:
 
             # take a random sample
-            sample = random.sample(end_set, min(constants.end_screen_samples,
+            sample = random.sample(end_set, min(self.end_screen_samples,
                                                 len(end_set)))
 
             predictions = []
@@ -362,7 +382,8 @@ class DataCollector:
 
         t1 = t.time()
 
-        print("identifying the winners took", t1 - t0, "seconds")
+        if self.verbose:
+            print("identifying the winners took", t1 - t0, "seconds")
 
         return winners
 
@@ -391,7 +412,8 @@ def main():
         print()
     """
 
-    collector = DataCollector("874833883", step=5)
+    collector = DataCollector("874833883",
+                              step=5)
     collector.get_winners()
 
 
