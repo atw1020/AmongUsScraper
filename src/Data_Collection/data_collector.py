@@ -345,10 +345,6 @@ class DataCollector:
                         # convert the vod tensor to PIL
                         image = Image.fromarray(np.uint8(self.transition_tensor[index]))
 
-                        # save the image
-                        game_index += 1
-                        image.save("game " + str(game_index) + ".jpg")
-
                         # crop the images
                         cropped = image.crop(constants.winner_identifier_cropping)
 
@@ -356,8 +352,18 @@ class DataCollector:
                         crops = np.array(cropper.crop_crewmates(cropped))
 
                         winners.append(np.argmax(self.crewmate_identifier.predict(crops), axis=1))
+                    elif self.transition_predictions[index - 1] == 4:
 
-        print(winners)
+                        # save the image
+                        game_index += 1
+                        image.save("game " + str(game_index) + ".jpg")
+
+                        # print the winners data
+
+                        print("game #", str(game_index), sep="")
+
+                        for winner in winners:
+                            print(constants.crewmate_color_ids[winner])
 
         t1 = t.time()
 
