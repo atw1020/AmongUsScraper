@@ -8,8 +8,10 @@ data collection program
 
 import os
 import time as t
+import random
 
 import numpy as np
+from scipy import stats
 
 from twitchdl import twitch
 
@@ -313,23 +315,39 @@ class DataCollector:
         if self.transition_predictions is None:
             self.get_transition_predictions()
 
-        game_transitions = self.get_game_transitions()
-
         winners = []
-
-        game_index = 0
 
         t0 = t.time()
 
         # print the transition predictions
 
+        end_sets = []
+
+        # get the set of all indices of predictions (games
         for i in range(len(self.transition_predictions)):
 
-            # make sure that this is an over screen
             if self.transition_predictions[i] == 4:
 
+                # check to see if this is part of a chain
+                if self.transition_predictions[i - 1] != 4:
+                    # if this is a new chain, add a new list
+                    end_sets.append([i])
+                else:
+                    # otherwise, expand the old chain
+                    end_sets[-1].append(i)
+
+        # choose images from each end set and process them
+        for end_set in end_sets:
+
+            # take a random sample
+            sample = random.sample(end_set, min(constants.end_screen_samples,
+                                                len(end_set)))
+
+            predictions = []
+
+            for item in sample:
                 # convert the vod tensor to PIL
-                image = Image.fromarray(np.uint8(self.transition_tensor[i]))
+                image = Image.fromarray(self.transition_tensor[item])
 
                 # crop the images
                 cropped = image.crop(constants.winner_identifier_cropping)
@@ -337,24 +355,16 @@ class DataCollector:
                 # crop the image into individual crewmates
                 crops = np.array(cropper.crop_crewmates(cropped))
 
-                winners.append(np.argmax(self.crewmate_identifier.predict(crops), axis=1))
-            elif self.transition_predictions[i - 1] == 4:
+                predictions.append(np.argmax(self.crewmate_identifier.predict(crops), axis=1))
 
-                # save the image
-                game_index += 1
-                image.save("game " + str(game_index) + ".jpg")
-
-                # print the winners data
-
-                print("game #", str(game_index), sep="")
-
-                for winner in winners[-1]:
-                    if winner != 0:
-                        print(constants.crewmate_color_ids[winners])
+            # get the predictions by taking the mode along the axis
+            winners.append(stats.mode(np.array(predictions), axis=0).mode[0])
 
         t1 = t.time()
 
         print("identifying the winners took", t1 - t0, "seconds")
+
+        return winners
 
 
 def main():
