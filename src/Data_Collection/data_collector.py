@@ -348,9 +348,9 @@ class DataCollector:
 
                 print("game #", str(game_index), sep="")
 
-                for game in winners:
-                    for player in game:
-                        print(constants.crewmate_color_ids[player])
+                for winner in winners[-1]:
+                    if winner != 0:
+                        print(constants.crewmate_color_ids[winners])
 
         t1 = t.time()
 
