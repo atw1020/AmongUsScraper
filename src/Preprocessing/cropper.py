@@ -146,6 +146,35 @@ def crop_images(directory):
     print("finished cropping", directory)
 
 
+def crop_all_meetings(directory):
+    """
+
+    crops all the meetings in th specified directory and saves the up
+    two directories
+
+    :param directory: directory to get the images from
+    :return: None
+    """
+
+    files = os.listdir(directory)
+
+    for file in files:
+
+        if file == ".DS_Store":
+            continue
+
+        path = os.path.join(directory, file)
+
+        image = Image.open(path)
+        crops = crop_meeting(image)
+
+        for i, crop in enumerate(crops):
+            # save the file two directories up
+            crop.save(os.path.join(directory,
+                                   "../../",
+                                   str(i) + "-" + file))
+
+
 def main():
     """
 
@@ -166,18 +195,10 @@ def main():
                                     "Crude Data"))
                                     """
 
-    image = Image.open(os.path.join("Data",
-                                    "Game Classifier",
-                                    "Training Data",
-                                    "Meeting",
-                                    "Meeting-841174127-979.jpg"))
-
-    crops = crop_meeting(image)
-
-    for i in range(len(crops)):
-        crops[i].save("image " + str(i) + ".png")
-        print("image", i)
-        print(pytesseract.image_to_string(crops[i]))
+    crop_all_meetings(os.path.join("Data",
+                                   "Game Classifier",
+                                   "Training Data",
+                                   "Meeting"))
 
 
 if __name__ == "__main__":
