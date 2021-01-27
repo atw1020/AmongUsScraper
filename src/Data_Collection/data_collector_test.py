@@ -28,8 +28,14 @@ def collection_parameter_search(limits,
     step_seed_range = step_seed_max - step_seed_min
 
     vods = [
-        "874833883"
+        "874833883",
+        "887962963",
+        "887579689",
+        "887571311",
+        "886173458"
     ]
+
+    print("step, end transition step, games found, time elapsed")
 
     for i in range(reps):
 
@@ -37,12 +43,8 @@ def collection_parameter_search(limits,
         step_seed = random.random() * step_seed_range + step_seed_min
         step = int(1 / step_seed)
 
-        print("chose a step of", step)
-
         end_transition_seed = random.randint(end_transition_seed_min, end_transition_seed_max)
         end_transition_step = int(constants.frames_per_vod / end_transition_seed)
-
-        print("chose an end transition step of", end_transition_step)
 
         # set up accumulators
         games_found = 0
@@ -56,7 +58,8 @@ def collection_parameter_search(limits,
             # create a data collector object and get the winners
             collector = data_collector.DataCollector(vod,
                                                      step=step,
-                                                     end_transition_step=end_transition_step)
+                                                     end_transition_step=end_transition_step,
+                                                     verbose=False)
 
             winners = collector.get_winners()
 
@@ -65,8 +68,11 @@ def collection_parameter_search(limits,
             games_found += len(winners)
             time_elapsed += t1 - t0
 
-            print("found", games_found, "so far")
-            print("finding them took", time_elapsed, "seconds")
+        # print the results
+        print(step, end=", ")
+        print(end_transition_step, end=", ")
+        print(games_found, end=", ")
+        print(time_elapsed)
 
 
 def main():
@@ -77,8 +83,14 @@ def main():
     :return:
     """
 
-    collection_parameter_search((0.0, 0.5, 1, 10),
-                                1)
+    collection_parameter_search((0.05, 0.2, 3, 10),
+                                10)
+
+    # ranges searched
+    # 1) 0 - 0.5
+    #    1 - 10
+    # 2) 0.05 - 0.2
+    #    3 - 10
 
 
 if __name__ == "__main__":
