@@ -9,10 +9,10 @@ import os
 from tensorflow.keras import Model
 from tensorflow.keras import layers
 from tensorflow.keras.utils import plot_model
+from tensorflow.keras.optimizers import Adam
 
 from src import constants
 from src.Models.Text_Recognition import trainer
-from src.Models.Text_Recognition import text_utils
 
 
 def init_nn(vocab):
@@ -82,7 +82,14 @@ def init_nn(vocab):
     softmax = layers.Softmax()(dense)
 
     model = Model(inputs=input_layer,
-                  outputs=softmax)
+                  outputs=softmax,
+                  name="Text Reader")
+
+    opt = Adam(lr=0.001)
+
+    model.compile(loss="sparse_categorical_crossentropy",
+                  optimizer=opt,
+                  metrics=["accuracy"])
 
     return model
 
@@ -102,7 +109,6 @@ def main():
     model = init_nn(labels)
     model.summary()
     plot_model(model, to_file="RNN.png")
-
 
 
 if __name__ == "__main__":

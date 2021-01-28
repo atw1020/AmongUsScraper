@@ -8,8 +8,9 @@ import os
 
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
-from src.Models.Text_Recognition import text_utils
 from src import constants
+from src.Models.Text_Recognition import initalizer
+from src.Models.Text_Recognition import text_utils
 
 
 def get_vocab(directory):
@@ -55,7 +56,7 @@ def gen_dataset(directory):
 
     generate a dataset from the
 
-    :param directory:
+    :param directory: directory to generate the dataset from
     :return:
     """
 
@@ -66,12 +67,19 @@ def gen_dataset(directory):
                                         image_size=constants.meeting_dimensions)
 
 
-def train_model(dataset):
+def train_model(dataset, vocab):
     """
 
-    :param dataset: the dataset
-    :return:
+    train a model on the specified dataset
+
+    :param dataset: the dataset to train on
+    :param vocab: vocabulary to use
+    :return: trained model
     """
+
+    model = initalizer.init_nn(vocab)
+
+    model.fit(dataset, epochs=10)
 
 
 def main():
@@ -82,14 +90,11 @@ def main():
     :return:
     """
 
-    dataset = gen_dataset(os.path.join("Data",
-                                       "Meeting namer",
-                                       "Training Data"))
+    dataset, vocab = gen_dataset(os.path.join("Data",
+                                              "Meeting namer",
+                                              "Training Data"))
 
-    for x, y in dataset:
-        print(x.shape)
-        print(y.shape)
-        break
+    train_model(dataset, vocab)
 
 
 if __name__ == "__main__":
