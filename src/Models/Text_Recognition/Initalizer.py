@@ -6,6 +6,7 @@ Author: Arthur Wesley
 
 from tensorflow.keras import Model
 from tensorflow.keras import layers
+from tensorflow.keras.utils import plot_model
 
 from src import constants
 
@@ -51,24 +52,21 @@ def init_nn():
     flatten = layers.Flatten()(dropout)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(flatten)
 
-    reshape = layers.Reshape(input_shape=())(dropout)
+    repeat = layers.RepeatVector(constants.name_length)(dropout)
 
-    GRU = layers.GRU(512,
-                     input_shape=(constants.name_length, None),
+    GRU = layers.GRU(64,
+                     activation="relu",
+                     return_sequences=True)(repeat)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
+
+    GRU = layers.GRU(64,
                      activation="relu",
                      return_sequences=True)(dropout)
-    dropout = layers.Dropout(GRU)
-
-    GRU = layers.GRU(512,
-                     input_shape=(constants.name_length, None),
-                     activation="relu",
-                     return_sequences=True)(dropout)
-    dropout = layers.Dropout(GRU)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
 
     dense = layers.Dense(units=constants.vocab_size,
-                         activation="sigmoid",
-                         )(dropout)
-    softmax = layers.Softmax(dense)
+                         activation="sigmoid")(dropout)
+    softmax = layers.Softmax()(dense)
 
     model = Model(inputs=input_layer,
                   outputs=softmax)
@@ -86,6 +84,7 @@ def main():
 
     model = init_nn()
     model.summary()
+    plot_model(model, to_file="RNN.png")
 
 
 if __name__ == "__main__":
