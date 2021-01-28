@@ -44,6 +44,7 @@ winner_identifier_dimensions = (winner_identifier_cropping[3] - winner_identifie
                                 winner_identifier_cropping[2] - winner_identifier_cropping[0])
 
 crewmate_dimensions = (75, 55)
+meeting_dimensions = (45, 220)
 
 """
 
@@ -62,6 +63,10 @@ dataset_fractions = [0.1 * i for i in range(10)]
 # classifier_dropout rate
 classifier_dropout = 0.3  # 0.25
 crewmate_identifier_dropout = 0.4
+text_rec_dropout = 0.2
+
+vocab_size = 256
+name_length = 10  # 10 characters in a line
 
 learning_curve_extension = " test data.txt"
 
