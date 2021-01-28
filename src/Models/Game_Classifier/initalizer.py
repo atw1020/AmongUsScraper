@@ -45,12 +45,8 @@ def init_nn():
 
     opt = Adam(learning_rate=0.0001)
 
-    model = keras.Model(inputs=input_layer,
-                        outputs=output,
-                        name="Game_Classifier")
-    model.compile(loss="sparse_categorical_crossentropy",
-                  optimizer=opt,
-                  metrics=["accuracy"])
+    model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
+    model.compile(loss="sparse_categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
     return model
 
