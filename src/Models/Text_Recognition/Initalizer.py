@@ -11,13 +11,15 @@ from tensorflow.keras.utils import plot_model
 from src import constants
 
 
-def init_nn():
+def init_nn(vocab_dict):
     """
 
     creates the neural network
 
     :return: initialized model
     """
+
+    vocab_size = len(vocab_dict.keys())
 
     input_layer = layers.Input(shape=constants.meeting_dimensions + (3,))
 
@@ -35,11 +37,14 @@ def init_nn():
                                 padding="same")(dropout)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
 
+    pooling = layers.MaxPooling2D(pool_size=2,
+                                  strides=2)(dropout)
+
     convolution = layers.Conv2D(filters=32,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(dropout)
+                                padding="same")(pooling)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
 
     convolution = layers.Conv2D(filters=64,
@@ -49,22 +54,27 @@ def init_nn():
                                 padding="same")(dropout)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
 
-    flatten = layers.Flatten()(dropout)
+    pooling = layers.MaxPooling2D(pool_size=2,
+                                  strides=2)(dropout)
+
+    flatten = layers.Flatten()(pooling)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(flatten)
 
     repeat = layers.RepeatVector(constants.name_length)(dropout)
 
-    GRU = layers.GRU(64,
+    GRU = layers.GRU(128,
+                     input_shape=(None, dropout.type_spec.shape[1]),
                      activation="relu",
                      return_sequences=True)(repeat)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
 
-    GRU = layers.GRU(64,
+    GRU = layers.GRU(128,
+                     input_shape=(None, dropout.type_spec.shape[1]),
                      activation="relu",
                      return_sequences=True)(dropout)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
 
-    dense = layers.Dense(units=constants.vocab_size,
+    dense = layers.Dense(units=vocab_size,
                          activation="sigmoid")(dropout)
     softmax = layers.Softmax()(dense)
 
@@ -82,7 +92,7 @@ def main():
     :return:
     """
 
-    model = init_nn()
+    model = init_nn({"a": 0, "b": 1, "c": 2})
     model.summary()
     plot_model(model, to_file="RNN.png")
 
