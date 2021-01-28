@@ -32,6 +32,9 @@ def pad_string(st):
     :return: padded string
     """
 
+    if len(st) > 10:
+        print(st)
+
     assert len(st) <= 10
 
     return st + " " * (constants.name_length - len(st))

@@ -4,14 +4,18 @@ Author: Arthur Wesley
 
 """
 
+import os
+
 from tensorflow.keras import Model
 from tensorflow.keras import layers
 from tensorflow.keras.utils import plot_model
 
 from src import constants
+from src.Models.Text_Recognition import trainer
+from src.Models.Text_Recognition import text_utils
 
 
-def init_nn(vocab_dict):
+def init_nn(vocab):
     """
 
     creates the neural network
@@ -19,7 +23,7 @@ def init_nn(vocab_dict):
     :return: initialized model
     """
 
-    vocab_size = len(vocab_dict.keys())
+    vocab_size = len(vocab.keys())
 
     input_layer = layers.Input(shape=constants.meeting_dimensions + (3,))
 
@@ -74,8 +78,7 @@ def init_nn(vocab_dict):
                      return_sequences=True)(dropout)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
 
-    dense = layers.Dense(units=vocab_size,
-                         activation="sigmoid")(dropout)
+    dense = layers.Dense(units=vocab_size)(dropout)
     softmax = layers.Softmax()(dense)
 
     model = Model(inputs=input_layer,
@@ -92,9 +95,14 @@ def main():
     :return:
     """
 
-    model = init_nn({"a": 0, "b": 1, "c": 2})
+    labels = trainer.get_vocab(os.path.join("Data",
+                                            "Meeting namer",
+                                            "Training data"))
+
+    model = init_nn(labels)
     model.summary()
     plot_model(model, to_file="RNN.png")
+
 
 
 if __name__ == "__main__":

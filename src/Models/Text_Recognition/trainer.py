@@ -9,17 +9,25 @@ import os
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 from src.Models.Text_Recognition import text_utils
+from src import constants
 
 
-def string_to_numpy(st, translation_dict):
+def get_vocab(directory):
     """
 
+    get the vocab from a directory
 
-
-    :param st:
-    :param translation_dict:
-    :return:
+    :param directory: directory to get the vocabulary from
+    :return: vocabulary from the directory
     """
+
+    files = os.listdir(os.path.join(directory,
+                                    "ext"))
+
+    # get the names of all the players
+    names = [file.split("-")[2] for file in files]
+
+    return text_utils.get_vocab(names)
 
 
 def get_labels(directory):
@@ -27,14 +35,19 @@ def get_labels(directory):
 
     gets the string labels from the specified
 
-    :param directory:
-    :return:
+    :param directory: directory to get the labels from
+    :return: labels of the images in that directory
     """
 
     files = os.listdir(os.path.join(directory,
                                     "ext"))
 
-    return [file.split("-")[2] for file in files]
+    # get the names of all the players
+    names = [file.split("-")[2] for file in files]
+
+    vocab = text_utils.get_vocab(names)
+
+    return [text_utils.label_from_string(name, vocab) for name in names]
 
 
 def gen_dataset(directory):
@@ -49,7 +62,8 @@ def gen_dataset(directory):
     labels = get_labels(directory)
 
     return image_dataset_from_directory(directory,
-                                        labels=labels)
+                                        labels=labels,
+                                        image_size=constants.meeting_dimensions)
 
 
 def train_model(dataset):
@@ -68,14 +82,14 @@ def main():
     :return:
     """
 
-    labels = get_labels(os.path.join("Data",
-                                     "Meeting namer",
-                                     "Training Data"))
+    dataset = gen_dataset(os.path.join("Data",
+                                       "Meeting namer",
+                                       "Training Data"))
 
-    vocab = text_utils.get_vocab(labels)
-
-    print(text_utils.label_from_string(labels[0], vocab))
-    print(labels)
+    for x, y in dataset:
+        print(x.shape)
+        print(y.shape)
+        break
 
 
 if __name__ == "__main__":
