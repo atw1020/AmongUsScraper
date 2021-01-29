@@ -27,69 +27,70 @@ def init_nn(vocab):
 
     input_layer = layers.Input(shape=constants.meeting_dimensions + (3,))
 
-    convolution = layers.Conv2D(filters=8,
+    convolution = layers.Conv2D(filters=16,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
                                 padding="same")(input_layer)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
-
-    convolution = layers.Conv2D(filters=16,
-                                kernel_size=5,
-                                strides=2,
-                                activation="relu",
-                                padding="same")(dropout)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
-
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2)(dropout)
+    batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=32,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(pooling)
+                                padding="same")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=64,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(dropout)
+                                padding="same")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    batch_norm = layers.BatchNormalization()(dropout)
 
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2)(dropout)
+    convolution = layers.Conv2D(filters=128,
+                                kernel_size=5,
+                                strides=2,
+                                activation="relu",
+                                padding="same")(batch_norm)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    batch_norm = layers.BatchNormalization()(dropout)
 
-    flatten = layers.Flatten()(pooling)
+    flatten = layers.Flatten()(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(flatten)
+    batch_norm = layers.BatchNormalization()(dropout)
 
-    repeat = layers.RepeatVector(constants.name_length)(dropout)
+    repeat = layers.RepeatVector(constants.name_length)(batch_norm)
 
-    GRU = layers.GRU(128,
-                     input_shape=(None, dropout.type_spec.shape[1]),
-                     activation="relu",
-                     return_sequences=True)(repeat)
+    GRU = layers.SimpleRNN(256,
+                           input_shape=(None, dropout.type_spec.shape[1]),
+                           activation="relu",
+                           return_sequences=True)(repeat)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
+    batch_norm = layers.BatchNormalization()(dropout)
 
-    GRU = layers.GRU(128,
-                     input_shape=(None, dropout.type_spec.shape[1]),
-                     activation="relu",
-                     return_sequences=True)(dropout)
+    GRU = layers.SimpleRNN(128,
+                           input_shape=(None, dropout.type_spec.shape[1]),
+                           activation="relu",
+                           return_sequences=True)(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
+    batch_norm = layers.BatchNormalization()(dropout)
 
-    dense = layers.Dense(units=vocab_size)(dropout)
-    softmax = layers.Softmax()(dense)
+    dense = layers.Dense(units=vocab_size,
+                         activation="sigmoid")(batch_norm)
 
     model = Model(inputs=input_layer,
-                  outputs=softmax,
-                  name="Text Reader")
+                  outputs=dense,
+                  name="Text_Reader")
 
-    opt = Adam(lr=0.001)
+    opt = Adam(lr=0.01)
 
-    model.compile(loss="sparse_categorical_crossentropy",
+    model.compile(loss="binary_crossentropy",
                   optimizer=opt,
-                  metrics=["accuracy"])
+                  metrics=["binary_accuracy"])
 
     return model
 

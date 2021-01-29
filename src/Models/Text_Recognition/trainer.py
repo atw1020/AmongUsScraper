@@ -37,7 +37,7 @@ def get_labels(directory):
     gets the string labels from the specified
 
     :param directory: directory to get the labels from
-    :return: labels of the images in that directory
+    :return: labels of the images in that directory and the vocab used for them
     """
 
     files = os.listdir(os.path.join(directory,
@@ -48,7 +48,7 @@ def get_labels(directory):
 
     vocab = text_utils.get_vocab(names)
 
-    return [text_utils.label_from_string(name, vocab) for name in names]
+    return [text_utils.label_from_string(name, vocab) for name in names], vocab
 
 
 def gen_dataset(directory):
@@ -60,11 +60,11 @@ def gen_dataset(directory):
     :return:
     """
 
-    labels = get_labels(directory)
+    labels, vocab = get_labels(directory)
 
     return image_dataset_from_directory(directory,
                                         labels=labels,
-                                        image_size=constants.meeting_dimensions)
+                                        image_size=constants.meeting_dimensions), vocab
 
 
 def train_model(dataset, vocab):
@@ -79,7 +79,7 @@ def train_model(dataset, vocab):
 
     model = initalizer.init_nn(vocab)
 
-    model.fit(dataset, epochs=10)
+    model.fit(dataset, epochs=5)
 
 
 def main():
@@ -93,6 +93,11 @@ def main():
     dataset, vocab = gen_dataset(os.path.join("Data",
                                               "Meeting namer",
                                               "Training Data"))
+
+    for x, y in dataset:
+        print(x.shape)
+        print(y.shape)
+        break
 
     train_model(dataset, vocab)
 

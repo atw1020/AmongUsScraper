@@ -50,7 +50,12 @@ def label_from_string(st, vocab):
     :return:
     """
 
-    return np.array([vocab[char] for char in pad_string(st)])
+    result = np.zeros((constants.name_length, len(vocab)))
+
+    for i in range(len(st)):
+        result[i][vocab[st[i]]] = 1
+
+    return result
 
 
 def main():
