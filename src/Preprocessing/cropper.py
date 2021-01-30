@@ -197,7 +197,7 @@ def main():
 
     crop_all_meetings(os.path.join("Data",
                                    "Game Classifier",
-                                   "Training Data",
+                                   "Test Data",
                                    "Meeting"))
 
 

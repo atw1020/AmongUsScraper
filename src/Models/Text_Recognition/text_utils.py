@@ -58,6 +58,20 @@ def label_from_string(st, vocab):
     return result
 
 
+def merge_vocab(vocabs):
+    """
+
+    merges
+
+    :param vocabs: vocabularies to merge
+    :return:
+    """
+
+    vocab = sorted(set([key for vocab in vocabs for key in vocab.keys()]))
+
+    return {char: i for i, char in enumerate(vocab)}
+
+
 def main():
     """
 

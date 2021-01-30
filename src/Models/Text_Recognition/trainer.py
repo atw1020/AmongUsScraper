@@ -31,12 +31,13 @@ def get_vocab(directory):
     return text_utils.get_vocab(names)
 
 
-def get_labels(directory):
+def get_labels(directory, vocab):
     """
 
     gets the string labels from the specified
 
     :param directory: directory to get the labels from
+    :param vocab: vocabulary to use when getting the labels
     :return: labels of the images in that directory and the vocab used for them
     """
 
@@ -46,21 +47,23 @@ def get_labels(directory):
     # get the names of all the players
     names = [file.split("-")[2] for file in files]
 
-    vocab = text_utils.get_vocab(names)
+    if vocab is None:
+        vocab = text_utils.get_vocab(names)
 
     return [text_utils.label_from_string(name, vocab) for name in names], vocab
 
 
-def gen_dataset(directory):
+def gen_dataset(directory, vocab=None):
     """
 
     generate a dataset from the
 
+    :param vocab: vocabulary to use
     :param directory: directory to generate the dataset from
     :return:
     """
 
-    labels, vocab = get_labels(directory)
+    labels, vocab = get_labels(directory, vocab)
 
     return image_dataset_from_directory(directory,
                                         labels=labels,
@@ -81,6 +84,8 @@ def train_model(dataset, vocab):
 
     model.fit(dataset, epochs=5)
 
+    return model
+
 
 def main():
     """
@@ -90,16 +95,29 @@ def main():
     :return:
     """
 
-    dataset, vocab = gen_dataset(os.path.join("Data",
-                                              "Meeting namer",
-                                              "Training Data"))
+    training_path = os.path.join("Data",
+                                  "Meeting namer",
+                                  "Training Data")
+    test_path = os.path.join("Data",
+                             "Meeting namer",
+                             "Test Data")
 
-    for x, y in dataset:
-        print(x.shape)
-        print(y.shape)
-        break
+    # get the vocabularies
+    train_vocab = get_vocab(training_path)
+    test_vocab = get_vocab(test_path)
 
-    train_model(dataset, vocab)
+    vocab = text_utils.merge_vocab((train_vocab, test_vocab))
+    print(vocab)
+
+    # get the datasets
+    training_data, vocab = gen_dataset(training_path, vocab)
+    test_data, vocab = gen_dataset(test_path, vocab)
+
+    # train the model
+    model = train_model(training_data, vocab)
+
+    model.evaluate(training_data)
+    model.evaluate(test_data)
 
 
 if __name__ == "__main__":
