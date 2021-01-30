@@ -93,6 +93,25 @@ def train_model(dataset, test_data, vocab):
     return model
 
 
+def get_model_vocab():
+    """
+
+
+
+    :return:
+    """
+
+    # get the vocabularies
+    train_vocab = get_vocab(os.path.join("Data",
+                                         "Meeting namer",
+                                         "Training Data"))
+    test_vocab = get_vocab(os.path.join("Data",
+                                        "Meeting namer",
+                                        "Test Data"))
+
+    return text_utils.merge_vocab((train_vocab, test_vocab))
+
+
 def main():
     """
 
@@ -101,39 +120,19 @@ def main():
     :return:
     """
 
-    training_path = os.path.join("Data",
-                                  "Meeting namer",
-                                  "Training Data")
-    test_path = os.path.join("Data",
-                             "Meeting namer",
-                             "Test Data")
-
-    # get the vocabularies
-    train_vocab = get_vocab(training_path)
-    test_vocab = get_vocab(test_path)
-
-    vocab = text_utils.merge_vocab((train_vocab, test_vocab))
-    vocab_reverse = text_utils.reverse_vocab(vocab)
+    vocab = get_model_vocab()
 
     # get the datasets
-    training_data, vocab = gen_dataset(training_path, vocab)
-    test_data, vocab = gen_dataset(test_path, vocab)
+    training_data, vocab = gen_dataset(os.path.join("Data",
+                                                    "Meeting namer",
+                                                    "Test Data"), vocab)
+    test_data, vocab = gen_dataset(os.path.join("Data",
+                                                "Meeting namer",
+                                                "Test Data"), vocab)
 
     # train the model
     model = train_model(training_data, test_data, vocab)
-
-    image = img_to_array(load_img(os.path.join("Data",
-                                               "Meeting namer",
-                                               "Test Data",
-                                               "ext",
-                                               "OR-DED-Nyxpip-844335327-835.jpg")))
-
-    image = image.reshape((1,) + image.shape)
-
-    result = np.argmax(model.predict(image), axis=2)
-    text = "".join([vocab_reverse[char] for char in result])
-
-    print(text)
+    model.save(constants.text_recognition)
 
 
 if __name__ == "__main__":
