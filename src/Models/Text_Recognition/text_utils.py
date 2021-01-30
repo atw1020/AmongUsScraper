@@ -23,6 +23,18 @@ def get_vocab(strings):
     return {char: i for i, char in enumerate(vocab)}
 
 
+def reverse_vocab(vocab):
+    """
+
+    reverses a vocabulary dictionary, or more generally, any dictionary
+
+    :param vocab: vocabulary to reverse
+    :return: reversed dictionary
+    """
+
+    return {v: k for k, v in vocab.items()}
+
+
 def pad_string(st):
     """
 

@@ -6,7 +6,10 @@ Author: Arthur Wesley
 
 import os
 
+import numpy as np
+
 from tensorflow.keras.preprocessing import image_dataset_from_directory
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 from src import constants
 from src.Models.Text_Recognition import initalizer
@@ -70,19 +73,22 @@ def gen_dataset(directory, vocab=None):
                                         image_size=constants.meeting_dimensions), vocab
 
 
-def train_model(dataset, vocab):
+def train_model(dataset, test_data, vocab):
     """
 
     train a model on the specified dataset
 
     :param dataset: the dataset to train on
+    :param test_data: validation data
     :param vocab: vocabulary to use
     :return: trained model
     """
 
     model = initalizer.init_nn(vocab)
 
-    model.fit(dataset, epochs=5)
+    model.fit(dataset,
+              validation_data=test_data,
+              epochs=5)
 
     return model
 
@@ -107,17 +113,27 @@ def main():
     test_vocab = get_vocab(test_path)
 
     vocab = text_utils.merge_vocab((train_vocab, test_vocab))
-    print(vocab)
+    vocab_reverse = text_utils.reverse_vocab(vocab)
 
     # get the datasets
     training_data, vocab = gen_dataset(training_path, vocab)
     test_data, vocab = gen_dataset(test_path, vocab)
 
     # train the model
-    model = train_model(training_data, vocab)
+    model = train_model(training_data, test_data, vocab)
 
-    model.evaluate(training_data)
-    model.evaluate(test_data)
+    image = img_to_array(load_img(os.path.join("Data",
+                                               "Meeting namer",
+                                               "Test Data",
+                                               "ext",
+                                               "OR-DED-Nyxpip-844335327-835.jpg")))
+
+    image = image.reshape((1,) + image.shape)
+
+    result = np.argmax(model.predict(image), axis=2)
+    text = "".join([vocab_reverse[char] for char in result])
+
+    print(text)
 
 
 if __name__ == "__main__":
