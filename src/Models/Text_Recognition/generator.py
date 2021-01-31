@@ -68,41 +68,28 @@ def generator(directory, vocab):
             yield (x1, x2), y
 
             j += 1
-            """
-            
-            expected: 
-            
-                ((TensorSpec(shape=(45, 220, 3), dtype=tf.int8, name=None), 
-                RaggedTensorSpec(TensorShape([None, 60]), tf.int8, 1, tf.int64)), 
-                TensorSpec(shape=(60,), dtype=tf.int8, name=None))
-                
-            got:
-            
-                ((TensorSpec(shape=(45, 220, 3), dtype=tf.int8, name=None), 
-                  TensorSpec(shape=(1, 60), dtype=tf.float64, name=None)), 
-                  TensorSpec(shape=(60,), dtype=tf.int8, name=None))
-            
-            """
 
 
-def gen_dataset(path, batch_size=32):
+def gen_dataset(path, batch_size=32, vocab=None):
     """
 
     generate a dataset
 
     :param path: the path to the directory to generate the dataset from
-    batch_size: the size of the batch to generate
+    :param batch_size: the size of the batch to generate
+    :param vocab: vocabulary to use
     :return: dataset
     """
 
-    vocab = text_utils.get_vocab(text_utils.get_names(path))
+    if vocab is None:
+        vocab = text_utils.get_vocab(text_utils.get_names(path))
 
     vocab_size = len(vocab.keys()) + 2
 
     dataset = tf.data.Dataset.from_generator(lambda: generator(path, vocab),
                                              output_signature=((tf.TensorSpec(shape=constants.meeting_dimensions + (3,),
                                                                               dtype=tf.int8),
-                                                                tf.TensorSpec(shape=(None, 60),
+                                                                tf.TensorSpec(shape=(None, vocab_size),
                                                                               dtype=tf.float64)),
                                                                tf.TensorSpec(shape=vocab_size,
                                                                              dtype=tf.int8)))

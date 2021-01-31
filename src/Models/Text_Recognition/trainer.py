@@ -75,12 +75,18 @@ def main():
 
     vocab = get_model_vocab()
 
-    training_data = generator.generator(os.path.join("Data",
-                                                     "Meeting Identifier",
-                                                     "Training Data"), vocab)
+    training_data = generator.gen_dataset(os.path.join("Data",
+                                                       "Meeting Identifier",
+                                                       "Training Data"),
+                                          vocab=vocab)
+
+    test_data = generator.gen_dataset(os.path.join("Data",
+                                                   "Meeting Identifier",
+                                                   "Test Data"),
+                                      vocab=vocab)
 
     # train the model
-    model = train_model(training_data, None, vocab)
+    model = train_model(training_data, test_data, vocab)
     model.save(constants.text_recognition)
 
 

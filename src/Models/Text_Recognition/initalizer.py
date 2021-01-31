@@ -23,7 +23,7 @@ def init_nn(vocab):
     :return: initialized model
     """
 
-    # plus two for the
+    # plus two for the start and end tokens
     vocab_size = len(vocab.keys()) + 2
 
     # CNN
