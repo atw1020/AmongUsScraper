@@ -8,8 +8,6 @@ import os
 
 import numpy as np
 
-from src import constants
-
 
 def get_vocab(strings):
     """
@@ -64,6 +62,58 @@ def get_names(directory):
 
     # get the names of all the players
     return [file.split("-")[2] for file in files]
+
+
+def get_string_input_data(st, vocab):
+    """
+
+    get a set of input data from a string given a vocab
+
+    :param st: string to generate
+    :param vocab: vocabulary to use
+    :return: numpy array representing the string
+    """
+
+    # add two to the vocab size for the start and end characters
+    vocab_size = len(vocab.keys()) + 2
+
+    # create an array of zeros
+    zeros = np.zeros((len(st) + 1, vocab_size))
+
+    # the first item in the zeros array is the the start character
+    zeros[0][vocab_size - 2] = 1
+
+    # go through the string and specify the remaining characters
+    for i, char in enumerate(st):
+        zeros[i + 1][vocab[char]] = 1
+
+    return zeros
+
+
+def get_character_label(st, index, vocab):
+    """
+
+    gets a character's label from the specified vocabulary
+
+    :param st: string to get the label from
+    :param index: index of the character to get the label for
+    :param vocab: vocabulary to create the label using
+    :return: character label
+    """
+
+    vocab_size = len(vocab.keys()) + 2
+
+    if index > len(st):
+        # if the index is out of bounds, the character must be a null terminator
+        char_index = vocab_size - 1
+    else:
+        # the character index come from the dictionary
+        char_index = vocab[st[index]]
+
+    zeros = np.zeros(vocab_size)
+    zeros[char_index] = 1
+
+    return zeros
 
 
 def main():
