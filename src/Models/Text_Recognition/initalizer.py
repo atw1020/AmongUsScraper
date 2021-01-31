@@ -46,14 +46,11 @@ def init_nn(vocab):
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2)(batch_norm)
-
     convolution = layers.Conv2D(filters=64,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(pooling)
+                                padding="same")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
@@ -65,9 +62,10 @@ def init_nn(vocab):
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    flatten = layers.Flatten()(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(flatten)
-    CNN_output = layers.BatchNormalization()(dropout)
+    pooling = layers.MaxPooling2D(pool_size=2,
+                                  strides=2)(batch_norm)
+
+    flatten = layers.Flatten()(pooling)
 
     # RNN input layer
     rnn_input = layers.Input(shape=(None, vocab_size))
@@ -81,22 +79,24 @@ def init_nn(vocab):
     LSTM = layers.LSTM(252,
                        activation="relu",
                        return_sequences=False)(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
-    RNN_output = layers.BatchNormalization()(dropout)
 
-    concatenate = layers.Concatenate()([CNN_output, RNN_output])
+    concatenate = layers.Concatenate()([flatten, LSTM])
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(concatenate)
+    batch_norm = layers.BatchNormalization()(dropout)
 
     dense = layers.Dense(units=256,
-                         activation="sigmoid")(concatenate)
+                         activation="sigmoid")(batch_norm)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(dense)
+    batch_norm = layers.BatchNormalization()(dropout)
 
     output = layers.Dense(units=vocab_size,
-                          activation="sigmoid")(dense)
+                          activation="sigmoid")(batch_norm)
 
     model = Model(inputs=[image_input_layer, rnn_input],
                   outputs=output,
                   name="Text_Reader")
 
-    opt = Adam(lr=0.001)
+    opt = Adam(lr=0.003)
 
     model.compile(loss="categorical_crossentropy",
                   optimizer=opt,
