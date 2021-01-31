@@ -34,47 +34,6 @@ def get_vocab(directory):
 
     return text_utils.get_vocab(names)
 
-
-def get_labels(directory, vocab):
-    """
-
-    gets the string labels from the specified
-
-    :param directory: directory to get the labels from
-    :param vocab: vocabulary to use when getting the labels
-    :return: labels of the images in that directory and the vocab used for them
-    """
-
-    files = os.listdir(os.path.join(directory,
-                                    "ext"))
-
-    # get the names of all the players
-    names = [file.split("-")[2] for file in files]
-
-    if vocab is None:
-        vocab = text_utils.get_vocab(names)
-
-    return [text_utils.label_from_string(name, vocab) for name in names], vocab
-
-
-def gen_dataset(directory, vocab=None):
-    """
-
-    generate a dataset from the
-
-    :param vocab: vocabulary to use
-    :param directory: directory to generate the dataset from
-    :return:
-    """
-
-    labels, vocab = get_labels(directory, vocab)
-
-    return image_dataset_from_directory(directory,
-                                        labels=labels,
-                                        image_size=constants.meeting_dimensions,
-                                        shuffle=False), vocab
-
-
 def train_model(dataset, test_data, vocab):
     """
 
@@ -123,28 +82,6 @@ def main():
     """
 
     vocab = get_model_vocab()
-
-    # get the datasets
-    training_data, vocab = gen_dataset(os.path.join("Data",
-                                                    "Meeting namer",
-                                                    "Training Data"), vocab)
-    test_data, vocab = gen_dataset(os.path.join("Data",
-                                                "Meeting namer",
-                                                "Test Data"), vocab)
-
-    for x, y in training_data:
-        print(np.argmax(y, axis=2))
-
-        model = initalizer.init_nn(vocab)
-
-        predictions = model.predict(x)
-
-        loss_fn = CategoricalCrossentropy()
-        loss = loss_fn(y, predictions)
-
-        print(loss.numpy())
-
-        return 0
 
     # train the model
     model = train_model(training_data, test_data, vocab)
