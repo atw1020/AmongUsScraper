@@ -29,7 +29,7 @@ def main():
     model = load_model(constants.text_recognition)
 
     image = img_to_array(load_img(os.path.join("Data",
-                                               "Meeting namer",
+                                               "Meeting Identifier",
                                                "Training Data",
                                                "ext",
                                                "BL-DED-Brizzyne-842123954-2317.jpg")))

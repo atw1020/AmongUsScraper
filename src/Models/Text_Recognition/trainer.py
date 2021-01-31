@@ -26,13 +26,10 @@ def get_vocab(directory):
     :return: vocabulary from the directory
     """
 
-    files = os.listdir(os.path.join(directory,
-                                    "ext"))
-
-    # get the names of all the players
-    names = [file.split("-")[2] for file in files]
+    names = text_utils.get_names(directory)
 
     return text_utils.get_vocab(names)
+
 
 def train_model(dataset, test_data, vocab):
     """
@@ -64,10 +61,10 @@ def get_model_vocab():
 
     # get the vocabularies
     train_vocab = get_vocab(os.path.join("Data",
-                                         "Meeting namer",
+                                         "Meeting Identifier",
                                          "Training Data"))
     test_vocab = get_vocab(os.path.join("Data",
-                                        "Meeting namer",
+                                        "Meeting Identifier",
                                         "Test Data"))
 
     return text_utils.merge_vocab((train_vocab, test_vocab))

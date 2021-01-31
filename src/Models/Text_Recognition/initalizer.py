@@ -111,7 +111,7 @@ def main():
     """
 
     labels = trainer.get_vocab(os.path.join("Data",
-                                            "Meeting namer",
+                                            "Meeting Identifier",
                                             "Training data"))
 
     model = init_nn(labels)

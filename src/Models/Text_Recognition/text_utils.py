@@ -4,6 +4,8 @@ Author: Arthur Wesley
 
 """
 
+import os
+
 import numpy as np
 
 from src import constants
@@ -35,41 +37,6 @@ def reverse_vocab(vocab):
     return {v: k for k, v in vocab.items()}
 
 
-def pad_string(st):
-    """
-
-    pad the string with spaces
-
-    :param st: string to pad
-    :return: padded string
-    """
-
-    if len(st) > 10:
-        print(st)
-
-    assert len(st) <= 10
-
-    return st + " " * (constants.name_length - len(st))
-
-
-def label_from_string(st, vocab):
-    """
-
-    generates a numpy label containing
-
-    :param st: string to parametrize
-    :param vocab: vocabulary
-    :return:
-    """
-
-    result = np.zeros((constants.name_length, len(vocab)))
-
-    for i in range(len(st)):
-        result[i][vocab[st[i]]] = 1
-
-    return result
-
-
 def merge_vocab(vocabs):
     """
 
@@ -84,6 +51,21 @@ def merge_vocab(vocabs):
     return {char: i for i, char in enumerate(vocab)}
 
 
+def get_names(directory):
+    """
+
+    get the names of all the players in a specified directory
+
+    :param directory: directory to get the data from
+    :return: names of all the players
+    """
+
+    files = os.listdir(directory)
+
+    # get the names of all the players
+    return [file.split("-")[2] for file in files]
+
+
 def main():
     """
 
@@ -91,8 +73,6 @@ def main():
 
     :return:
     """
-
-    print(pad_string("street "), ":D", sep="")
 
 
 if __name__ == "__main__":
