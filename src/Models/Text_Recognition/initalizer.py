@@ -46,11 +46,14 @@ def init_nn(vocab):
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
+    pooling = layers.MaxPooling2D(pool_size=2,
+                                  strides=2)(batch_norm)
+
     convolution = layers.Conv2D(filters=64,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(batch_norm)
+                                padding="same")(pooling)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
@@ -95,7 +98,7 @@ def init_nn(vocab):
 
     opt = Adam(lr=0.001)
 
-    model.compile(loss="sparse_categorical_crossentropy",
+    model.compile(loss="categorical_crossentropy",
                   optimizer=opt,
                   metrics=["accuracy"])
 
@@ -116,7 +119,7 @@ def main():
 
     model = init_nn(labels)
     model.summary()
-    plot_model(model, to_file="RNN.png")
+    # plot_model(model, to_file="RNN.png")
 
 
 if __name__ == "__main__":
