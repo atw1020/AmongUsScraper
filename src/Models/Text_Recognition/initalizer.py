@@ -23,15 +23,18 @@ def init_nn(vocab):
     :return: initialized model
     """
 
-    vocab_size = len(vocab.keys())
+    # plus two for the
+    vocab_size = len(vocab.keys()) + 2
 
-    input_layer = layers.Input(shape=constants.meeting_dimensions + (3,))
+    # CNN
+
+    image_input_layer = layers.Input(shape=constants.meeting_dimensions + (3,))
 
     convolution = layers.Conv2D(filters=16,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(input_layer)
+                                padding="same")(image_input_layer)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
@@ -61,36 +64,40 @@ def init_nn(vocab):
 
     flatten = layers.Flatten()(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(flatten)
+    CNN_output = layers.BatchNormalization()(dropout)
+
+    # RNN input layer
+    rnn_input = layers.Input(shape=(None, vocab_size))
+
+    LSTM = layers.LSTM(252,
+                       activation="relu",
+                       return_sequences=True)(rnn_input)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    repeat = layers.RepeatVector(constants.name_length)(batch_norm)
+    LSTM = layers.LSTM(252,
+                       activation="relu",
+                       return_sequences=False)(batch_norm)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
+    RNN_output = layers.BatchNormalization()(dropout)
 
-    GRU = layers.SimpleRNN(256,
-                           input_shape=(None, dropout.type_spec.shape[1]),
-                           activation="relu",
-                           return_sequences=True)(repeat)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
-    batch_norm = layers.BatchNormalization()(dropout)
+    concatenate = layers.Concatenate()([CNN_output, RNN_output])
 
-    GRU = layers.SimpleRNN(128,
-                           input_shape=(None, dropout.type_spec.shape[1]),
-                           activation="relu",
-                           return_sequences=True)(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
-    batch_norm = layers.BatchNormalization()(dropout)
+    dense = layers.Dense(units=256,
+                         activation="sigmoid")(concatenate)
 
-    dense = layers.Dense(units=vocab_size,
-                         activation="sigmoid")(batch_norm)
+    output = layers.Dense(units=vocab_size,
+                          activation="sigmoid")(dense)
 
-    model = Model(inputs=input_layer,
-                  outputs=dense,
+    model = Model(inputs=[image_input_layer, rnn_input],
+                  outputs=output,
                   name="Text_Reader")
 
-    opt = Adam(lr=0.01)
+    opt = Adam(lr=0.001)
 
-    model.compile(loss="binary_crossentropy",
+    model.compile(loss="categorical_crossentropy",
                   optimizer=opt,
-                  metrics=["binary_accuracy"])
+                  metrics=["categorical_accuracy"])
 
     return model
 

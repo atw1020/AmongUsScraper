@@ -32,7 +32,10 @@ def main():
                                                "Meeting namer",
                                                "Training Data",
                                                "ext",
-                                               "BK-DED-yan-829611887-472.jpg")))
+                                               "BL-DED-Brizzyne-842123954-2317.jpg")))
+
+    # "  335433.."
+    # "  335433.."
 
     image = image.reshape((1,) + image.shape)
 
@@ -40,6 +43,7 @@ def main():
     text = "".join([vocab_reverse[char] for char in result[0]])
 
     print(text)
+    print(model.predict(image))
 
 
 if __name__ == "__main__":

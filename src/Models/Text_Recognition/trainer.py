@@ -10,6 +10,7 @@ import numpy as np
 
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
+from tensorflow.keras.losses import CategoricalCrossentropy
 
 from src import constants
 from src.Models.Text_Recognition import initalizer
@@ -70,7 +71,8 @@ def gen_dataset(directory, vocab=None):
 
     return image_dataset_from_directory(directory,
                                         labels=labels,
-                                        image_size=constants.meeting_dimensions), vocab
+                                        image_size=constants.meeting_dimensions,
+                                        shuffle=False), vocab
 
 
 def train_model(dataset, test_data, vocab):
@@ -88,7 +90,7 @@ def train_model(dataset, test_data, vocab):
 
     model.fit(dataset,
               validation_data=test_data,
-              epochs=5)
+              epochs=50)
 
     return model
 
@@ -125,10 +127,24 @@ def main():
     # get the datasets
     training_data, vocab = gen_dataset(os.path.join("Data",
                                                     "Meeting namer",
-                                                    "Test Data"), vocab)
+                                                    "Training Data"), vocab)
     test_data, vocab = gen_dataset(os.path.join("Data",
                                                 "Meeting namer",
                                                 "Test Data"), vocab)
+
+    for x, y in training_data:
+        print(np.argmax(y, axis=2))
+
+        model = initalizer.init_nn(vocab)
+
+        predictions = model.predict(x)
+
+        loss_fn = CategoricalCrossentropy()
+        loss = loss_fn(y, predictions)
+
+        print(loss.numpy())
+
+        return 0
 
     # train the model
     model = train_model(training_data, test_data, vocab)
