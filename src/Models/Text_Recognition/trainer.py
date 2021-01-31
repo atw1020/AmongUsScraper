@@ -6,15 +6,10 @@ Author: Arthur Wesley
 
 import os
 
-import numpy as np
-
-from tensorflow.keras.preprocessing import image_dataset_from_directory
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
-from tensorflow.keras.losses import CategoricalCrossentropy
-
 from src import constants
 from src.Models.Text_Recognition import initalizer
 from src.Models.Text_Recognition import text_utils
+from src.Models.Text_Recognition import generator
 
 
 def get_vocab(directory):
@@ -80,8 +75,12 @@ def main():
 
     vocab = get_model_vocab()
 
+    training_data = generator.generator(os.path.join("Data",
+                                                     "Meeting Identifier",
+                                                     "Training Data"), vocab)
+
     # train the model
-    model = train_model(training_data, test_data, vocab)
+    model = train_model(training_data, None, vocab)
     model.save(constants.text_recognition)
 
 

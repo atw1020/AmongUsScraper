@@ -103,7 +103,7 @@ def get_character_label(st, index, vocab):
 
     vocab_size = len(vocab.keys()) + 2
 
-    if index > len(st):
+    if index >= len(st):
         # if the index is out of bounds, the character must be a null terminator
         char_index = vocab_size - 1
     else:

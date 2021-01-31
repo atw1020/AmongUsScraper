@@ -6,6 +6,7 @@ data generator
 
 import os
 
+import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 from src import constants
@@ -67,6 +68,46 @@ def generator(directory, vocab):
             yield (x1, x2), y
 
             j += 1
+            """
+            
+            expected: 
+            
+                ((TensorSpec(shape=(45, 220, 3), dtype=tf.int8, name=None), 
+                RaggedTensorSpec(TensorShape([None, 60]), tf.int8, 1, tf.int64)), 
+                TensorSpec(shape=(60,), dtype=tf.int8, name=None))
+                
+            got:
+            
+                ((TensorSpec(shape=(45, 220, 3), dtype=tf.int8, name=None), 
+                  TensorSpec(shape=(1, 60), dtype=tf.float64, name=None)), 
+                  TensorSpec(shape=(60,), dtype=tf.int8, name=None))
+            
+            """
+
+
+def gen_dataset(path, batch_size=32):
+    """
+
+    generate a dataset
+
+    :param path: the path to the directory to generate the dataset from
+    batch_size: the size of the batch to generate
+    :return: dataset
+    """
+
+    vocab = text_utils.get_vocab(text_utils.get_names(path))
+
+    vocab_size = len(vocab.keys()) + 2
+
+    dataset = tf.data.Dataset.from_generator(lambda: generator(path, vocab),
+                                             output_signature=((tf.TensorSpec(shape=constants.meeting_dimensions + (3,),
+                                                                              dtype=tf.int8),
+                                                                tf.TensorSpec(shape=(None, 60),
+                                                                              dtype=tf.float64)),
+                                                               tf.TensorSpec(shape=vocab_size,
+                                                                             dtype=tf.int8)))
+
+    return dataset.batch(batch_size)
 
 
 def main():
@@ -77,13 +118,9 @@ def main():
     :return:
     """
 
-    vocab = text_utils.get_vocab(text_utils.get_names(os.path.join("Data",
-                                                                   "Meeting Identifier",
-                                                                   "Training Data")))
-
-    gen = generator(os.path.join("Data",
-                                 "Meeting Identifier",
-                                 "Training Data"), vocab)
+    gen_dataset(os.path.join("Data",
+                             "Meeting Identifier",
+                             "Training Data"))
 
 
 if __name__ == "__main__":
