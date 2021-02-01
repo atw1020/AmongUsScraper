@@ -33,12 +33,13 @@ def init_nn(vocab):
     # CNN
 
     image_input_layer = layers.Input(shape=constants.meeting_dimensions + (3,))
+    batch_norm = layers.BatchNormalization()(image_input_layer)
 
     convolution = layers.Conv2D(filters=16,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(image_input_layer)
+                                padding="same")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
