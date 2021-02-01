@@ -13,6 +13,7 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 from src import constants
 from src.Models.Text_Recognition.trainer import get_model_vocab
+from src.Models.Text_Recognition import text_utils
 
 
 def read_img(img_path, vocab):
@@ -31,30 +32,33 @@ def read_img(img_path, vocab):
 
     vocab_size = len(vocab.keys()) + 2
 
-    print(vocab)
-    print(vocab_size)
-
     # initialize the text tensor
-    text_tensor = np.zeros((1, vocab_size))
-    text_tensor[0][-2] = 1
+    text_tensor = np.zeros((1, 1, vocab_size))
+    text_tensor[0][0][-2] = 1
 
     # load the model
     model = load_model(constants.text_recognition)
-    model.summary()
 
     # loop through the characters
-    while text_tensor[-1][-1] != 1:
-
-        print(image.shape)
-        print(text_tensor.shape)
+    while text_tensor[0][-1][-1] != 1:
 
         # get the next character
-        next_char = model.predict([image, text_tensor])
+        char_index = np.argmax(model.predict([image, text_tensor]))
+
+        next_char = np.zeros((1, 1, vocab_size))
+        next_char[0][0][char_index] = 1
 
         # concatenate the new character
-        text_tensor = np.concatenate([text_tensor, next_char], axis=0)
+        text_tensor = np.concatenate([text_tensor, next_char],
+                                     axis=1)
 
-        print(text_tensor.shape)
+    # get the specific characters using argmax
+    chars = np.argmax(text_tensor, axis=2)[0][1:-1]
+
+    # reverse the vocab
+    reverse_vocab = text_utils.reverse_vocab(vocab)
+
+    return "".join([reverse_vocab[char] for char in chars])
 
 
 def main():
@@ -67,10 +71,12 @@ def main():
 
     vocab = get_model_vocab()
 
-    read_img(os.path.join("Data",
-                          "Meeting Identifier",
-                          "Training Data",
-                          "BL-DED-Deluxe 4-840885731-1506.jpg"), vocab)
+    text = read_img(os.path.join("Data",
+                                 "Meeting Identifier",
+                                 "Training Data",
+                                 "CY-LIV-Blaustoise-845808011-3585.jpg"), vocab)
+
+    print('outputs "', text, '"', sep="")
 
 
 if __name__ == "__main__":

@@ -76,13 +76,13 @@ def main():
     vocab = get_model_vocab()
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
-                                                       "Meeting Identifier",
-                                                       "Training Data"),
+                                                            "Meeting Identifier",
+                                                            "Training Data"),
                                                vocab=vocab)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
-                                                   "Meeting Identifier",
-                                                   "Test Data"),
+                                                        "Meeting Identifier",
+                                                        "Test Data"),
                                            vocab=vocab)
 
     # train the model

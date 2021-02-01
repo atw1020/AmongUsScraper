@@ -107,7 +107,7 @@ def init_nn(vocab):
                   outputs=output,
                   name="Text_Reader")
 
-    opt = Adam(lr=0.0003)
+    opt = Adam(lr=0.0001)
 
     model.compile(loss="categorical_crossentropy",
                   optimizer=opt,
