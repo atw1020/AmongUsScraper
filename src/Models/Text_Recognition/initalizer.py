@@ -23,6 +23,10 @@ def init_nn(vocab):
     :return: initialized model
     """
 
+    LSTM_units = 256
+    kernel_sizes = []
+    strides = []
+
     # plus two for the start and end tokens
     vocab_size = len(vocab.keys()) + 2
 
@@ -46,11 +50,14 @@ def init_nn(vocab):
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
+    pooling = layers.MaxPooling2D(pool_size=2,
+                                  strides=2)(batch_norm)
+
     convolution = layers.Conv2D(filters=64,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(batch_norm)
+                                padding="same")(pooling)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
@@ -70,18 +77,23 @@ def init_nn(vocab):
     # RNN input layer
     rnn_input = layers.Input(shape=(None, vocab_size))
 
-    LSTM = layers.LSTM(252,
+    LSTM = layers.LSTM(LSTM_units,
                        activation="relu",
                        return_sequences=True)(rnn_input)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    LSTM = layers.LSTM(252,
+    LSTM = layers.LSTM(LSTM_units,
                        activation="relu",
                        return_sequences=False)(batch_norm)
 
     concatenate = layers.Concatenate()([flatten, LSTM])
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(concatenate)
+    batch_norm = layers.BatchNormalization()(dropout)
+
+    dense = layers.Dense(units=256,
+                         activation="sigmoid")(batch_norm)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(dense)
     batch_norm = layers.BatchNormalization()(dropout)
 
     dense = layers.Dense(units=256,
@@ -96,7 +108,7 @@ def init_nn(vocab):
                   outputs=output,
                   name="Text_Reader")
 
-    opt = Adam(lr=0.003)
+    opt = Adam(lr=0.001)
 
     model.compile(loss="categorical_crossentropy",
                   optimizer=opt,

@@ -41,7 +41,7 @@ def train_model(dataset, test_data, vocab):
 
     model.fit(dataset,
               validation_data=test_data,
-              epochs=200)
+              epochs=100)
 
     return model
 
@@ -88,6 +88,10 @@ def main():
     # train the model
     model = train_model(training_data, test_data, vocab)
     model.save(constants.text_recognition)
+
+    # 3.0222 at 20 w/ learning rate 0.003
+    # 1.5839 at 20 w/ learning rate 0.001
+    # 2.2448 at 20 w/ learning rate of 0.0003
 
 
 if __name__ == "__main__":
