@@ -8,11 +8,12 @@ import os
 
 import numpy as np
 
-from tensorflow.keras.preprocessing.image import img_to_array, load_img
 from tensorflow.keras.models import load_model
+from tensorflow.keras.metrics import CategoricalAccuracy
+from tensorflow.keras.preprocessing.image import img_to_array, load_img
 
 from src import constants
-from src.Models.Text_Recognition import trainer, text_utils
+from src.Models.Text_Recognition import trainer, text_utils, data_generator
 
 
 def main():
@@ -24,26 +25,26 @@ def main():
     """
 
     vocab = trainer.get_model_vocab()
-    vocab_reverse = text_utils.reverse_vocab(vocab)
 
     model = load_model(constants.text_recognition)
 
-    image = img_to_array(load_img(os.path.join("Data",
-                                               "Meeting Identifier",
-                                               "Training Data",
-                                               "ext",
-                                               "BL-DED-Brizzyne-842123954-2317.jpg")))
+    training_data = data_generator.gen_dataset(os.path.join("Data",
+                                                            "Meeting Identifier",
+                                                            "Test Data"),
+                                               vocab=vocab,
+                                               shuffle=False)
 
-    # "  335433.."
-    # "  335433.."
+    for x, y in training_data:
 
-    image = image.reshape((1,) + image.shape)
+        # create the accuracy evaluation object
+        accuracy = CategoricalAccuracy()
 
-    result = np.argmax(model.predict(image), axis=2)
-    text = "".join([vocab_reverse[char] for char in result[0]])
+        # make a prediction and update the state of the accuracy using it
+        prediction = model.predict(x)
+        accuracy.update_state(y, prediction)
 
-    print(text)
-    print(model.predict(image))
+        print("sequences of length", x[1].shape[1],
+              "had an accuracy of", accuracy.result().numpy())
 
 
 if __name__ == "__main__":

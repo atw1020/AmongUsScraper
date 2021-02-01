@@ -6,6 +6,8 @@ data generator
 
 import os
 
+import numpy as np
+
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
@@ -97,7 +99,10 @@ def generator(directory, substring_len, vocab):
         j += 1
 
 
-def gen_dataset_batchless(path, substring_len, vocab, batch_size):
+def gen_dataset_batchless(path,
+                          substring_len,
+                          vocab,
+                          batch_size):
     """
 
     generate a dataset
@@ -125,7 +130,10 @@ def gen_dataset_batchless(path, substring_len, vocab, batch_size):
     return dataset.batch(batch_size)
 
 
-def gen_dataset(path, batch_size=32, vocab=None):
+def gen_dataset(path,
+                batch_size=32,
+                vocab=None,
+                shuffle=True):
     """
 
     generate a dataset in batches
@@ -133,13 +141,17 @@ def gen_dataset(path, batch_size=32, vocab=None):
     :param path: path to the directory to get the dataset from
     :param batch_size: size of the batches to generate
     :param vocab: vocabulary to use
+    :param shuffle: whether or not to shuffle the dataset
     :return: dataset with batches
     """
 
     if vocab is None:
         vocab = text_utils.get_vocab(text_utils.get_names(path))
 
-    datasets = [gen_dataset_batchless(path, i, vocab, batch_size) for i in range(constants.name_length)]
+    datasets = [gen_dataset_batchless(path,
+                                      i,
+                                      vocab,
+                                      batch_size) for i in range(constants.name_length)]
 
     # concatenate the datasets
     dataset = datasets[0]
@@ -149,7 +161,10 @@ def gen_dataset(path, batch_size=32, vocab=None):
 
     # shuffle the dataset
 
-    return dataset.shuffle(buffer_size=8 * batch_size)
+    if shuffle:
+        return dataset.shuffle(buffer_size=8 * batch_size)
+    else:
+        return dataset
 
 
 def main():
@@ -160,12 +175,18 @@ def main():
     :return:
     """
 
-    dataset = gen_dataset(os.path.join("Data",
-                                             "Meeting Identifier",
-                                             "Training Data"))
+    path = os.path.join("Data",
+                        "Meeting Identifier",
+                        "Training Data")
 
-    for (x1, x2), y in dataset:
-        print(x2.shape)
+    gen = generator(path,
+                    0,
+                    text_utils.get_vocab(text_utils.get_names(path)))
+
+    for (x1, x2), y in gen:
+        print(x2)
+        print(y)
+        break
 
 
 if __name__ == "__main__":

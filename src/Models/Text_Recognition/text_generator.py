@@ -74,7 +74,7 @@ def main():
     text = read_img(os.path.join("Data",
                                  "Meeting Identifier",
                                  "Training Data",
-                                 "CY-LIV-Blaustoise-845808011-3585.jpg"), vocab)
+                                 "RD-DED-Ze-838252205-1388.jpg"), vocab)
 
     print('outputs "', text, '"', sep="")
 

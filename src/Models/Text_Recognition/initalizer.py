@@ -49,14 +49,11 @@ def init_nn(vocab):
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2)(batch_norm)
-
     convolution = layers.Conv2D(filters=64,
                                 kernel_size=5,
                                 strides=2,
                                 activation="relu",
-                                padding="same")(pooling)
+                                padding="same")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
@@ -68,20 +65,20 @@ def init_nn(vocab):
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    pooling = layers.MaxPooling2D(pool_size=2,
-                                  strides=2)(batch_norm)
-
-    flatten = layers.Flatten()(pooling)
+    flatten = layers.Flatten()(batch_norm)
 
     dense = layers.Dense(units=LSTM_units,
                          activation="relu")(flatten)
 
     # RNN input layer
-    rnn_input = layers.Input(shape=(None, vocab_size))
+    rnn_input = layers.Input(shape=(None,))
+
+    embedding = layers.Embedding(input_dim=vocab_size,
+                                 output_dim=256)(rnn_input)
 
     LSTM = layers.LSTM(LSTM_units,
                        activation="relu",
-                       return_sequences=True)(rnn_input)
+                       return_sequences=True)(embedding)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
     batch_norm = layers.BatchNormalization()(dropout)
 
@@ -103,8 +100,10 @@ def init_nn(vocab):
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(dense)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    output = layers.Dense(units=vocab_size,
-                          activation="sigmoid")(batch_norm)
+    dense = layers.Dense(units=vocab_size,
+                         activation="sigmoid")(batch_norm)
+
+    output = layers.Softmax()(dense)
 
     model = Model(inputs=[image_input_layer, rnn_input],
                   outputs=output,
