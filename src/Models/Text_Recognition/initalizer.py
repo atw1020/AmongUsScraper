@@ -73,6 +73,9 @@ def init_nn(vocab):
 
     flatten = layers.Flatten()(pooling)
 
+    dense = layers.Dense(units=LSTM_units,
+                         activation="relu")(flatten)
+
     # RNN input layer
     rnn_input = layers.Input(shape=(None, vocab_size))
 
@@ -86,17 +89,17 @@ def init_nn(vocab):
                        activation="relu",
                        return_sequences=False)(batch_norm)
 
-    concatenate = layers.Concatenate()([flatten, LSTM])
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(concatenate)
+    add = layers.Add()([LSTM, dense])
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(add)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    dense = layers.Dense(units=256,
-                         activation="sigmoid")(batch_norm)
+    dense = layers.Dense(units=LSTM_units,
+                         activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(dense)
     batch_norm = layers.BatchNormalization()(dropout)
 
-    dense = layers.Dense(units=256,
-                         activation="sigmoid")(batch_norm)
+    dense = layers.Dense(units=LSTM_units,
+                         activation="relu")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(dense)
     batch_norm = layers.BatchNormalization()(dropout)
 
@@ -111,7 +114,7 @@ def init_nn(vocab):
 
     model.compile(loss="categorical_crossentropy",
                   optimizer=opt,
-                  metrics=["accuracy"])
+                  metrics=["categorical_accuracy"])
 
     return model
 

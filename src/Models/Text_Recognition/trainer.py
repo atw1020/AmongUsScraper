@@ -41,7 +41,7 @@ def train_model(dataset, test_data, vocab):
 
     model.fit(dataset,
               validation_data=test_data,
-              epochs=50)
+              epochs=80)
 
     return model
 
