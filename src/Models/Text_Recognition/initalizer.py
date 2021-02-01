@@ -23,9 +23,7 @@ def init_nn(vocab):
     :return: initialized model
     """
 
-    LSTM_units = 256
-    kernel_sizes = []
-    strides = []
+    LSTM_units = 512
 
     # plus two for the start and end tokens
     vocab_size = len(vocab.keys()) + 2
@@ -109,7 +107,7 @@ def init_nn(vocab):
                   outputs=output,
                   name="Text_Reader")
 
-    opt = Adam(lr=0.001)
+    opt = Adam(lr=0.0003)
 
     model.compile(loss="categorical_crossentropy",
                   optimizer=opt,

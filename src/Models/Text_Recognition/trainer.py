@@ -9,7 +9,7 @@ import os
 from src import constants
 from src.Models.Text_Recognition import initalizer
 from src.Models.Text_Recognition import text_utils
-from src.Models.Text_Recognition import generator
+from src.Models.Text_Recognition import data_generator
 
 
 def get_vocab(directory):
@@ -41,7 +41,7 @@ def train_model(dataset, test_data, vocab):
 
     model.fit(dataset,
               validation_data=test_data,
-              epochs=200)
+              epochs=50)
 
     return model
 
@@ -75,15 +75,15 @@ def main():
 
     vocab = get_model_vocab()
 
-    training_data = generator.gen_dataset(os.path.join("Data",
+    training_data = data_generator.gen_dataset(os.path.join("Data",
                                                        "Meeting Identifier",
                                                        "Training Data"),
-                                          vocab=vocab)
+                                               vocab=vocab)
 
-    test_data = generator.gen_dataset(os.path.join("Data",
+    test_data = data_generator.gen_dataset(os.path.join("Data",
                                                    "Meeting Identifier",
                                                    "Test Data"),
-                                      vocab=vocab)
+                                           vocab=vocab)
 
     # train the model
     model = train_model(training_data, test_data, vocab)
