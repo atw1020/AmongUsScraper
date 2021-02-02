@@ -26,6 +26,54 @@ def get_vocab(directory):
     return text_utils.get_vocab(names)
 
 
+def train_random_model(training_data,
+                       test_data,
+                       vocab,
+                       repeats=10):
+    """
+
+    train a randomly generated model
+
+    :param training_data: dataset to train on
+    :param test_data: testing data
+    :param vocab: vocabulary
+    :param repeats: number of times to repeat the experiment
+    :return: None
+    """
+
+    hyperparameters = initalizer.get_random_hyperparameters()
+
+    keys = sorted(hyperparameters.keys())
+    print(", ".join(keys), "training accuracy", "test accuracy", sep=", ")
+
+    for i in range(repeats):
+
+        while True:
+            try:
+                model, kwargs = initalizer.init_random_nn(vocab)
+                break
+            except ValueError:
+                continue
+
+        print(", ".join([str(kwargs[key]) for key in keys]))
+
+        # fit the model
+        model.fit(training_data,
+                  validation_data=test_data,
+                  epochs=100)
+
+        training_accuracy = model.evaluate(training_data)[1]
+        test_accuracy = model.evaluate(test_data)[1]
+
+        # print the values
+        print(", ".join([str(kwargs[key]) for key in keys]),
+              training_accuracy,
+              test_accuracy,
+              sep=", ")
+
+        input("process completed, press any key to continue...")
+
+
 def train_model(dataset, test_data, vocab):
     """
 
@@ -86,8 +134,13 @@ def main():
                                            vocab=vocab)
 
     # train the model
-    model = train_model(training_data, test_data, vocab)
-    model.save(constants.text_recognition)
+
+    train_random_model(training_data,
+                       test_data,
+                       vocab)
+
+    # model = train_model(training_data, test_data, vocab)
+    # model.save(constants.text_recognition)
 
 
 if __name__ == "__main__":

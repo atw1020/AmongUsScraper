@@ -5,22 +5,65 @@ Author: Arthur Wesley
 """
 
 import os
+import random
 
 from tensorflow.keras import Model
 from tensorflow.keras import layers
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras import backend as K
 
 from src import constants
 from src.Models.Text_Recognition import trainer
 
 
+def repeat_vector(args):
+    layer_to_repeat = args[0]
+    sequence_layer = args[1]
+    return layers.RepeatVector(K.shape(sequence_layer)[1])(layer_to_repeat)
+
+
+def get_random_hyperparameters():
+    """
+
+    generate a random set of hyperparameters for the neural network
+
+    :return: random set of hyperparameters
+    """
+
+    return {
+        "conv_size": random.randint(3, 15),
+        "conv_stride": random.randint(2, 5),
+        "pool_1": random.randint(0, 1),
+        "pool_2": random.randint(0, 1),
+        "early_merge": random.randint(0, 1),
+        "lstm_breadth": 2 ** random.randint(6, 10),
+        "lstm_depth": random.randint(1, 2),
+        "end_breadth": 2 ** random.randint(6, 10),
+        "end_depth": random.randint(1, 5),
+        "lr": 10 ** (2 * random.random() - 4)
+    }
+
+
+def init_random_nn(vocab):
+    """
+
+    initializes a neural network with random hyper-parameters
+
+    :param vocab: vocab to create the neural network for
+    :return: tuple of the network and a dictionary of its hyperparameters
+    """
+
+    kwargs = get_random_hyperparameters()
+    return init_nn(vocab, **kwargs), kwargs
+
+
 def init_nn(vocab,
             conv_size=5,
             conv_stride=2,
-            pool_1=False,
-            pool_2=False,
-            early_merge=False,
+            pool_1=0,
+            pool_2=0,
+            early_merge=0,
             lstm_breadth=512,
             lstm_depth=2,
             end_breadth=512,
@@ -45,7 +88,16 @@ def init_nn(vocab,
     :return: initialized model
     """
 
-    # plus two for the start and end tokens
+    # reset the session
+    K.clear_session()
+
+    # convert booleans from integers to booleans
+    pool_1 = bool(pool_1)
+    pool_2 = bool(pool_2)
+
+    early_merge = bool(early_merge)
+
+    # get the size of the vocabulary
     vocab_size = len(vocab.keys()) + 2
 
     # CNN
@@ -99,28 +151,47 @@ def init_nn(vocab,
 
     flatten = layers.Flatten()(temp)
 
-    dense = layers.Dense(units=lstm_breadth,
-                         activation="relu")(flatten)
-
     # RNN input layer
     rnn_input = layers.Input(shape=(None,))
 
     embedding = layers.Embedding(input_dim=vocab_size,
                                  output_dim=256)(rnn_input)
 
-    for i in range(1 - lstm_depth):
+    if early_merge:
+
+        flatten_size = flatten.type_spec.shape[1]
+
+        # repeat the flatten vector
+        repeat = layers.Lambda(repeat_vector,
+                               output_shape=(None, flatten_size))([flatten, embedding])
+
+        # concatenate the embedding and repeat
+        concatenate = layers.Concatenate()([embedding, repeat])
+        temp = concatenate
+
+    else:
+        temp = embedding
+
+    for i in range(lstm_depth - 1):
         LSTM = layers.LSTM(lstm_breadth,
                            activation="relu",
-                           return_sequences=True)(embedding)
+                           return_sequences=True)(temp)
         dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
         batch_norm = layers.BatchNormalization()(dropout)
 
+        temp = batch_norm
+
     LSTM = layers.LSTM(lstm_breadth,
                        activation="relu",
-                       return_sequences=False)(batch_norm)
+                       return_sequences=False)(temp)
 
-    add = layers.Add()([LSTM, dense])
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(add)
+    if not early_merge:
+        concatenate = layers.Concatenate()([LSTM, flatten])
+        temp = concatenate
+    else:
+        temp = LSTM
+
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(temp)
     batch_norm = layers.BatchNormalization()(dropout)
 
     for i in range(end_depth):

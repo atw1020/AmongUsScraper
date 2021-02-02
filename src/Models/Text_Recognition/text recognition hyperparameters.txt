@@ -1,0 +1,1 @@
+conv_size, conv_stride, early_merge, end_breadth, end_depth, lr, lstm_breadth, lstm_depth, pool_1, pool_2, training accuracy, test accuracy

@@ -56,7 +56,7 @@ def main():
                                                shuffle=False)
 
     model = load_model(constants.text_recognition)
-    model.evaluate(training_data)
+    print(model.evaluate(training_data))
 
     # training accuracy: 0.2579
     # no duplicates accuracy: 0.2313
