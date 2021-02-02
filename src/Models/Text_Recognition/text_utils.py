@@ -77,17 +77,7 @@ def get_string_input_data(st, vocab):
     # add two to the vocab size for the start and end characters
     vocab_size = len(vocab.keys()) + 2
 
-    # create an array of zeros
-    zeros = np.zeros((len(st) + 1, vocab_size))
-
-    # the first item in the zeros array is the the start character
-    zeros[0][vocab_size - 2] = 1
-
-    # go through the string and specify the remaining characters
-    for i, char in enumerate(st):
-        zeros[i + 1][vocab[char]] = 1
-
-    return zeros
+    return np.array([vocab_size - 2] + [vocab[char] for char in st])
 
 
 def get_character_label(st, index, vocab):
@@ -105,15 +95,10 @@ def get_character_label(st, index, vocab):
 
     if index >= len(st):
         # if the index is out of bounds, the character must be a null terminator
-        char_index = vocab_size - 1
+        return vocab_size - 1
     else:
         # the character index come from the dictionary
-        char_index = vocab[st[index]]
-
-    zeros = np.zeros(vocab_size)
-    zeros[char_index] = 1
-
-    return zeros
+        return vocab[st[index]]
 
 
 def main():

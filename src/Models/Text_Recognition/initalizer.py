@@ -111,9 +111,9 @@ def init_nn(vocab):
 
     opt = Adam(lr=0.0001)
 
-    model.compile(loss="categorical_crossentropy",
+    model.compile(loss="sparse_categorical_crossentropy",
                   optimizer=opt,
-                  metrics=["categorical_accuracy"])
+                  metrics=["accuracy"])
 
     return model
 

@@ -119,9 +119,9 @@ def gen_dataset_batchless(path,
     dataset = tf.data.Dataset.from_generator(lambda: generator(path, substring_len, vocab),
                                              output_signature=((tf.TensorSpec(shape=constants.meeting_dimensions + (3,),
                                                                               dtype=tf.int8),
-                                                                tf.TensorSpec(shape=(None, vocab_size),
+                                                                tf.TensorSpec(shape=(None,),
                                                                               dtype=tf.float64)),
-                                                               tf.TensorSpec(shape=vocab_size,
+                                                               tf.TensorSpec(shape=(),
                                                                              dtype=tf.int8)))
 
     # now that we have the dataset, split it into many datasets where each contains inputs
@@ -179,11 +179,9 @@ def main():
                         "Meeting Identifier",
                         "Training Data")
 
-    gen = generator(path,
-                    0,
-                    text_utils.get_vocab(text_utils.get_names(path)))
+    dataset = gen_dataset(path)
 
-    for (x1, x2), y in gen:
+    for (x1, x2), y in dataset:
         print(x2)
         print(y)
         break
