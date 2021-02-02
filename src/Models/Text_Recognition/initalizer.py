@@ -20,20 +20,25 @@ def init_nn(vocab,
             conv_stride=2,
             pool_1=False,
             pool_2=False,
+            early_merge=False,
             lstm_breadth=512,
-            end_depth=2,
+            lstm_depth=2,
             end_breadth=512,
+            end_depth=2,
             lr=0.001):
     """
 
     creates the neural network
 
+    :param early_merge: whether or not to merge the text and image networks before or
+                        after the LSTM
     :param pool_2: whether or not to use the first pooling layer
     :param pool_1: whether or not to use the second pooling layer
     :param conv_stride: stride of each convolution
     :param conv_size: size of each convolution
     :param vocab: vocabulary to use
     :param lstm_breadth: number of units in the LSTM
+    :param lstm_depth: number of LSTM layers
     :param end_depth: number of layers at the end
     :param end_breadth: breadth of the last layers of the network
     :param lr: learning rate of the network
@@ -103,11 +108,12 @@ def init_nn(vocab,
     embedding = layers.Embedding(input_dim=vocab_size,
                                  output_dim=256)(rnn_input)
 
-    LSTM = layers.LSTM(lstm_breadth,
-                       activation="relu",
-                       return_sequences=True)(embedding)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
-    batch_norm = layers.BatchNormalization()(dropout)
+    for i in range(1 - lstm_depth):
+        LSTM = layers.LSTM(lstm_breadth,
+                           activation="relu",
+                           return_sequences=True)(embedding)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
+        batch_norm = layers.BatchNormalization()(dropout)
 
     LSTM = layers.LSTM(lstm_breadth,
                        activation="relu",

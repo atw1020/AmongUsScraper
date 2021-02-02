@@ -37,7 +37,7 @@ def train_model(dataset, test_data, vocab):
     :return: trained model
     """
 
-    model = initalizer.init_nn(vocab, conv_stride=stride)
+    model = initalizer.init_nn(vocab)
 
     model.fit(dataset,
               validation_data=test_data,
