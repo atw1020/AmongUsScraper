@@ -80,7 +80,7 @@ def get_string_input_data(st, vocab):
     return np.array([vocab_size - 2] + [vocab[char] for char in st])
 
 
-def get_character_label(st, index, vocab):
+def get_character_label(st, vocab):
     """
 
     gets a character's label from the specified vocabulary
@@ -93,14 +93,7 @@ def get_character_label(st, index, vocab):
 
     vocab_size = len(vocab.keys()) + 2
 
-    result = [vocab[st[i]] for i in range(index)]
-
-    if index >= len(st):
-        # if the index is out of bounds, the character must be a null terminator
-        return result + [vocab_size - 1]
-    else:
-        # the character index come from the dictionary
-        return result + [vocab[st[index]]]
+    return [vocab[char] for char in st] + [vocab_size - 1]
 
 
 def main():

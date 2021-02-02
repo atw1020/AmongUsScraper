@@ -85,7 +85,8 @@ def train_model(dataset, test_data, vocab):
     :return: trained model
     """
 
-    model = initalizer.init_nn(vocab)
+    model = initalizer.init_nn(vocab,
+                               lr=0.0003)
 
     model.fit(dataset,
               validation_data=test_data,
@@ -135,12 +136,12 @@ def main():
 
     # train the model
 
-    train_random_model(training_data,
-                       test_data,
-                       vocab)
+    # train_random_model(training_data,
+    #                    test_data,
+    #                    vocab)
 
-    # model = train_model(training_data, test_data, vocab)
-    # model.save(constants.text_recognition)
+    model = train_model(training_data, test_data, vocab)
+    model.save(constants.text_recognition)
 
 
 if __name__ == "__main__":
