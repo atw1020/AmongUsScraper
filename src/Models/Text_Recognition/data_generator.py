@@ -55,12 +55,13 @@ def get_name_length_indices(directory):
     return indices
 
 
-def generator(directory, vocab):
+def generator(directory, length, vocab):
     """
 
     generator, yields training data and test data
 
     :param directory: directory to get the images from
+    :param length: length of the substrings to generate a dataset for
     :param vocab: vocabulary to use
     :return:
     """
@@ -75,6 +76,9 @@ def generator(directory, vocab):
 
     j = 0
     while j < len(files):
+
+        if length != len(files[j]):
+            continue
 
         # ge the image
         x1 = img_to_array(load_img(os.path.join(directory,
@@ -93,20 +97,22 @@ def generator(directory, vocab):
         j += 1
 
 
-def gen_dataset(path,
-                vocab,
-                batch_size=32):
+def gen_dataset_batchless(path,
+                          length,
+                          vocab,
+                          batch_size):
     """
 
     generate a dataset
 
     :param path: the path to the directory to generate the dataset from
+    :param length: length of the strings to generate the dataset for
     :param vocab: vocabulary to use
     :param batch_size: size of the batches to divide the dataset into
     :return: dataset
     """
 
-    dataset = tf.data.Dataset.from_generator(lambda: generator(path, vocab),
+    dataset = tf.data.Dataset.from_generator(lambda: generator(path, length, vocab),
                                              output_signature=((tf.TensorSpec(shape=constants.meeting_dimensions + (3,),
                                                                               dtype=tf.int8),
                                                                 tf.TensorSpec(shape=(None,),
@@ -118,6 +124,43 @@ def gen_dataset(path,
     # of the same length
 
     return dataset.batch(batch_size)
+
+
+def gen_dataset(path,
+                batch_size=32,
+                vocab=None,
+                shuffle=True):
+    """
+
+    generate a dataset in batches
+
+    :param path: path to the directory to get the dataset from
+    :param batch_size: size of the batches to generate
+    :param vocab: vocabulary to use
+    :param shuffle: whether or not to shuffle the dataset
+    :return: dataset with batches
+    """
+
+    if vocab is None:
+        vocab = text_utils.get_vocab(text_utils.get_names(path))
+
+    datasets = [gen_dataset_batchless(path,
+                                      i,
+                                      vocab,
+                                      batch_size) for i in range(constants.name_length)]
+
+    # concatenate the datasets
+    dataset = datasets[0]
+
+    for ds in datasets[1:]:
+        dataset = dataset.concatenate(ds)
+
+    # shuffle the dataset
+
+    if shuffle:
+        return dataset.shuffle(buffer_size=8 * batch_size)
+    else:
+        return dataset
 
 
 def main():
