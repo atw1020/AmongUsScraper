@@ -196,9 +196,7 @@ def main():
                                     """
 
     crop_all_meetings(os.path.join("Data",
-                                   "Game Classifier",
-                                   "Test Data",
-                                   "Meeting"))
+                                   "Temp Images"))
 
 
 if __name__ == "__main__":

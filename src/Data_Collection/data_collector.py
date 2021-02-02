@@ -410,10 +410,11 @@ def main():
         print()
     """
 
-    collector = DataCollector("874833883",
+    collector = DataCollector("891553855",
                               step=20,
-                              end_transition_step=300)
-    collector.get_winners()
+                              end_transition_step=40)
+
+    collector.save_predictions()
 
 
 if __name__ == "__main__":

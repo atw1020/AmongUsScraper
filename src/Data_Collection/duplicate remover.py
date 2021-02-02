@@ -32,7 +32,7 @@ def is_end_screen(filename):
                "BN" in label or "CY" in label or "LM" in label
 
 
-def get_duplicates(end_screen, images):
+def get_end_duplicates(end_screen, images):
     """
 
     generates a list of images of the same end screen as end_screen based on the index
@@ -71,7 +71,7 @@ def get_duplicates(end_screen, images):
     return duplicates
 
 
-def remove_duplicates(directory):
+def remove_end_duplicates(directory):
     """
 
     removes all of the duplicate images from a given directory
@@ -91,7 +91,7 @@ def remove_duplicates(directory):
             continue
 
         if is_end_screen(file):
-            duplicates = get_duplicates(file, files)
+            duplicates = get_end_duplicates(file, files)
 
             # get the middle file
             middle = duplicates[int(len(duplicates) / 2)]
@@ -111,6 +111,48 @@ def remove_duplicates(directory):
             processed_files += duplicates
 
 
+def get_player_duplicates(player, images):
+    """
+
+    generate a list of all the images in images that also show the specified player
+
+    :param player: player name, color and living status to look for
+    :param images: images to look through
+    :return: list of duplicated images
+    """
+
+    status = "-".join(player.split("-")[:3])
+
+    return [image for image in images if status in image]
+
+
+def remove_player_duplicates(directory):
+    """
+
+    move all of the
+
+    :param directory:
+    :return:
+    """
+
+    files = os.listdir(directory)
+
+    i = 0
+
+    while i < len(files):
+
+        duplicates = get_player_duplicates(files[i], files[i:])
+
+        for duplicate in duplicates:
+            # remove the file
+            os.remove(os.path.join(directory, duplicate))
+
+            files.remove(duplicate)
+
+        i += 1
+
+
+
 def main():
     """
 
@@ -119,7 +161,11 @@ def main():
     :return: None
     """
 
-    remove_duplicates("Data/Temp Images")
+    # remove_end_duplicates("Data/Temp Images")
+
+    path = "Data/Temp Images"
+
+    remove_player_duplicates(path)
 
 
 if __name__ == "__main__":
