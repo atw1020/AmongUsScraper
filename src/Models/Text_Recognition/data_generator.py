@@ -121,7 +121,7 @@ def gen_dataset_batchless(path,
                                                                               dtype=tf.int8),
                                                                 tf.TensorSpec(shape=(None,),
                                                                               dtype=tf.float64)),
-                                                               tf.TensorSpec(shape=(),
+                                                               tf.TensorSpec(shape=(None,),
                                                                              dtype=tf.int8)))
 
     # now that we have the dataset, split it into many datasets where each contains inputs

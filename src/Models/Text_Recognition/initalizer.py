@@ -183,10 +183,17 @@ def init_nn(vocab,
 
     LSTM = layers.LSTM(lstm_breadth,
                        activation="relu",
-                       return_sequences=False)(temp)
+                       return_sequences=True)(temp)
 
     if not early_merge:
-        concatenate = layers.Concatenate()([LSTM, flatten])
+
+        flatten_size = flatten.type_spec.shape[1]
+
+        # repeat the flatten vector
+        repeat = layers.Lambda(repeat_vector,
+                               output_shape=(None, flatten_size))([flatten, LSTM])
+
+        concatenate = layers.Concatenate()([LSTM, repeat])
         temp = concatenate
     else:
         temp = LSTM

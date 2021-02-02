@@ -93,12 +93,14 @@ def get_character_label(st, index, vocab):
 
     vocab_size = len(vocab.keys()) + 2
 
+    result = [vocab[st[i]] for i in range(index)]
+
     if index >= len(st):
         # if the index is out of bounds, the character must be a null terminator
-        return vocab_size - 1
+        return result + [vocab_size - 1]
     else:
         # the character index come from the dictionary
-        return vocab[st[index]]
+        return result + [vocab[st[index]]]
 
 
 def main():
