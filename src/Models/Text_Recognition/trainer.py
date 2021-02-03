@@ -103,7 +103,8 @@ def train_model(training_data,
     """
 
     model = initalizer.init_nn(vocab,
-                               early_merge=False)
+                               early_merge=False,
+                               lr=0.03)
 
     model.fit(training_data,
               validation_data=test_data,

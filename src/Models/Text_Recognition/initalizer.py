@@ -36,6 +36,7 @@ def get_random_hyperparameters():
         "conv_stride": random.randint(2, 5),
         "pool_1": random.randint(0, 1),
         "pool_2": random.randint(0, 1),
+        "embedding_dim": 2 ** random.randint(6, 10),
         "early_merge": random.randint(0, 1),
         "lstm_breadth": 2 ** random.randint(6, 10),
         "lstm_depth": random.randint(1, 2),
@@ -63,6 +64,7 @@ def init_nn(vocab,
             conv_stride=2,
             pool_1=0,
             pool_2=0,
+            embedding_dim=256,
             early_merge=0,
             lstm_breadth=512,
             lstm_depth=2,
@@ -73,6 +75,7 @@ def init_nn(vocab,
 
     creates the neural network
 
+    :param embedding_dim: dimension of the embedding layer
     :param early_merge: whether or not to merge the text and image networks before or
                         after the LSTM
     :param pool_2: whether or not to use the first pooling layer
@@ -155,7 +158,7 @@ def init_nn(vocab,
     rnn_input = layers.Input(shape=(None,))
 
     embedding = layers.Embedding(input_dim=vocab_size,
-                                 output_dim=256)(rnn_input)
+                                 output_dim=embedding_dim)(rnn_input)
 
     if early_merge:
 
