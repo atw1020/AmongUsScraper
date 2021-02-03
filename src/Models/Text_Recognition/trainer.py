@@ -77,10 +77,12 @@ def train_random_model(training_data,
             input("process completed, press any key to continue...")
         else:
             # automatically store the results and continue
-            with open("src/Models/Text_Recognition/text recognition hyperparameters.txt") as file:
+            with open("src/Models/Text_Recognition/text recognition hyperparameters.txt", "a") as file:
 
                 # write the data
                 items = [str(kwargs[key]) for key in keys] + [str(training_accuracy), str(test_accuracy)]
+                print(", ".join(items))
+
                 file.write(", ".join(items))
 
                 # write the newline
@@ -154,7 +156,8 @@ def main():
     train_random_model(training_data,
                        test_data,
                        vocab,
-                       automatic=True)
+                       automatic=True,
+                       repeats=50)
 
     # model = train_model(training_data, test_data, vocab)
     # model.save(constants.text_recognition)
