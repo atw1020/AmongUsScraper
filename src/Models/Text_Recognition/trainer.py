@@ -74,23 +74,25 @@ def train_random_model(training_data,
         input("process completed, press any key to continue...")
 
 
-def train_model(dataset, test_data, vocab):
+def train_model(training_data,
+                test_data,
+                vocab):
     """
 
     train a model on the specified dataset
 
-    :param dataset: the dataset to train on
+    :param training_data: the dataset to train on
     :param test_data: validation data
     :param vocab: vocabulary to use
     :return: trained model
     """
 
     model = initalizer.init_nn(vocab,
-                               lr=0.0003)
+                               early_merge=False)
 
-    model.fit(dataset,
+    model.fit(training_data,
               validation_data=test_data,
-              epochs=100)
+              epochs=200)
 
     return model
 

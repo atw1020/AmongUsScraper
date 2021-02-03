@@ -77,7 +77,8 @@ def generator(directory, length, vocab):
     j = 0
     while j < len(files):
 
-        if length != len(files[j]):
+        if length != len(name_from_filepath(files[j])):
+            j += 1
             continue
 
         # ge the image
@@ -145,7 +146,7 @@ def gen_dataset(path,
         vocab = text_utils.get_vocab(text_utils.get_names(path))
 
     datasets = [gen_dataset_batchless(path,
-                                      i,
+                                      i + 1,
                                       vocab,
                                       batch_size) for i in range(constants.name_length)]
 
