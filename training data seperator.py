@@ -95,12 +95,61 @@ def sort_crewmate_identifier_data(output_dir):
     files = os.listdir(os.path.join(path, "Crude Data"))
 
     for file in files:
+
+        if file == ".DS_Store":
+            continue
+
         label = file.split("-")[0]
 
         label = constants.colors_dict[label]
 
         os.rename(os.path.join(path, "Crude Data", file),
                   os.path.join(output_dir, label, file))
+
+
+def sort_meeting_data():
+    """
+
+    sorts meeting data into training and test data based on the person who
+    uploaded it
+
+    :return:
+    """
+
+    start_path = "Data/Meeting Identifier/Crude Data/"
+
+    files = os.listdir(start_path)
+
+    player_names = dict()
+
+    for file in files:
+
+        if file == ".DS_Store":
+            continue
+
+        # split the filepath on the dash
+        items = file.split("-")
+        video_id = items[3]
+
+        if video_id in player_names:
+            # if we already have the player name cached, use it
+            player_name = player_names[video_id]
+        else:
+            # otherwise, get the player name from the video ID
+            video = twitch.get_video(video_id)
+            player_name = video['creator']['displayName']
+
+            # cache the player name
+            player_names[video_id] = player_name
+
+        if is_name_test(player_name):
+            data_set = "Test Data"
+        else:
+            data_set = "Training Data"
+
+        output = os.path.join("Data", "Meeting Identifier", data_set, file)
+
+        os.rename(start_path + file, output)
 
 
 def main():
@@ -116,6 +165,8 @@ def main():
     sort_crewmate_identifier_data(os.path.join("Data",
                                                "Crewmate Identifier",
                                                "Test Data"))
+
+    sort_meeting_data()
 
     """
     streamers = ["Blunder", "shofu", "Kara", "Pokimane", "5up", "captainsparklez",

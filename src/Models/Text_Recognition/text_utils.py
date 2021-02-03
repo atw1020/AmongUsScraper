@@ -86,7 +86,6 @@ def get_character_label(st, vocab):
     gets a character's label from the specified vocabulary
 
     :param st: string to get the label from
-    :param index: index of the character to get the label for
     :param vocab: vocabulary to create the label using
     :return: character label
     """

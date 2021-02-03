@@ -80,11 +80,12 @@ def train_random_model(training_data,
             with open("src/Models/Text_Recognition/text recognition hyperparameters.txt") as file:
 
                 # write the data
-                items = [str(kwargs[key]) for key in keys] + [training_accuracy, test_accuracy]
+                items = [str(kwargs[key]) for key in keys] + [str(training_accuracy), str(test_accuracy)]
                 file.write(", ".join(items))
 
                 # write the newline
                 file.write("\n")
+
 
 def train_model(training_data,
                 test_data,
@@ -152,7 +153,8 @@ def main():
 
     train_random_model(training_data,
                        test_data,
-                       vocab)
+                       vocab,
+                       automatic=True)
 
     # model = train_model(training_data, test_data, vocab)
     # model.save(constants.text_recognition)
