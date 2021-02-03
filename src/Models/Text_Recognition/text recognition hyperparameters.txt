@@ -1,1 +1,3 @@
 conv_size, conv_stride, early_merge, end_breadth, end_depth, lr, lstm_breadth, lstm_depth, pool_1, pool_2, training accuracy, test accuracy
+7, 4, 1, 64, 4, 0.000603163258841895, 1024, 2, 0, 0, 0.11973525583744049, 0.11779141426086426
+5, 2, 1, 128, 4, 0.0019654681812681487, 1024, 1, 1, 0, 0.128158837556839, 0.11926380544900894

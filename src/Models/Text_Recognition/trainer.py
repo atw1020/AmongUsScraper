@@ -60,7 +60,7 @@ def train_random_model(training_data,
         # fit the model
         model.fit(training_data,
                   validation_data=test_data,
-                  epochs=100)
+                  epochs=200)
 
         training_accuracy = model.evaluate(training_data)[1]
         test_accuracy = model.evaluate(test_data)[1]
