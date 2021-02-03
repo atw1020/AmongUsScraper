@@ -29,7 +29,8 @@ def get_vocab(directory):
 def train_random_model(training_data,
                        test_data,
                        vocab,
-                       repeats=10):
+                       repeats=10,
+                       automatic=False):
     """
 
     train a randomly generated model
@@ -38,6 +39,7 @@ def train_random_model(training_data,
     :param test_data: testing data
     :param vocab: vocabulary
     :param repeats: number of times to repeat the experiment
+    :param automatic: whether or not to automaticaly store the results
     :return: None
     """
 
@@ -71,8 +73,18 @@ def train_random_model(training_data,
               test_accuracy,
               sep=", ")
 
-        input("process completed, press any key to continue...")
+        if not automatic:
+            input("process completed, press any key to continue...")
+        else:
+            # automatically store the results and continue
+            with open("src/Models/Text_Recognition/text recognition hyperparameters.txt") as file:
 
+                # write the data
+                items = [str(kwargs[key]) for key in keys] + [training_accuracy, test_accuracy]
+                file.write(", ".join(items))
+
+                # write the newline
+                file.write("\n")
 
 def train_model(training_data,
                 test_data,

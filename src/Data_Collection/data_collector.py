@@ -410,11 +410,15 @@ def main():
         print()
     """
 
-    collector = DataCollector("897673466",  # 889665311 892058194
-                              step=20,
-                              end_transition_step=40)
+    games = ["817942495", "776770697", "897395686", "893041446", "891659775", "895991033"]
 
-    collector.save_predictions()
+    for game in games:
+
+        collector = DataCollector(game,
+                                  step=20,
+                                  end_transition_step=40)
+
+        collector.save_predictions()
 
 
 if __name__ == "__main__":
