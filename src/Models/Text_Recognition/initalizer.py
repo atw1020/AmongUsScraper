@@ -32,15 +32,15 @@ def get_random_hyperparameters():
     """
 
     return {
-        "conv_size": random.randint(3, 15),
-        "conv_stride": random.randint(2, 5),
+        "conv_size": random.randint(9, 18),
+        "conv_stride": random.randint(2, 4),
         "pool_1": random.randint(0, 1),
         "pool_2": random.randint(0, 1),
-        "embedding_dim": 2 ** random.randint(6, 10),
+        "embedding_dim": 2 ** random.randint(7, 9),
         "early_merge": random.randint(0, 1),
-        "lstm_breadth": 2 ** random.randint(6, 10),
-        "lstm_depth": random.randint(1, 2),
-        "end_breadth": 2 ** random.randint(6, 10),
+        "lstm_breadth": 2 ** random.randint(8, 12),
+        "lstm_depth": random.randint(1, 5),
+        "end_breadth": 2 ** random.randint(8, 12),
         "end_depth": random.randint(1, 5),
         "lr": 10 ** (2 * random.random() - 4)
     }
