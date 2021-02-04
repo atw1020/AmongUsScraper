@@ -41,7 +41,7 @@ def get_random_hyperparameters():
         "lstm_breadth": 2 ** random.randint(8, 12),
         "lstm_depth": random.randint(1, 2),
         "end_breadth": 2 ** random.randint(8, 12),
-        "end_depth": random.randint(1, 5),
+        "end_depth": random.randint(1, 10),
         "lr": 0.001  # 10 ** (random.random() - 3)
     }
 

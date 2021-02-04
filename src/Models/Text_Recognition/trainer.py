@@ -108,7 +108,7 @@ def train_model(training_data,
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=200)
+              epochs=300)
 
     return model
 
