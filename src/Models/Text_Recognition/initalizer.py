@@ -61,16 +61,16 @@ def init_random_nn(vocab):
 
 def init_nn(vocab,
             image_dimensions=constants.meeting_dimensions,
-            conv_size=11,
-            conv_stride=3,
+            conv_size=18,
+            conv_stride=4,
             pool_1=0,
             pool_2=0,
-            embedding_dim=256,
+            embedding_dim=512,
             early_merge=0,
-            lstm_breadth=512,
+            lstm_breadth=256,
             lstm_depth=2,
-            end_breadth=512,
-            end_depth=2,
+            end_breadth=256,
+            end_depth=1,
             lr=0.001):
     """
 
