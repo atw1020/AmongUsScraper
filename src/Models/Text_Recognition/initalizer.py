@@ -60,9 +60,9 @@ def init_random_nn(vocab):
 
 
 def init_nn(vocab,
-            image_dimensions=constants.res_360p,
-            conv_size=5,
-            conv_stride=2,
+            image_dimensions=constants.meeting_dimensions,
+            conv_size=11,
+            conv_stride=3,
             pool_1=0,
             pool_2=0,
             embedding_dim=256,

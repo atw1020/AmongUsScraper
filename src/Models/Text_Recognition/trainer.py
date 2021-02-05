@@ -103,6 +103,7 @@ def train_model(training_data,
     """
 
     model = initalizer.init_nn(vocab,
+                               image_dimensions=constants.meeting_dimensions_420p,
                                early_merge=False,
                                lr=0.03)
 
@@ -128,8 +129,11 @@ def get_model_vocab():
     test_vocab = get_vocab(os.path.join("Data",
                                         "Meeting Identifier",
                                         "Test Data"))
+    high_res_vocab = get_vocab(os.path.join("Data",
+                                            "Meeting Identifier",
+                                            "High Res Training Data"))
 
-    return text_utils.merge_vocab((train_vocab, test_vocab))
+    return text_utils.merge_vocab((train_vocab, test_vocab, high_res_vocab))
 
 
 def main():
@@ -154,14 +158,18 @@ def main():
 
     # train the model
 
-    train_random_model(training_data,
+    """train_random_model(training_data,
                        test_data,
                        vocab,
                        automatic=True,
-                       repeats=50)
+                       repeats=50)"""
 
-    # model = train_model(training_data, test_data, vocab)
-    # model.save(constants.text_recognition)
+    high_res_data = data_generator.gen_dataset("Data/Meeting Identifier/High Res Training Data",
+                                               vocab=vocab,
+                                               input_dim=constants.meeting_dimensions_420p)
+
+    model = train_model(high_res_data, None, vocab)
+    model.save(constants.text_recognition)
 
 
 if __name__ == "__main__":

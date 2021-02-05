@@ -60,6 +60,15 @@ def get_names(directory):
 
     files = os.listdir(directory)
 
+    if ".DS_Store" in files:
+        files.remove(".DS_Store")
+
+    for file in files:
+        try:
+            file.split("-")[2]
+        except IndexError:
+            print(file)
+
     # get the names of all the players
     return [file.split("-")[2] for file in files]
 
