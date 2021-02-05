@@ -8,24 +8,10 @@ import os
 
 from twitchdl import twitch
 
+from tensorflow.keras.preprocessing.image import save_img
+
 from src import constants
 from src.Data_Collection import web_scrapper
-
-
-def get_label(file_name, label_length):
-    """
-
-    get a label from the image file name of the screenshot file
-
-    :param file_name: name of the file
-    :param label_length: number of items separated by dashes in the label
-    :return: string representing the file's label
-    """
-
-    file_name = file_name.split("-")
-    label = file_name[:label_length]
-
-    return "-".join(label)
 
 
 def get_timestamp(file_name, label_length):
@@ -77,14 +63,12 @@ def update_resolution(input_dir,
     files.sort(key=lambda f: get_timestamp(f, label_length)[0])
 
     previous_video = ""
-    access_token = None
     vods = None
     url = ""
 
     for file in files:
 
         # collect the data from the file
-        label = get_label(file, label_length)
         video_id, vod, frame = get_timestamp(file, label_length)
 
         if video_id != previous_video:
@@ -100,7 +84,10 @@ def update_resolution(input_dir,
         image = web_scrapper.get_still_frame(url + vods[vod],
                                              index=frame)
 
-        print(image.shape)
+        # save the image
+        save_img(os.path.join(output_dir, file),
+                 image)
+
         break
 
 
