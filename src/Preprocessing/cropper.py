@@ -102,16 +102,16 @@ def crop_meeting_480p(image):
     """
 
     boxes = [
-        (85, 65, 305, 110),
-        (305, 65, 525, 110),
-        (85, 110, 305, 155),
-        (305, 110, 525, 155),
-        (85, 155, 305, 200),
-        (305, 155, 525, 200),
-        (85, 200, 305, 245),
-        (305, 200, 525, 245),
-        (85, 245, 305, 290),
-        (305, 245, 525, 290)
+        (115, 90, 405, 150),
+        (405, 90, 695, 150),
+        (115, 150, 405, 210),
+        (405, 150, 695, 210),
+        (115, 210, 405, 270),
+        (405, 210, 695, 270),
+        (115, 270, 405, 330),
+        (405, 270, 695, 330),
+        (115, 330, 405, 390),
+        (405, 330, 695, 390)
     ]
 
     crops = []
@@ -196,7 +196,7 @@ def crop_all_meetings(directory):
         path = os.path.join(directory, file)
 
         image = Image.open(path)
-        crops = crop_meeting(image)
+        crops = crop_meeting_480p(image)
 
         for i, crop in enumerate(crops):
             # save the file two directories up
