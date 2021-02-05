@@ -32,16 +32,17 @@ def get_random_hyperparameters():
     """
 
     return {
-        "conv_size": random.randint(3, 15),
-        "conv_stride": random.randint(2, 5),
+        "conv_size": random.randint(9, 18),
+        "conv_stride": random.randint(3, 4),
         "pool_1": random.randint(0, 1),
-        "pool_2": random.randint(0, 1),
-        "early_merge": random.randint(0, 1),
-        "lstm_breadth": 2 ** random.randint(6, 10),
+        "pool_2": 0,  # random.randint(0, 1),
+        "embedding_dim": 2 ** random.randint(7, 9),
+        "early_merge": 0,  # random.randint(0, 1),
+        "lstm_breadth": 2 ** random.randint(8, 12),
         "lstm_depth": random.randint(1, 2),
-        "end_breadth": 2 ** random.randint(6, 10),
-        "end_depth": random.randint(1, 5),
-        "lr": 10 ** (2 * random.random() - 4)
+        "end_breadth": 2 ** random.randint(8, 12),
+        "end_depth": random.randint(1, 10),
+        "lr": 0.001  # 10 ** (random.random() - 3)
     }
 
 
@@ -63,6 +64,7 @@ def init_nn(vocab,
             conv_stride=2,
             pool_1=0,
             pool_2=0,
+            embedding_dim=256,
             early_merge=0,
             lstm_breadth=512,
             lstm_depth=2,
@@ -73,6 +75,7 @@ def init_nn(vocab,
 
     creates the neural network
 
+    :param embedding_dim: dimension of the embedding layer
     :param early_merge: whether or not to merge the text and image networks before or
                         after the LSTM
     :param pool_2: whether or not to use the first pooling layer
@@ -155,7 +158,7 @@ def init_nn(vocab,
     rnn_input = layers.Input(shape=(None,))
 
     embedding = layers.Embedding(input_dim=vocab_size,
-                                 output_dim=256)(rnn_input)
+                                 output_dim=embedding_dim)(rnn_input)
 
     if early_merge:
 
@@ -183,10 +186,17 @@ def init_nn(vocab,
 
     LSTM = layers.LSTM(lstm_breadth,
                        activation="relu",
-                       return_sequences=False)(temp)
+                       return_sequences=True)(temp)
 
     if not early_merge:
-        concatenate = layers.Concatenate()([LSTM, flatten])
+
+        flatten_size = flatten.type_spec.shape[1]
+
+        # repeat the flatten vector
+        repeat = layers.Lambda(repeat_vector,
+                               output_shape=(None, flatten_size))([flatten, LSTM])
+
+        concatenate = layers.Concatenate()([LSTM, repeat])
         temp = concatenate
     else:
         temp = LSTM

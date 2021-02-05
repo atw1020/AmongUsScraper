@@ -129,10 +129,10 @@ def get_player_duplicates(player, images):
 def remove_player_duplicates(directory):
     """
 
-    move all of the
+    delete all of the duplicated players in the specified directory
 
-    :param directory:
-    :return:
+    :param directory: directory to clean
+    :return: None
     """
 
     files = os.listdir(directory)
@@ -141,16 +141,15 @@ def remove_player_duplicates(directory):
 
     while i < len(files):
 
-        duplicates = get_player_duplicates(files[i], files[i:])
+        duplicates = get_player_duplicates(files[i], files[:i] + files[i + 1:])
 
         for duplicate in duplicates:
             # remove the file
-            os.remove(os.path.join(directory, duplicate))
+            # os.remove(os.path.join(directory, duplicate))
 
             files.remove(duplicate)
 
         i += 1
-
 
 
 def main():
@@ -163,9 +162,12 @@ def main():
 
     # remove_end_duplicates("Data/Temp Images")
 
-    path = "Data/Temp Images"
+    images = os.listdir("Data/Meeting Identifier/Training Data")
 
-    remove_player_duplicates(path)
+    duplicates = get_player_duplicates(images[0], images)
+    print(duplicates)
+
+    # remove_player_duplicates("Data/Meeting Identifier/Test Data")
 
 
 if __name__ == "__main__":

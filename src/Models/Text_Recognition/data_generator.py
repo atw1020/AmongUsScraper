@@ -55,13 +55,13 @@ def get_name_length_indices(directory):
     return indices
 
 
-def generator(directory, substring_len, vocab):
+def generator(directory, length, vocab):
     """
 
     generator, yields training data and test data
 
     :param directory: directory to get the images from
-    :param substring_len: length of the substrings to generate a dataset for
+    :param length: length of the substrings to generate a dataset for
     :param vocab: vocabulary to use
     :return:
     """
@@ -77,21 +77,20 @@ def generator(directory, substring_len, vocab):
     j = 0
     while j < len(files):
 
-        # make sure that the name is short enough for this group
-        if len(name_from_filepath(files[j])) < substring_len:
-            break
+        if length != len(name_from_filepath(files[j])):
+            j += 1
+            continue
 
         # ge the image
         x1 = img_to_array(load_img(os.path.join(directory,
                                                 files[j])))
 
         # get the characters to feed in
-        x2 = text_utils.get_string_input_data(name_from_filepath(files[j])[:substring_len],
+        x2 = text_utils.get_string_input_data(name_from_filepath(files[j]),
                                               vocab)
 
         # get the output character
         y = text_utils.get_character_label(name_from_filepath(files[j]),
-                                           substring_len,
                                            vocab)
 
         yield (x1, x2), y
@@ -100,7 +99,7 @@ def generator(directory, substring_len, vocab):
 
 
 def gen_dataset_batchless(path,
-                          substring_len,
+                          length,
                           vocab,
                           batch_size):
     """
@@ -108,20 +107,18 @@ def gen_dataset_batchless(path,
     generate a dataset
 
     :param path: the path to the directory to generate the dataset from
-    :param substring_len: length of the substrings to generate the dataset for
+    :param length: length of the strings to generate the dataset for
     :param vocab: vocabulary to use
     :param batch_size: size of the batches to divide the dataset into
     :return: dataset
     """
 
-    vocab_size = len(vocab.keys()) + 2
-
-    dataset = tf.data.Dataset.from_generator(lambda: generator(path, substring_len, vocab),
+    dataset = tf.data.Dataset.from_generator(lambda: generator(path, length, vocab),
                                              output_signature=((tf.TensorSpec(shape=constants.meeting_dimensions + (3,),
                                                                               dtype=tf.int8),
                                                                 tf.TensorSpec(shape=(None,),
                                                                               dtype=tf.float64)),
-                                                               tf.TensorSpec(shape=(),
+                                                               tf.TensorSpec(shape=(None,),
                                                                              dtype=tf.int8)))
 
     # now that we have the dataset, split it into many datasets where each contains inputs
@@ -149,7 +146,7 @@ def gen_dataset(path,
         vocab = text_utils.get_vocab(text_utils.get_names(path))
 
     datasets = [gen_dataset_batchless(path,
-                                      i,
+                                      i + 1,
                                       vocab,
                                       batch_size) for i in range(constants.name_length)]
 

@@ -9,7 +9,7 @@ import os
 import numpy as np
 
 from tensorflow.keras.models import load_model
-from tensorflow.keras.metrics import CategoricalAccuracy
+from tensorflow.keras.metrics import SparseCategoricalAccuracy
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 
 from src import constants
@@ -29,13 +29,17 @@ def length_accuracy(dataset):
 
     for x, y in dataset:
         # create the accuracy evaluation object
-        accuracy = CategoricalAccuracy()
+        accuracy = SparseCategoricalAccuracy()
 
         # make a prediction and update the state of the accuracy using it
         prediction = model.predict(x)
+
         accuracy.update_state(y, prediction)
 
-        print("sequences of length", x[1].shape[1],
+        print(y[0].numpy())
+        print(np.argmax(prediction, axis=-1)[0])
+
+        print("sequences of length", x[1].shape[1] - 1,
               "had an accuracy of", accuracy.result().numpy())
 
 
@@ -55,11 +59,7 @@ def main():
                                                vocab=vocab,
                                                shuffle=False)
 
-    model = load_model(constants.text_recognition)
-    print(model.evaluate(training_data))
-
-    # training accuracy: 0.2579
-    # no duplicates accuracy: 0.2313
+    length_accuracy(training_data)
 
 
 if __name__ == "__main__":

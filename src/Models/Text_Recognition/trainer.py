@@ -29,7 +29,8 @@ def get_vocab(directory):
 def train_random_model(training_data,
                        test_data,
                        vocab,
-                       repeats=10):
+                       repeats=10,
+                       automatic=False):
     """
 
     train a randomly generated model
@@ -38,6 +39,7 @@ def train_random_model(training_data,
     :param test_data: testing data
     :param vocab: vocabulary
     :param repeats: number of times to repeat the experiment
+    :param automatic: whether or not to automaticaly store the results
     :return: None
     """
 
@@ -60,7 +62,7 @@ def train_random_model(training_data,
         # fit the model
         model.fit(training_data,
                   validation_data=test_data,
-                  epochs=100)
+                  epochs=300)
 
         training_accuracy = model.evaluate(training_data)[1]
         test_accuracy = model.evaluate(test_data)[1]
@@ -71,25 +73,42 @@ def train_random_model(training_data,
               test_accuracy,
               sep=", ")
 
-        input("process completed, press any key to continue...")
+        if not automatic:
+            input("process completed, press any key to continue...")
+
+        else:
+            # automatically store the results and continue
+            with open("src/Models/Text_Recognition/text recognition hyperparameters.txt", "a") as file:
+
+                # write the data
+                items = [str(kwargs[key]) for key in keys] + [str(training_accuracy), str(test_accuracy)]
+
+                file.write(", ".join(items))
+
+                # write the newline
+                file.write("\n")
 
 
-def train_model(dataset, test_data, vocab):
+def train_model(training_data,
+                test_data,
+                vocab):
     """
 
     train a model on the specified dataset
 
-    :param dataset: the dataset to train on
+    :param training_data: the dataset to train on
     :param test_data: validation data
     :param vocab: vocabulary to use
     :return: trained model
     """
 
-    model = initalizer.init_nn(vocab)
+    model = initalizer.init_nn(vocab,
+                               early_merge=False,
+                               lr=0.03)
 
-    model.fit(dataset,
+    model.fit(training_data,
               validation_data=test_data,
-              epochs=100)
+              epochs=300)
 
     return model
 
@@ -137,7 +156,9 @@ def main():
 
     train_random_model(training_data,
                        test_data,
-                       vocab)
+                       vocab,
+                       automatic=True,
+                       repeats=50)
 
     # model = train_model(training_data, test_data, vocab)
     # model.save(constants.text_recognition)

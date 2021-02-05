@@ -171,8 +171,9 @@ def crop_all_meetings(directory):
         for i, crop in enumerate(crops):
             # save the file two directories up
             crop.save(os.path.join(directory,
-                                   "../../",
                                    str(i) + "-" + file))
+
+        os.remove(path)
 
 
 def main():
