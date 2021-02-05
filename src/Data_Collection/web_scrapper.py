@@ -20,13 +20,16 @@ from src import constants
 from twitchdl.commands.download import _parse_playlists, _get_playlist_by_name, _get_vod_paths
 
 
-def get_base_url(video_id, access_token=None):
+def get_base_url(video_id,
+                 access_token=None,
+                 quality=constants.quality(constants.res_360p)):
     """
 
     generates the URL of a video with a given ID
 
     :param access_token: access token for the video
     :param video_id: ID of the video
+    :param quality: quality of the video
     :return: generated URL
     """
 
@@ -35,9 +38,9 @@ def get_base_url(video_id, access_token=None):
 
     playlists_m3u8 = twitch.get_playlists(video_id, access_token)
     playlists = list(_parse_playlists(playlists_m3u8))
-    playlist_uri = _get_playlist_by_name(playlists, constants.quality)
+    playlist_url = _get_playlist_by_name(playlists, quality)
 
-    return re.sub("/[^/]+$", "/", playlist_uri)
+    return re.sub("/[^/]+$", "/", playlist_url)
 
 
 def get_vods(video_id, access_token=None):
@@ -58,7 +61,8 @@ def get_vods(video_id, access_token=None):
 
     playlists_m3u8 = twitch.get_playlists(video_id, access_token)
     playlists = list(_parse_playlists(playlists_m3u8))
-    playlist_uri = _get_playlist_by_name(playlists, constants.quality)
+    playlist_uri = _get_playlist_by_name(playlists,
+                                         constants.quality(constants.dimensions))
 
     response = requests.get(playlist_uri)
     response.raise_for_status()

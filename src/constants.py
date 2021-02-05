@@ -28,9 +28,21 @@ res_480p = (480, 852)
 res_360p = (360, 640)
 res_160p = (160, 284)
 
+
+def quality(dim):
+    """
+
+    get the quality of images of the specified dimensions
+
+    :param dim: dimensions to get the quality of
+    :return: quality string (for twitchdl)
+    """
+
+    return str(dim[0]) + "p"
+
+
 # dimensions of our images
 dimensions = res_360p
-quality = str(dimensions[0]) + "p"
 
 sampling_rate = 1
 
