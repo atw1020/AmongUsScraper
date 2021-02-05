@@ -71,24 +71,28 @@ def update_resolution(input_dir,
         # collect the data from the file
         video_id, vod, frame = get_timestamp(file, label_length)
 
-        if video_id != previous_video:
-            # update the access token
-            access_token = twitch.get_access_token(video_id)
-            vods = web_scrapper.get_vods(video_id, access_token)
+        try:
+            if video_id != previous_video:
 
-            # get the url
-            url = web_scrapper.get_base_url(video_id,
-                                            access_token,
-                                            constants.quality(new_resolution))
+                previous_video = video_id
+
+                # update the access token
+                access_token = twitch.get_access_token(video_id)
+                vods = web_scrapper.get_vods(video_id, access_token)
+
+                # get the url
+                url = web_scrapper.get_base_url(video_id,
+                                                access_token,
+                                                constants.quality(new_resolution))
+        except TypeError:
+            continue
 
         image = web_scrapper.get_still_frame(url + vods[vod],
                                              index=frame)
 
         # save the image
-        save_img(os.path.join(output_dir, file),
+        save_img(os.path.join(output_dir, "-".join(["Meeting", video_id, str(vod), str(frame)]) + ".jpg"),
                  image)
-
-        break
 
 
 def main():

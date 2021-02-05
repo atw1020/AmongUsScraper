@@ -92,6 +92,36 @@ def crop_meeting(image):
     return crops
 
 
+def crop_meeting_480p(image):
+    """
+
+    crop the members out of the given meeting image (480p version)
+
+    :param image: image to crop crewmates from
+    :return: cropped images
+    """
+
+    boxes = [
+        (85, 65, 305, 110),
+        (305, 65, 525, 110),
+        (85, 110, 305, 155),
+        (305, 110, 525, 155),
+        (85, 155, 305, 200),
+        (305, 155, 525, 200),
+        (85, 200, 305, 245),
+        (305, 200, 525, 245),
+        (85, 245, 305, 290),
+        (305, 245, 525, 290)
+    ]
+
+    crops = []
+
+    for i in range(len(boxes)):
+        crops.append(image.crop(boxes[i]))
+
+    return crops
+
+
 def crop_all_crewmates(directory, output_directory):
     """
 
