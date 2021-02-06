@@ -6,7 +6,7 @@ Author: Arthur Wesley
 
 import os
 
-from kerastuner.tuners import Hyperband
+from kerastuner.tuners import Hyperband, BayesianOptimization
 
 from src import constants
 from src.Models.Text_Recognition import initalizer
@@ -90,18 +90,18 @@ def main():
                                                         "Test Data"),
                                            vocab=vocab)
 
-    tuner = Hyperband(lambda hp: initalizer.init_nn(vocab, hp),
-                      objective="val_accuracy",
-                      max_epochs=100,
-                      executions_per_trial=3,
-                      directory="Models",
-                      project_name="Text Recognition")
+    model = train_model(training_data, test_data, vocab)
+    model.save(constants.text_recognition)
 
-    # model = train_model(training_data, test_data, vocab)
-    # model.save(constants.text_recognition)
+    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
+                                 objective="val_accuracy",
+                                 max_trials=50,
+                                 executions_per_trial=1,
+                                 directory="Models",
+                                 project_name="Bayesian Text Recognition")
 
     tuner.search(training_data,
-                 epochs=100,
+                 epochs=50,
                  validation_data=test_data)
 
 

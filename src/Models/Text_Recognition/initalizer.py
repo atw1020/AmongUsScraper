@@ -38,14 +38,14 @@ def init_nn(vocab, hp):
     conv_1_size = hp.Int("conv_1 size", 5, 17, 2)
     conv_1_stride = hp.Int("conv_1 stride", 2, 5)
 
-    conv_2_size = hp.Int("conv_1 size", 5, 17, 2)
-    conv_2_stride = hp.Int("conv_1 stride", 2, 5)
+    conv_2_size = hp.Int("conv_2 size", 5, 17, 2)
+    conv_2_stride = hp.Int("conv_2 stride", 2, 5)
 
-    conv_3_size = hp.Int("conv_1 size", 5, 17, 2)
-    conv_3_stride = hp.Int("conv_1 stride", 2, 5)
+    conv_3_size = hp.Int("conv_3 size", 5, 17, 2)
+    conv_3_stride = hp.Int("conv_3 stride", 2, 5)
 
-    conv_4_size = hp.Int("conv_1 size", 5, 17, 2)
-    conv_4_stride = hp.Int("conv_1 stride", 2, 5)
+    conv_4_size = hp.Int("conv_4 size", 5, 17, 2)
+    conv_4_stride = hp.Int("conv_4 stride", 2, 5)
 
     lstm_depth = hp.Int("lstm depth", 1, 10)
     lstm_breadth = hp.Int("lstm breadth", 512, 2048, 128)
