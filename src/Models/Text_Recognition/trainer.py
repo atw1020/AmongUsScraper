@@ -145,7 +145,8 @@ def main():
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Training Data"),
-                                               vocab=vocab)
+                                               vocab=vocab,
+                                               batch_size=1)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
