@@ -33,17 +33,17 @@ def init_nn(vocab, hp):
     :return: initialized model
     """
 
-    embedding_dim = 512  # hp.Int("embedding dim", 256, 1024, 64)
+    embedding_dim = hp.Int("embedding dim", 256, 1024, 64)
 
-    conv_size = 13  # hp.Int("conv size", 5, 17, 2)
-    conv_stride = 3  # hp.Int("conv stride", 2, 5)
+    conv_size = hp.Int("conv size", 5, 17, 2)
+    conv_stride = hp.Int("conv stride", 2, 5)
 
-    lstm_depth = 2  # hp.Int("lstm depth", 1, 10)
-    lstm_breadth = 1024  # hp.Int("lstm breadth", 512, 2048, 128)
+    lstm_depth = hp.Int("lstm depth", 1, 10)
+    lstm_breadth = hp.Int("lstm breadth", 512, 2048, 128)
 
     end_depth = 1  # hp.Int("end depth", 1, 10)
-    end_breadth = 512  # hp.Int("end breadth", 512, 2048, 128)
-    lr = 0.001  # 10 ** hp.Float("learning rate", -5, -2)
+    end_breadth = hp.Int("end breadth", 512, 2048, 128)
+    lr = 10 ** hp.Float("learning rate", -5, -2)
 
     # reset the session
     K.clear_session()
