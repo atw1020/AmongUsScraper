@@ -35,8 +35,17 @@ def init_nn(vocab, hp):
 
     embedding_dim = hp.Int("embedding dim", 256, 1024, 64)
 
-    conv_size = hp.Int("conv size", 5, 17, 2)
-    conv_stride = hp.Int("conv stride", 2, 5)
+    conv_1_size = hp.Int("conv_1 size", 5, 17, 2)
+    conv_1_stride = hp.Int("conv_1 stride", 2, 5)
+
+    conv_2_size = hp.Int("conv_1 size", 5, 17, 2)
+    conv_2_stride = hp.Int("conv_1 stride", 2, 5)
+
+    conv_3_size = hp.Int("conv_1 size", 5, 17, 2)
+    conv_3_stride = hp.Int("conv_1 stride", 2, 5)
+
+    conv_4_size = hp.Int("conv_1 size", 5, 17, 2)
+    conv_4_stride = hp.Int("conv_1 stride", 2, 5)
 
     lstm_depth = hp.Int("lstm depth", 1, 10)
     lstm_breadth = hp.Int("lstm breadth", 512, 2048, 128)
@@ -63,16 +72,16 @@ def init_nn(vocab, hp):
     batch_norm = layers.BatchNormalization()(image_input_layer)
 
     convolution = layers.Conv2D(filters=16,
-                                kernel_size=conv_size,
-                                strides=conv_stride,
+                                kernel_size=conv_1_size,
+                                strides=conv_1_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=32,
-                                kernel_size=conv_size,
-                                strides=conv_stride,
+                                kernel_size=conv_2_size,
+                                strides=conv_2_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
@@ -85,16 +94,16 @@ def init_nn(vocab, hp):
                                    strides=2)(temp)
 
     convolution = layers.Conv2D(filters=64,
-                                kernel_size=conv_size,
-                                strides=conv_stride,
+                                kernel_size=conv_3_size,
+                                strides=conv_3_stride,
                                 activation="relu",
                                 padding="same")(temp)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=128,
-                                kernel_size=conv_size,
-                                strides=conv_stride,
+                                kernel_size=conv_4_size,
+                                strides=conv_4_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
