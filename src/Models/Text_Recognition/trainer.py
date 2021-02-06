@@ -84,7 +84,7 @@ def main():
                                                             "Meeting Identifier",
                                                             "Training Data"),
                                                vocab=vocab,
-                                               batch_size=1)
+                                               batch_size=32)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",

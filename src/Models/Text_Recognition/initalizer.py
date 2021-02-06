@@ -54,7 +54,7 @@ def init_hyperparameters():
     hp.Fixed("end depth", 2)
     hp.Fixed("end breadth", 1024)
 
-    hp.Fixed("learning rate", 0.01)
+    hp.Fixed("learning rate", 0.001)
     hp.Fixed("dropout", 0.2)
 
     return hp
