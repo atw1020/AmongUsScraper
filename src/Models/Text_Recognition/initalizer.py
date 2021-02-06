@@ -23,82 +23,30 @@ def repeat_vector(args):
     return layers.RepeatVector(K.shape(sequence_layer)[1])(layer_to_repeat)
 
 
-def get_random_hyperparameters():
-    """
-
-    generate a random set of hyperparameters for the neural network
-
-    :return: random set of hyperparameters
-    """
-
-    return {
-        "conv_size": random.randint(9, 18),
-        "conv_stride": random.randint(3, 4),
-        "pool_1": random.randint(0, 1),
-        "pool_2": 0,  # random.randint(0, 1),
-        "embedding_dim": 2 ** random.randint(7, 9),
-        "early_merge": 0,  # random.randint(0, 1),
-        "lstm_breadth": 2 ** random.randint(8, 12),
-        "lstm_depth": random.randint(1, 2),
-        "end_breadth": 2 ** random.randint(8, 12),
-        "end_depth": random.randint(1, 10),
-        "lr": 0.001  # 10 ** (random.random() - 3)
-    }
-
-
-def init_random_nn(vocab):
-    """
-
-    initializes a neural network with random hyper-parameters
-
-    :param vocab: vocab to create the neural network for
-    :return: tuple of the network and a dictionary of its hyperparameters
-    """
-
-    kwargs = get_random_hyperparameters()
-    return init_nn(vocab, **kwargs), kwargs
-
-
-def init_nn(vocab,
-            conv_size=5,
-            conv_stride=2,
-            pool_1=0,
-            pool_2=0,
-            embedding_dim=256,
-            early_merge=0,
-            lstm_breadth=512,
-            lstm_depth=2,
-            end_breadth=512,
-            end_depth=2,
-            lr=0.001):
+def init_nn(vocab, hp):
     """
 
     creates the neural network
 
-    :param embedding_dim: dimension of the embedding layer
-    :param early_merge: whether or not to merge the text and image networks before or
-                        after the LSTM
-    :param pool_2: whether or not to use the first pooling layer
-    :param pool_1: whether or not to use the second pooling layer
-    :param conv_stride: stride of each convolution
-    :param conv_size: size of each convolution
     :param vocab: vocabulary to use
-    :param lstm_breadth: number of units in the LSTM
-    :param lstm_depth: number of LSTM layers
-    :param end_depth: number of layers at the end
-    :param end_breadth: breadth of the last layers of the network
-    :param lr: learning rate of the network
+    :param hp: hyperparameters used
     :return: initialized model
     """
 
+    embedding_dim = hp.Int("embedding dim", 256, 1024, 64)
+
+    conv_size = hp.Int("conv size", 5, 17, 2)
+    conv_stride = hp.Int("conv stride", 2, 5)
+
+    lstm_depth = hp.Int("lstm depth", 1, 10)
+    lstm_breadth = hp.Int("lstm breadth", 512, 2048, 128)
+
+    end_depth = hp.Int("end depth", 1, 10)
+    end_breadth = hp.Int("end breadth", 512, 2048, 128)
+    lr = 10 ** hp.Float("learning rate", -5, -2)
+
     # reset the session
     K.clear_session()
-
-    # convert booleans from integers to booleans
-    pool_1 = bool(pool_1)
-    pool_2 = bool(pool_2)
-
-    early_merge = bool(early_merge)
 
     # get the size of the vocabulary
     vocab_size = len(vocab.keys()) + 2
@@ -126,10 +74,6 @@ def init_nn(vocab,
 
     temp = batch_norm
 
-    if pool_1:
-        temp = layers.MaxPooling2D(pool_size=2,
-                                   strides=2)(temp)
-
     convolution = layers.Conv2D(filters=64,
                                 kernel_size=conv_size,
                                 strides=conv_stride,
@@ -148,10 +92,6 @@ def init_nn(vocab,
 
     temp = batch_norm
 
-    if pool_2:
-        temp = layers.MaxPooling2D(pool_size=2,
-                                   strides=2)(temp)
-
     flatten = layers.Flatten()(temp)
 
     # RNN input layer
@@ -160,20 +100,7 @@ def init_nn(vocab,
     embedding = layers.Embedding(input_dim=vocab_size,
                                  output_dim=embedding_dim)(rnn_input)
 
-    if early_merge:
-
-        flatten_size = flatten.type_spec.shape[1]
-
-        # repeat the flatten vector
-        repeat = layers.Lambda(repeat_vector,
-                               output_shape=(None, flatten_size))([flatten, embedding])
-
-        # concatenate the embedding and repeat
-        concatenate = layers.Concatenate()([embedding, repeat])
-        temp = concatenate
-
-    else:
-        temp = embedding
+    temp = embedding
 
     for i in range(lstm_depth - 1):
         LSTM = layers.LSTM(lstm_breadth,
@@ -188,18 +115,14 @@ def init_nn(vocab,
                        activation="relu",
                        return_sequences=True)(temp)
 
-    if not early_merge:
+    flatten_size = flatten.type_spec.shape[1]
 
-        flatten_size = flatten.type_spec.shape[1]
+    # repeat the flatten vector
+    repeat = layers.Lambda(repeat_vector,
+                           output_shape=(None, flatten_size))([flatten, LSTM])
 
-        # repeat the flatten vector
-        repeat = layers.Lambda(repeat_vector,
-                               output_shape=(None, flatten_size))([flatten, LSTM])
-
-        concatenate = layers.Concatenate()([LSTM, repeat])
-        temp = concatenate
-    else:
-        temp = LSTM
+    concatenate = layers.Concatenate()([LSTM, repeat])
+    temp = concatenate
 
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(temp)
     batch_norm = layers.BatchNormalization()(dropout)
