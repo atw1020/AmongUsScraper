@@ -28,69 +28,6 @@ def get_vocab(directory):
     return text_utils.get_vocab(names)
 
 
-def train_random_model(training_data,
-                       test_data,
-                       vocab,
-                       repeats=10,
-                       automatic=False):
-    """
-
-    train a randomly generated model
-
-    :param training_data: dataset to train on
-    :param test_data: testing data
-    :param vocab: vocabulary
-    :param repeats: number of times to repeat the experiment
-    :param automatic: whether or not to automaticaly store the results
-    :return: None
-    """
-
-    hyperparameters = initalizer.get_random_hyperparameters()
-
-    keys = sorted(hyperparameters.keys())
-    print(", ".join(keys), "training accuracy", "test accuracy", sep=", ")
-
-    for i in range(repeats):
-
-        while True:
-            try:
-                model, kwargs = initalizer.init_random_nn(vocab)
-                break
-            except ValueError:
-                continue
-
-        print(", ".join([str(kwargs[key]) for key in keys]))
-
-        # fit the model
-        model.fit(training_data,
-                  validation_data=test_data,
-                  epochs=300)
-
-        training_accuracy = model.evaluate(training_data)[1]
-        test_accuracy = model.evaluate(test_data)[1]
-
-        # print the values
-        print(", ".join([str(kwargs[key]) for key in keys]),
-              training_accuracy,
-              test_accuracy,
-              sep=", ")
-
-        if not automatic:
-            input("process completed, press any key to continue...")
-
-        else:
-            # automatically store the results and continue
-            with open("src/Models/Text_Recognition/text recognition hyperparameters.txt", "a") as file:
-
-                # write the data
-                items = [str(kwargs[key]) for key in keys] + [str(training_accuracy), str(test_accuracy)]
-
-                file.write(", ".join(items))
-
-                # write the newline
-                file.write("\n")
-
-
 def train_model(training_data,
                 test_data,
                 vocab):
@@ -104,9 +41,7 @@ def train_model(training_data,
     :return: trained model
     """
 
-    model = initalizer.init_nn(vocab,
-                               early_merge=False,
-                               lr=0.03)
+    model = initalizer.init_nn(vocab, None)
 
     model.fit(training_data,
               validation_data=test_data,
@@ -155,11 +90,14 @@ def main():
                                                         "Test Data"),
                                            vocab=vocab)
 
+    model = train_model(training_data, test_data, vocab)
+
     tuner = Hyperband(lambda hp: initalizer.init_nn(vocab, hp),
                       objective="val_accuracy",
-                      max_trials=50,
+                      max_epochs=300,
                       executions_per_trial=3,
-                      directory="Models/Hyperparameter Tuning")
+                      directory="Models",
+                      project_name="Text Recognition")
 
     # model = train_model(training_data, test_data, vocab)
     # model.save(constants.text_recognition)
