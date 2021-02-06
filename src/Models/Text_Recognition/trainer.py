@@ -103,13 +103,12 @@ def train_model(training_data,
     """
 
     model = initalizer.init_nn(vocab,
-                               image_dimensions=constants.meeting_dimensions_420p,
-                               early_merge=False,
-                               lr=0.03)
+                               image_dimensions=constants.meeting_dimensions,
+                               lr=0.001)
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=300)
+              epochs=50)
 
     return model
 
@@ -149,7 +148,8 @@ def main():
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Training Data"),
-                                               vocab=vocab)
+                                               vocab=vocab,
+                                               batch_size=1)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
@@ -168,7 +168,7 @@ def main():
                                                vocab=vocab,
                                                input_dim=constants.meeting_dimensions_420p)
 
-    model = train_model(high_res_data, None, vocab)
+    model = train_model(training_data, test_data, vocab)
     model.save(constants.text_recognition)
 
 
