@@ -6,7 +6,8 @@ Author: Arthur Wesley
 
 import os
 
-from kerastuner.tuners import Hyperband, BayesianOptimization
+from kerastuner.tuners import BayesianOptimization
+from kerastuner import HyperParameters
 
 from src import constants
 from src.Models.Text_Recognition import initalizer
@@ -41,7 +42,7 @@ def train_model(training_data,
     :return: trained model
     """
 
-    model = initalizer.init_nn(vocab, None)
+    model = initalizer.init_nn(vocab)
 
     model.fit(training_data,
               validation_data=test_data,

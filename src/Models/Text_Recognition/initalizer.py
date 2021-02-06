@@ -13,6 +13,8 @@ from tensorflow.keras.utils import plot_model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import backend as K
 
+from kerastuner import HyperParameters
+
 from src import constants
 from src.Models.Text_Recognition import trainer
 
@@ -23,7 +25,43 @@ def repeat_vector(args):
     return layers.RepeatVector(K.shape(sequence_layer)[1])(layer_to_repeat)
 
 
-def init_nn(vocab, hp):
+def init_hyperparameters():
+    """
+
+    initializes the hyperparameters for the model
+
+    :return:
+    """
+
+    hp = HyperParameters()
+    hp.Fixed("embedding dim", 512)
+
+    hp.Fixed("conv_1 size", 11)
+    hp.Fixed("conv_1 stride", 4)
+
+    hp.Fixed("conv_2 size", 11)
+    hp.Fixed("conv_2 stride", 4)
+
+    hp.Fixed("conv_3 size", 11)
+    hp.Fixed("conv_3 stride", 4)
+
+    hp.Fixed("conv_4 size", 11)
+    hp.Fixed("conv_4 stride", 4)
+
+    hp.Fixed("lstm depth", 1)
+    hp.Fixed("lstm breadth", 1024)
+
+    hp.Fixed("end depth", 1)
+    hp.Fixed("end breadth", 1024)
+
+    hp.Fixed("learning rate", 0.001)
+    hp.Fixed("dropout", 0.2)
+
+    return hp
+
+
+def init_nn(vocab,
+            hp=None):
     """
 
     creates the neural network
@@ -32,6 +70,9 @@ def init_nn(vocab, hp):
     :param hp: hyperparameters used
     :return: initialized model
     """
+
+    if hp is None:
+        hp = init_hyperparameters()
 
     embedding_dim = hp.Int("embedding dim", 256, 1024, 64)
 
@@ -52,7 +93,7 @@ def init_nn(vocab, hp):
 
     end_depth = hp.Int("end depth", 1, 10)
     end_breadth = hp.Int("end breadth", 512, 2048, 128)
-    lr = 10 ** hp.Float("learning rate", -5, -2)
+    lr = 10 ** hp.Float("learning rate", -3, -2)
 
     dropout_rate = hp.Float("dropout", 0.1, 0.5)
 
