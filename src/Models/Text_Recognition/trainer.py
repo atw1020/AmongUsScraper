@@ -6,6 +6,8 @@ Author: Arthur Wesley
 
 import os
 
+from kerastuner.tuners import Hyperband
+
 from src import constants
 from src.Models.Text_Recognition import initalizer
 from src.Models.Text_Recognition import text_utils
@@ -153,16 +155,18 @@ def main():
                                                         "Test Data"),
                                            vocab=vocab)
 
-    # train the model
-
-    train_random_model(training_data,
-                       test_data,
-                       vocab,
-                       automatic=True,
-                       repeats=50)
+    tuner = Hyperband(lambda hp: initalizer.init_nn(vocab, hp),
+                      objective="val_accuracy",
+                      max_trials=50,
+                      executions_per_trial=3,
+                      directory="Models/Hyperparameter Tuning")
 
     # model = train_model(training_data, test_data, vocab)
     # model.save(constants.text_recognition)
+
+    tuner.search(training_data,
+                 epochs=300,
+                 validation_data=test_data)
 
 
 if __name__ == "__main__":
