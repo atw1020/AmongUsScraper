@@ -50,9 +50,11 @@ def init_nn(vocab, hp):
     lstm_depth = hp.Int("lstm depth", 1, 10)
     lstm_breadth = hp.Int("lstm breadth", 512, 2048, 128)
 
-    end_depth = 1  # hp.Int("end depth", 1, 10)
+    end_depth = hp.Int("end depth", 1, 10)
     end_breadth = hp.Int("end breadth", 512, 2048, 128)
     lr = 10 ** hp.Float("learning rate", -5, -2)
+
+    dropout_rate = hp.Float("dropout", 0.1, 0.5)
 
     # reset the session
     K.clear_session()
@@ -76,7 +78,7 @@ def init_nn(vocab, hp):
                                 strides=conv_1_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=32,
@@ -84,7 +86,7 @@ def init_nn(vocab, hp):
                                 strides=conv_2_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     temp = batch_norm
@@ -98,7 +100,7 @@ def init_nn(vocab, hp):
                                 strides=conv_3_stride,
                                 activation="relu",
                                 padding="same")(temp)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=128,
@@ -106,7 +108,7 @@ def init_nn(vocab, hp):
                                 strides=conv_4_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     temp = batch_norm
@@ -142,7 +144,7 @@ def init_nn(vocab, hp):
         LSTM = layers.LSTM(lstm_breadth,
                            activation="relu",
                            return_sequences=True)(temp)
-        dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
+        dropout = layers.Dropout(rate=dropout_rate)(LSTM)
         batch_norm = layers.BatchNormalization()(dropout)
 
         temp = batch_norm
@@ -164,13 +166,13 @@ def init_nn(vocab, hp):
     else:
         temp = LSTM
 
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(temp)
+    dropout = layers.Dropout(rate=dropout_rate)(temp)
     batch_norm = layers.BatchNormalization()(dropout)
 
     for i in range(end_depth):
         dense = layers.Dense(units=end_breadth,
                              activation="relu")(batch_norm)
-        dropout = layers.Dropout(rate=constants.text_rec_dropout)(dense)
+        dropout = layers.Dropout(rate=dropout_rate)(dense)
         batch_norm = layers.BatchNormalization()(dropout)
 
     dense = layers.Dense(units=vocab_size,

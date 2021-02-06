@@ -90,11 +90,9 @@ def main():
                                                         "Test Data"),
                                            vocab=vocab)
 
-    model = train_model(training_data, test_data, vocab)
-
     tuner = Hyperband(lambda hp: initalizer.init_nn(vocab, hp),
                       objective="val_accuracy",
-                      max_epochs=300,
+                      max_epochs=100,
                       executions_per_trial=3,
                       directory="Models",
                       project_name="Text Recognition")
@@ -103,7 +101,7 @@ def main():
     # model.save(constants.text_recognition)
 
     tuner.search(training_data,
-                 epochs=300,
+                 epochs=100,
                  validation_data=test_data)
 
 
