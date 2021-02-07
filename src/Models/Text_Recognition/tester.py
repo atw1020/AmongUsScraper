@@ -61,6 +61,9 @@ def main():
 
     length_accuracy(training_data)
 
+    model = load_model(constants.text_recognition)
+    model.evaluate(training_data)
+
 
 if __name__ == "__main__":
     main()

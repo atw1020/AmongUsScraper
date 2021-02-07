@@ -9,8 +9,10 @@ import random
 
 from tensorflow.keras import Model
 from tensorflow.keras import layers
+
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.optimizers import Adam
+
 from tensorflow.keras import backend as K
 
 from src import constants
@@ -143,10 +145,8 @@ def init_nn(vocab,
                                 strides=conv_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
-    batch_norm = layers.BatchNormalization()(dropout)
 
-    temp = batch_norm
+    temp = convolution
 
     if pool_2:
         temp = layers.MaxPooling2D(pool_size=2,
@@ -242,7 +242,7 @@ def main():
 
     model = init_nn(vocab)
     model.summary()
-    # plot_model(model, to_file="RNN.png")
+    plot_model(model, to_file="RNN.png")
 
 
 if __name__ == "__main__":

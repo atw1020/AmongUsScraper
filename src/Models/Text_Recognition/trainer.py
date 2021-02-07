@@ -6,6 +6,8 @@ Author: Arthur Wesley
 
 import os
 
+from tensorflow.keras.callbacks import Callback
+
 from src import constants
 from src.Models.Text_Recognition import initalizer
 from src.Models.Text_Recognition import text_utils
@@ -104,11 +106,14 @@ def train_model(training_data,
 
     model = initalizer.init_nn(vocab,
                                early_merge=False,
-                               lr=0.001)
+                               lr=0.00003)
+
+    cb = TrueAccuracyCallback()
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=50)
+              epochs=50,
+              callbacks=[cb])
 
     return model
 
@@ -130,6 +135,21 @@ def get_model_vocab():
                                         "Test Data"))
 
     return text_utils.merge_vocab((train_vocab, test_vocab))
+
+
+class TrueAccuracyCallback(Callback):
+
+    def on_epoch_end(self, epoch, logs=None):
+        """
+
+
+
+        :param epoch:
+        :param logs:
+        :return:
+        """
+
+        print(self.model.predict())
 
 
 def main():
@@ -163,6 +183,9 @@ def main():
 
     model = train_model(training_data, test_data, vocab)
     model.save(constants.text_recognition)
+
+    model.evaluate(training_data)
+    model.evaluate(test_data)
 
 
 if __name__ == "__main__":
