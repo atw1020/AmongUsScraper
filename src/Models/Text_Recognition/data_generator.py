@@ -209,11 +209,6 @@ def main():
     dataset = gen_dataset(path,
                           batch_size=None)
 
-    for (x_img, x_ltr), y in dataset:
-        print(x_img.shape)
-        print(x_ltr.shape)
-        print(y.shape)
-
 
 if __name__ == "__main__":
     main()
