@@ -64,7 +64,7 @@ def train_random_model(training_data,
         # fit the model
         model.fit(training_data,
                   validation_data=test_data,
-                  epochs=50)
+                  epochs=3000)
 
         training_accuracy = model.evaluate(training_data)[1]
         test_accuracy = model.evaluate(test_data)[1]
@@ -104,15 +104,14 @@ def train_model(training_data,
     :return: trained model
     """
 
-    model = initalizer.init_nn(vocab,
-                               early_merge=False,
-                               lr=0.00003)
+    model = initalizer.init_nn(vocab)
 
     cb = TrueAccuracyCallback(training_data)
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=50,
+              epochs=300,
+              batch_size=data_generator.get_dataset_size("Data/Meeting Identifier/Training Data/"),
               callbacks=[cb])
 
     return model
@@ -178,7 +177,7 @@ def main():
                                                             "Meeting Identifier",
                                                             "Training Data"),
                                                vocab=vocab,
-                                               batch_size=1)
+                                               batch_size=64)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
