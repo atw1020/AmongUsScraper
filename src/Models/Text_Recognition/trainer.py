@@ -108,7 +108,7 @@ def train_model(training_data,
                                early_merge=False,
                                lr=0.00003)
 
-    cb = TrueAccuracyCallback()
+    cb = TrueAccuracyCallback(training_data)
 
     model.fit(training_data,
               validation_data=test_data,
@@ -139,17 +139,29 @@ def get_model_vocab():
 
 class TrueAccuracyCallback(Callback):
 
+    def __init__(self, training_data):
+        """
+
+        initalize the callback
+
+        :param training_data: training data to evaluate
+        """
+        super().__init__()
+
+        # initialize the training data
+        self.training_data = training_data
+
     def on_epoch_end(self, epoch, logs=None):
         """
 
+        print the true accuracy at the end of the epoch
 
-
-        :param epoch:
-        :param logs:
-        :return:
+        :param epoch: current epoch
+        :param logs: data logs from the epoch
+        :return: None
         """
 
-        print(self.model.predict())
+        self.model.evaluate(self.training_data)
 
 
 def main():
