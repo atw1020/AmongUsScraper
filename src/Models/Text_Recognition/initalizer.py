@@ -178,6 +178,7 @@ def init_nn(vocab,
     for i in range(lstm_depth - 1):
         LSTM = layers.LSTM(lstm_breadth,
                            activation="relu",
+                           recurrent_dropout=constants.text_rec_dropout,
                            return_sequences=True)(temp)
         dropout = layers.Dropout(rate=constants.text_rec_dropout)(LSTM)
         batch_norm = layers.BatchNormalization()(dropout)
@@ -186,6 +187,7 @@ def init_nn(vocab,
 
     LSTM = layers.LSTM(lstm_breadth,
                        activation="relu",
+                       recurrent_dropout=constants.text_rec_dropout,
                        return_sequences=True)(temp)
 
     if not early_merge:

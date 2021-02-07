@@ -110,7 +110,7 @@ def train_model(training_data,
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=3000,
+              epochs=300,
               callbacks=[cb])
 
     return model
