@@ -62,7 +62,7 @@ def train_random_model(training_data,
         # fit the model
         model.fit(training_data,
                   validation_data=test_data,
-                  epochs=300)
+                  epochs=50)
 
         training_accuracy = model.evaluate(training_data)[1]
         test_accuracy = model.evaluate(test_data)[1]
@@ -104,11 +104,11 @@ def train_model(training_data,
 
     model = initalizer.init_nn(vocab,
                                early_merge=False,
-                               lr=0.03)
+                               lr=0.001)
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=300)
+              epochs=50)
 
     return model
 
@@ -145,7 +145,8 @@ def main():
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Training Data"),
-                                               vocab=vocab)
+                                               vocab=vocab,
+                                               batch_size=1)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
@@ -154,14 +155,14 @@ def main():
 
     # train the model
 
-    train_random_model(training_data,
+    """train_random_model(training_data,
                        test_data,
                        vocab,
                        automatic=True,
-                       repeats=50)
+                       repeats=50)"""
 
-    # model = train_model(training_data, test_data, vocab)
-    # model.save(constants.text_recognition)
+    model = train_model(training_data, test_data, vocab)
+    model.save(constants.text_recognition)
 
 
 if __name__ == "__main__":
