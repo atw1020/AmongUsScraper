@@ -106,8 +106,6 @@ def init_nn(vocab,
     pool_1 = bool(0)
     pool_2 = bool(0)
 
-    early_merge = bool(1)
-
     # get the size of the vocabulary
     vocab_size = len(vocab.keys()) + 2
 
@@ -168,20 +166,7 @@ def init_nn(vocab,
     embedding = layers.Embedding(input_dim=vocab_size,
                                  output_dim=embedding_dim)(rnn_input)
 
-    if early_merge:
-
-        flatten_size = flatten.type_spec.shape[1]
-
-        # repeat the flatten vector
-        repeat = layers.Lambda(repeat_vector,
-                               output_shape=(None, flatten_size))([flatten, embedding])
-
-        # concatenate the embedding and repeat
-        concatenate = layers.Concatenate()([embedding, repeat])
-        temp = concatenate
-
-    else:
-        temp = embedding
+    temp = embedding
 
     dense = layers.Dense(lstm_breadth,
                          activation="relu",)(flatten)
