@@ -31,10 +31,20 @@ def take_dataset_sample(datasets,
     """
 
     # get the sample sizes
-    sample_size = [int(current_fraction * subset_sizes[j]) for j in range(constants.name_length)]
+    sample_size = [int(current_fraction * subset_sizes[j])
+                   for j in range(constants.name_length)]
+
+    # unbatch the elements
+    datasets = [dataset.unbatch() for dataset in datasets]
 
     current_dataset = [datasets[j].take(sample_size[j])
                        for j in range(constants.name_length)]
+
+    # batch the datasets
+    for i in range(constants.name_length):
+
+        if sample_size[i] != 0:
+            current_dataset[i] = current_dataset[i].batch(sample_size[i])
 
     # concatenate the datasets
     dataset = current_dataset[0]
@@ -42,7 +52,7 @@ def take_dataset_sample(datasets,
     for ds in current_dataset[1:]:
         dataset = dataset.concatenate(ds)
 
-    return dataset
+    return dataset.shuffle(buffer_size=1000)
 
 
 def print_learning_curves(training_path,
@@ -66,7 +76,7 @@ def print_learning_curves(training_path,
     training_data = [data_generator.gen_dataset_batchless(training_path,
                                                           i + 1,
                                                           vocab,
-                                                          None,
+                                                          1,
                                                           subset_sizes[i])
                      for i in range(constants.name_length)]
     test_data = data_generator.gen_dataset(test_path)
@@ -78,6 +88,9 @@ def print_learning_curves(training_path,
 
         # increment i
         i += 1
+
+        if i != steps:
+            continue
 
         # initialize the model
         model = initalizer.init_nn(vocab)
