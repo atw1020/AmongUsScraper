@@ -47,12 +47,26 @@ def take_dataset_sample(datasets,
             current_dataset[i] = current_dataset[i].batch(sample_size[i])
 
     # concatenate the datasets
-    dataset = current_dataset[0]
+    i = 0
 
-    for ds in current_dataset[1:]:
-        dataset = dataset.concatenate(ds)
+    while sample_size[i] < 1:
+        # keep increasing i until we find something that works
+        i += 1
 
-    return dataset  # dataset.shuffle(buffer_size=1000)
+    dataset = current_dataset[i]
+    i += 1
+
+    # concatenate the rest
+    while i < constants.name_length:
+
+        # concatenate only if data exists
+        if sample_size[i] > 0:
+            dataset = dataset.concatenate(current_dataset[i])
+
+        # either way, increment the loop counter
+        i += 1
+
+    return dataset.shuffle(buffer_size=1000)
 
 
 def print_learning_curves(training_path,
@@ -91,9 +105,6 @@ def print_learning_curves(training_path,
         # increment i
         i += 1
 
-        if i != steps:
-            continue
-
         # initialize the model
         model = initalizer.init_nn(vocab)
 
@@ -102,9 +113,8 @@ def print_learning_curves(training_path,
 
         # train a model on the dataset
         model.fit(dataset,
-                  verbose=1,
-                  epochs=300,
-                  validation_data=test_data)
+                  verbose=0,
+                  epochs=300)
 
         training_acc = model.evaluate(dataset,
                                       verbose=0)
