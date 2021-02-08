@@ -76,7 +76,7 @@ def init_nn(vocab,
     if hp is None:
         hp = init_hyperparameters()
 
-    embedding_dim = hp.Int("embedding dim", 256, 1024, 64)
+    embedding_dim = hp.Int("embedding dim", 256, 512, 64)
 
     conv_1_size = hp.Int("conv_1 size", 5, 17, 2)
     conv_1_stride = hp.Int("conv_1 stride", 2, 5)
@@ -91,10 +91,10 @@ def init_nn(vocab,
     conv_4_stride = hp.Int("conv_4 stride", 2, 5)
 
     lstm_depth = hp.Int("lstm depth", 1, 10)
-    lstm_breadth = hp.Int("lstm breadth", 512, 2048, 128)
+    lstm_breadth = hp.Int("lstm breadth", 64, 512, 64)
 
     end_depth = hp.Int("end depth", 1, 10)
-    end_breadth = hp.Int("end breadth", 512, 2048, 128)
+    end_breadth = hp.Int("end breadth", 64, 512, 64)
     lr = 10 ** hp.Float("learning rate", -3, -2)
 
     dropout_rate = hp.Float("dropout", 0.1, 0.5)

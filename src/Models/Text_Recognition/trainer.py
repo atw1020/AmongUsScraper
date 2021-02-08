@@ -90,15 +90,10 @@ class TrueAccuracyCallback(Callback):
         # initialize the training data
         self.training_data = training_data
 
+    def __copy__(self):
+        return type(self)(self.training_data)
+
     def __deepcopy__(self, memodict={}):
-        """
-
-        deep copy of the object
-
-        :param memodict:
-        :return:
-        """
-
         id_self = id(self)
         _copy = memodict[id_self]
 
@@ -106,7 +101,7 @@ class TrueAccuracyCallback(Callback):
             _copy = type(self)(copy.deepcopy(self.training_data, memodict))
             memodict[id_self] = _copy
 
-        return copy
+        return _copy
 
     def on_epoch_end(self, epoch, logs=None):
         """
@@ -157,7 +152,7 @@ def main():
     tuner.search(training_data,
                  epochs=300,
                  validation_data=test_data,
-                 callbacks=[cb])
+                 callbacks=[])
 
 
 if __name__ == "__main__":
