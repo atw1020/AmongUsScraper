@@ -126,11 +126,6 @@ def main():
     model = train_model(training_data, test_data, vocab)
     model.save(constants.text_recognition)
 
-    """train_random_model(training_data,
-                       test_data,
-                       vocab,
-                       automatic=True,
-                       repeats=50)"""
     tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
                                  objective="val_accuracy",
                                  max_trials=50,
