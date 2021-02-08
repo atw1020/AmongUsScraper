@@ -5,6 +5,7 @@ Author: Arthur Wesley
 """
 
 import os
+import copy
 
 from tensorflow.keras.callbacks import Callback
 
@@ -89,6 +90,24 @@ class TrueAccuracyCallback(Callback):
         # initialize the training data
         self.training_data = training_data
 
+    def __deepcopy__(self, memodict={}):
+        """
+
+        deep copy of the object
+
+        :param memodict:
+        :return:
+        """
+
+        id_self = id(self)
+        _copy = memodict[id_self]
+
+        if _copy is None:
+            _copy = type(self)(copy.deepcopy(self.training_data, memodict))
+            memodict[id_self] = _copy
+
+        return copy
+
     def on_epoch_end(self, epoch, logs=None):
         """
 
@@ -123,8 +142,8 @@ def main():
                                                         "Test Data"),
                                            vocab=vocab)
 
-    model = train_model(training_data, test_data, vocab)
-    model.save(constants.text_recognition)
+    """model = train_model(training_data, test_data, vocab)
+    model.save(constants.text_recognition)"""
 
     tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
                                  objective="val_accuracy",
@@ -132,9 +151,6 @@ def main():
                                  executions_per_trial=1,
                                  directory="Models",
                                  project_name="Bayesian Text Recognition")
-
-    """model = train_model(training_data, test_data, vocab)
-    model.save(constants.text_recognition)"""
 
     cb = TrueAccuracyCallback(training_data)
 
