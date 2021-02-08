@@ -56,7 +56,7 @@ def init_hyperparameters():
     hp.Fixed("end depth", 1)
     hp.Fixed("end breadth", 256)
 
-    hp.Fixed("learning rate", 0.001)
+    hp.Fixed("learning rate", -3)
     hp.Fixed("dropout", 0.2)
 
     return hp
@@ -76,26 +76,26 @@ def init_nn(vocab,
     if hp is None:
         hp = init_hyperparameters()
 
-    embedding_dim = 512  # hp.Int("embedding dim", 256, 1024, 64)
+    embedding_dim = hp.Int("embedding dim", 256, 1024, 64)
 
-    conv_1_size = 18  # hp.Int("conv_1 size", 5, 17, 2)
-    conv_1_stride = 4  # hp.Int("conv_1 stride", 2, 5)
+    conv_1_size = hp.Int("conv_1 size", 5, 17, 2)
+    conv_1_stride = hp.Int("conv_1 stride", 2, 5)
 
-    conv_2_size = 18  # hp.Int("conv_2 size", 5, 17, 2)
-    conv_2_stride = 4  # hp.Int("conv_2 stride", 2, 5)
+    conv_2_size = hp.Int("conv_2 size", 5, 17, 2)
+    conv_2_stride = hp.Int("conv_2 stride", 2, 5)
 
-    conv_3_size = 18  # hp.Int("conv_3 size", 5, 17, 2)
-    conv_3_stride = 4  # hp.Int("conv_3 stride", 2, 5)
+    conv_3_size = hp.Int("conv_3 size", 5, 17, 2)
+    conv_3_stride = hp.Int("conv_3 stride", 2, 5)
 
-    conv_4_size = 18  # hp.Int("conv_4 size", 5, 17, 2)
-    conv_4_stride = 4  # hp.Int("conv_4 stride", 2, 5)
+    conv_4_size = hp.Int("conv_4 size", 5, 17, 2)
+    conv_4_stride = hp.Int("conv_4 stride", 2, 5)
 
-    lstm_depth = 2  # hp.Int("lstm depth", 1, 10)
-    lstm_breadth = 256  # hp.Int("lstm breadth", 512, 2048, 128)
+    lstm_depth = hp.Int("lstm depth", 1, 10)
+    lstm_breadth = hp.Int("lstm breadth", 512, 2048, 128)
 
-    end_depth = 1  # hp.Int("end depth", 1, 10)
-    end_breadth = 256  # hp.Int("end breadth", 512, 2048, 128)
-    lr = 0.001  # 10 ** hp.Float("learning rate", -3, -2)
+    end_depth = hp.Int("end depth", 1, 10)
+    end_breadth = hp.Int("end breadth", 512, 2048, 128)
+    lr = 10 ** hp.Float("learning rate", -3, -2)
 
     dropout_rate = hp.Float("dropout", 0.1, 0.5)
 
