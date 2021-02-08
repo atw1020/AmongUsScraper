@@ -16,6 +16,39 @@ from src import constants
 from src.Models.Text_Recognition import trainer, text_utils, data_generator
 
 
+def print_learning_curves(training_path,
+                          test_path,
+                          steps=10):
+    """
+
+    print the learning curves of a model
+
+    :param training_path: path to the training data
+    :param test_path: path to the test data
+    :param steps: number of dataset steps to take
+    :return: None
+    """
+
+    # initialize constants
+    dataset_sizes = data_generator.get_dataset_sizes(training_path)
+    vocab = trainer.get_model_vocab()
+
+    # load the data
+    training_data = [data_generator.gen_dataset_batchless(training_path,
+                                                          i + 1,
+                                                          vocab,
+                                                          None,
+                                                          dataset_sizes[i]) for i in range(constants.name_length)]
+    test_data = data_generator.gen_dataset(test_path)
+
+    # go through the training set
+
+    for i in range(steps):
+
+        # increment i
+        i += 1
+
+
 def length_accuracy(dataset):
     """
 

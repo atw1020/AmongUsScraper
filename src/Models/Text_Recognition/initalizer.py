@@ -36,7 +36,7 @@ def init_hyperparameters():
     """
 
     hp = HyperParameters()
-    hp.Fixed("embedding dim", 512)
+    hp.Fixed("embedding dim", 9)
 
     hp.Fixed("conv_1 size", 18)
     hp.Fixed("conv_1 stride", 4)
@@ -51,10 +51,10 @@ def init_hyperparameters():
     hp.Fixed("conv_4 stride", 4)
 
     hp.Fixed("lstm depth", 2)
-    hp.Fixed("lstm breadth", 256)
+    hp.Fixed("lstm breadth", 8)
 
     hp.Fixed("end depth", 1)
-    hp.Fixed("end breadth", 256)
+    hp.Fixed("end breadth", 8)
 
     hp.Fixed("learning rate", -3)
     hp.Fixed("dropout", constants.text_rec_dropout)
@@ -76,7 +76,7 @@ def init_nn(vocab,
     if hp is None:
         hp = init_hyperparameters()
 
-    embedding_dim = hp.Int("embedding dim", 256, 512, 64)
+    embedding_dim = int(2 ** hp.Float("embedding dim", 7, 9))
 
     conv_1_size = hp.Int("conv_1 size", 5, 17, 2)
     conv_1_stride = hp.Int("conv_1 stride", 2, 5)
@@ -91,10 +91,10 @@ def init_nn(vocab,
     conv_4_stride = hp.Int("conv_4 stride", 2, 5)
 
     lstm_depth = hp.Int("lstm depth", 1, 10)
-    lstm_breadth = hp.Int("lstm breadth", 64, 512, 64)
+    lstm_breadth = int(2 ** hp.Float("lstm breadth", 6, 12))
 
     end_depth = hp.Int("end depth", 1, 10)
-    end_breadth = hp.Int("end breadth", 64, 512, 64)
+    end_breadth = int(2 ** hp.Float("end breadth", 6, 12))
     lr = 10 ** hp.Float("learning rate", -3, -2)
 
     dropout_rate = hp.Float("dropout", 0.1, 0.5)
