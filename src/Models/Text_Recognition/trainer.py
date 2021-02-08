@@ -133,15 +133,15 @@ def main():
                                  directory="Models",
                                  project_name="Bayesian Text Recognition")
 
-    model = train_model(training_data, test_data, vocab)
-    model.save(constants.text_recognition)
+    """model = train_model(training_data, test_data, vocab)
+    model.save(constants.text_recognition)"""
 
-    model.evaluate(training_data)
-    model.evaluate(test_data)
+    cb = TrueAccuracyCallback(training_data)
 
     tuner.search(training_data,
-                 epochs=50,
-                 validation_data=test_data)
+                 epochs=300,
+                 validation_data=test_data,
+                 callbacks=[cb])
 
 
 if __name__ == "__main__":
