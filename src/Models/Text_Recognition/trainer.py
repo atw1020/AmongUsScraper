@@ -143,6 +143,7 @@ def main():
 
     model.evaluate(training_data)
     model.evaluate(test_data)
+
     tuner.search(training_data,
                  epochs=50,
                  validation_data=test_data)

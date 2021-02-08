@@ -231,7 +231,7 @@ def main():
 
     model = init_nn(vocab)
     model.summary()
-    # plot_model(model, to_file="RNN.png")
+    plot_model(model, to_file="RNN.png")
 
 
 if __name__ == "__main__":
