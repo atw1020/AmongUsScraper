@@ -36,25 +36,25 @@ def init_hyperparameters():
     """
 
     hp = HyperParameters()
-    hp.Fixed("embedding dim", 128)
+    hp.Fixed("embedding dim", 512)
 
-    hp.Fixed("conv_1 size", 11)
-    hp.Fixed("conv_1 stride", 3)
+    hp.Fixed("conv_1 size", 18)
+    hp.Fixed("conv_1 stride", 4)
 
-    hp.Fixed("conv_2 size", 11)
-    hp.Fixed("conv_2 stride", 3)
+    hp.Fixed("conv_2 size", 18)
+    hp.Fixed("conv_2 stride", 4)
 
-    hp.Fixed("conv_3 size", 11)
-    hp.Fixed("conv_3 stride", 3)
+    hp.Fixed("conv_3 size", 18)
+    hp.Fixed("conv_3 stride", 4)
 
-    hp.Fixed("conv_4 size", 11)
-    hp.Fixed("conv_4 stride", 3)
+    hp.Fixed("conv_4 size", 18)
+    hp.Fixed("conv_4 stride", 4)
 
     hp.Fixed("lstm depth", 2)
     hp.Fixed("lstm breadth", 256)
 
-    hp.Fixed("end depth", 2)
-    hp.Fixed("end breadth", 1024)
+    hp.Fixed("end depth", 1)
+    hp.Fixed("end breadth", 256)
 
     hp.Fixed("learning rate", 0.001)
     hp.Fixed("dropout", 0.2)
