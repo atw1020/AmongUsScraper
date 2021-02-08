@@ -115,7 +115,7 @@ def generator(directory, length, vocab):
         y = text_utils.get_character_label(name_from_filepath(files[j]),
                                            vocab)
 
-        yield (x1, x2), y
+        yield x1, y
 
         j += 1
 
@@ -138,10 +138,8 @@ def gen_dataset_batchless(path,
     """
 
     dataset = tf.data.Dataset.from_generator(lambda: generator(path, length, vocab),
-                                             output_signature=((tf.TensorSpec(shape=constants.meeting_dimensions + (3,),
+                                             output_signature=(tf.TensorSpec(shape=constants.meeting_dimensions + (3,),
                                                                               dtype=tf.int8),
-                                                                tf.TensorSpec(shape=(None,),
-                                                                                    dtype=tf.float64)),
                                                                tf.TensorSpec(shape=(None,),
                                                                              dtype=tf.int8)))
 
