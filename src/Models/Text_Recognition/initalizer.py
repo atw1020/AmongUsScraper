@@ -7,8 +7,6 @@ Author: Arthur Wesley
 import os
 import random
 
-
-import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras import layers
 
@@ -68,6 +66,7 @@ def init_nn(vocab,
             conv_stride=4,
             pool_1=0,
             pool_2=0,
+            embedding_dim=512,
             early_merge=0,
             lstm_breadth=256,
             lstm_depth=2,
@@ -78,6 +77,7 @@ def init_nn(vocab,
 
     creates the neural network
 
+    :param embedding_dim: dimension of the embedding layer
     :param early_merge: whether or not to merge the text and image networks before or
                         after the LSTM
     :param pool_2: whether or not to use the first pooling layer
@@ -156,6 +156,27 @@ def init_nn(vocab,
 
     flatten = layers.Flatten()(temp)
 
+    # RNN input layer
+    rnn_input = layers.Input(shape=(None,))
+
+    embedding = layers.Embedding(input_dim=vocab_size,
+                                 output_dim=embedding_dim)(rnn_input)
+
+    if early_merge:
+
+        flatten_size = flatten.type_spec.shape[1]
+
+        # repeat the flatten vector
+        repeat = layers.Lambda(repeat_vector,
+                               output_shape=(None, flatten_size))([flatten, embedding])
+
+        # concatenate the embedding and repeat
+        concatenate = layers.Concatenate()([embedding, repeat])
+        temp = concatenate
+
+    else:
+        temp = embedding
+
     dense = layers.Dense(lstm_breadth,
                          activation="relu",)(flatten)
 
@@ -163,9 +184,7 @@ def init_nn(vocab,
         GRU = layers.GRU(lstm_breadth,
                          activation="relu",
                          recurrent_dropout=constants.text_rec_dropout,
-                         return_sequences=True)(tf.constant(0,
-                                                            shape=(1, 1, 1),
-                                                            dtype=tf.float32),
+                         return_sequences=True)(temp,
                                                 initial_state=dense)
         dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
         batch_norm = layers.BatchNormalization()(dropout)
@@ -194,7 +213,7 @@ def init_nn(vocab,
 
     output = layers.Softmax()(dense)
 
-    model = Model(inputs=image_input_layer,
+    model = Model(inputs=[image_input_layer, rnn_input],
                   outputs=output,
                   name="Text_Reader")
 
