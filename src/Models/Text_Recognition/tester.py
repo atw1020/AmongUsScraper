@@ -95,7 +95,7 @@ def print_learning_curves(training_path,
         test_acc = model.evaluate(test_data,
                                   verbose=0)
 
-        print(float(i) * sum(subset_sizes) / steps, training_acc, test_acc, sep=", ")
+        print(int(float(i) * sum(subset_sizes) / steps), training_acc[1], test_acc[1], sep=", ")
 
 
 def length_accuracy(dataset):
@@ -133,7 +133,7 @@ def main():
     :return:
     """
 
-    vocab = trainer.get_model_vocab()
+    """vocab = trainer.get_model_vocab()
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
@@ -141,10 +141,10 @@ def main():
                                                vocab=vocab,
                                                shuffle=False)
 
-    length_accuracy(training_data)
+    length_accuracy(training_data)"""
 
-    model = load_model(constants.text_recognition)
-    model.evaluate(training_data)
+    print_learning_curves("Data/Meeting Identifier/Training Data",
+                          "Data/Meeting Identifier/Test Data")
 
 
 if __name__ == "__main__":
