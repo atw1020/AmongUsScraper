@@ -55,11 +55,14 @@ def main():
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
-                                                            "Training Data"),
+                                                            "Test Data"),
                                                vocab=vocab,
                                                shuffle=False)
 
     length_accuracy(training_data)
+
+    model = load_model(constants.text_recognition)
+    model.evaluate(training_data)
 
 
 if __name__ == "__main__":

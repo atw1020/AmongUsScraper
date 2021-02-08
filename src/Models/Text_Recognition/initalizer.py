@@ -9,8 +9,10 @@ import random
 
 from tensorflow.keras import Model
 from tensorflow.keras import layers
+
 from tensorflow.keras.utils import plot_model
 from tensorflow.keras.optimizers import Adam
+
 from tensorflow.keras import backend as K
 
 from kerastuner import HyperParameters
@@ -181,31 +183,27 @@ def init_nn(vocab,
     else:
         temp = embedding
 
+    dense = layers.Dense(lstm_breadth,
+                         activation="relu",)(flatten)
+
     for i in range(lstm_depth - 1):
-        LSTM = layers.LSTM(lstm_breadth,
-                           activation="relu",
-                           return_sequences=True)(temp)
-        dropout = layers.Dropout(rate=dropout_rate)(LSTM)
+        GRU = layers.GRU(lstm_breadth,
+                         activation="relu",
+                         recurrent_dropout=constants.text_rec_dropout,
+                         return_sequences=True)(temp,
+                                                initial_state=dense)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
         batch_norm = layers.BatchNormalization()(dropout)
 
         temp = batch_norm
 
-    LSTM = layers.LSTM(lstm_breadth,
-                       activation="relu",
-                       return_sequences=True)(temp)
+    GRU = layers.GRU(lstm_breadth,
+                     activation="relu",
+                     recurrent_dropout=constants.text_rec_dropout,
+                     return_sequences=True)(temp,
+                                            initial_state=dense)
 
-    if not early_merge:
-
-        flatten_size = flatten.type_spec.shape[1]
-
-        # repeat the flatten vector
-        repeat = layers.Lambda(repeat_vector,
-                               output_shape=(None, flatten_size))([flatten, LSTM])
-
-        concatenate = layers.Concatenate()([LSTM, repeat])
-        temp = concatenate
-    else:
-        temp = LSTM
+    temp = GRU
 
     dropout = layers.Dropout(rate=dropout_rate)(temp)
     batch_norm = layers.BatchNormalization()(dropout)
