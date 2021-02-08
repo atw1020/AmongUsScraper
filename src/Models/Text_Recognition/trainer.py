@@ -46,6 +46,7 @@ def train_model(training_data,
     """
 
     model = initalizer.init_nn(vocab)
+    model.summary()
 
     cb = TrueAccuracyCallback(training_data)
 
@@ -137,10 +138,14 @@ def main():
                                                         "Test Data"),
                                            vocab=vocab)
 
-    """model = train_model(training_data, test_data, vocab)
-    model.save(constants.text_recognition)"""
+    for (x1, x2), y in training_data:
+        print(x2)
+        break
 
-    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
+    model = train_model(training_data, test_data, vocab)
+    model.save(constants.text_recognition)
+
+    """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
                                  objective="val_accuracy",
                                  max_trials=50,
                                  executions_per_trial=1,
@@ -152,7 +157,7 @@ def main():
     tuner.search(training_data,
                  epochs=300,
                  validation_data=test_data,
-                 callbacks=[])
+                 callbacks=[])"""
 
 
 if __name__ == "__main__":

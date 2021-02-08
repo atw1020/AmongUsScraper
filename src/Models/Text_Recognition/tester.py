@@ -52,7 +52,7 @@ def take_dataset_sample(datasets,
     for ds in current_dataset[1:]:
         dataset = dataset.concatenate(ds)
 
-    return dataset.shuffle(buffer_size=1000)
+    return dataset  # dataset.shuffle(buffer_size=1000)
 
 
 def print_learning_curves(training_path,
@@ -79,7 +79,9 @@ def print_learning_curves(training_path,
                                                           1,
                                                           subset_sizes[i])
                      for i in range(constants.name_length)]
-    test_data = data_generator.gen_dataset(test_path)
+
+    test_data = data_generator.gen_dataset(test_path,
+                                           vocab=vocab)
 
     print("Dataset Size", "training accuracy", "test accuracy", sep=", ")
 
@@ -100,8 +102,9 @@ def print_learning_curves(training_path,
 
         # train a model on the dataset
         model.fit(dataset,
-                  verbose=0,
-                  epochs=300)
+                  verbose=1,
+                  epochs=300,
+                  validation_data=test_data)
 
         training_acc = model.evaluate(dataset,
                                       verbose=0)
@@ -146,15 +149,19 @@ def main():
     :return:
     """
 
-    """vocab = trainer.get_model_vocab()
-
+    """
+    vocab = trainer.get_model_vocab()
+    
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
-                                                            "Test Data"),
+                                                            "Training Data"),
                                                vocab=vocab,
-                                               shuffle=False)
+                                               shuffle=False,
+                                               batch_size=None)
 
-    length_accuracy(training_data)"""
+    length_accuracy(training_data)
+    
+    # """
 
     print_learning_curves("Data/Meeting Identifier/Training Data",
                           "Data/Meeting Identifier/Test Data")
