@@ -57,7 +57,7 @@ def init_hyperparameters():
     hp.Fixed("end breadth", 256)
 
     hp.Fixed("learning rate", -3)
-    hp.Fixed("dropout", 0.2)
+    hp.Fixed("dropout", constants.text_rec_dropout)
 
     return hp
 
@@ -102,10 +102,6 @@ def init_nn(vocab,
     # reset the session
     K.clear_session()
 
-    # convert booleans from integers to booleans
-    pool_1 = bool(0)
-    pool_2 = bool(0)
-
     # get the size of the vocabulary
     vocab_size = len(vocab.keys()) + 2
 
@@ -119,7 +115,7 @@ def init_nn(vocab,
                                 strides=conv_1_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=32,
@@ -127,21 +123,17 @@ def init_nn(vocab,
                                 strides=conv_2_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     temp = batch_norm
-
-    if pool_1:
-        temp = layers.MaxPooling2D(pool_size=2,
-                                   strides=2)(temp)
 
     convolution = layers.Conv2D(filters=64,
                                 kernel_size=conv_3_size,
                                 strides=conv_3_stride,
                                 activation="relu",
                                 padding="same")(temp)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=128,
@@ -149,14 +141,10 @@ def init_nn(vocab,
                                 strides=conv_4_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     temp = batch_norm
-
-    if pool_2:
-        temp = layers.MaxPooling2D(pool_size=2,
-                                   strides=2)(temp)
 
     flatten = layers.Flatten()(temp)
 
@@ -174,29 +162,29 @@ def init_nn(vocab,
     for i in range(lstm_depth - 1):
         GRU = layers.GRU(lstm_breadth,
                          activation="relu",
-                         recurrent_dropout=constants.text_rec_dropout,
+                         recurrent_dropout=dropout_rate,
                          return_sequences=True)(temp,
                                                 initial_state=dense)
-        dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
+        dropout = layers.Dropout(rate=dropout_rate)(GRU)
         batch_norm = layers.BatchNormalization()(dropout)
 
         temp = batch_norm
 
     GRU = layers.GRU(lstm_breadth,
                      activation="relu",
-                     recurrent_dropout=constants.text_rec_dropout,
+                     recurrent_dropout=dropout_rate,
                      return_sequences=True)(temp,
                                             initial_state=dense)
 
     temp = GRU
 
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(temp)
+    dropout = layers.Dropout(rate=dropout_rate)(temp)
     batch_norm = layers.BatchNormalization()(dropout)
 
     for i in range(end_depth):
         dense = layers.Dense(units=end_breadth,
                              activation="relu")(batch_norm)
-        dropout = layers.Dropout(rate=constants.text_rec_dropout)(dense)
+        dropout = layers.Dropout(rate=dropout_rate)(dense)
         batch_norm = layers.BatchNormalization()(dropout)
 
     dense = layers.Dense(units=vocab_size,
