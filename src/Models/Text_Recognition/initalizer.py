@@ -145,8 +145,10 @@ def init_nn(vocab,
                                 strides=conv_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    batch_norm = layers.BatchNormalization()(dropout)
 
-    temp = convolution
+    temp = batch_norm
 
     if pool_2:
         temp = layers.MaxPooling2D(pool_size=2,
