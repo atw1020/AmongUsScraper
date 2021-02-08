@@ -78,23 +78,23 @@ def init_nn(vocab,
 
     embedding_dim = int(2 ** hp.Float("embedding dim", 7, 9))
 
-    conv_1_size = hp.Int("conv_1 size", 5, 17, 2)
-    conv_1_stride = hp.Int("conv_1 stride", 2, 5)
+    conv_1_size = hp.Int("conv_1 size", 9, 18)
+    conv_1_stride = hp.Int("conv_1 stride", 2, 4)
 
-    conv_2_size = hp.Int("conv_2 size", 5, 17, 2)
-    conv_2_stride = hp.Int("conv_2 stride", 2, 5)
+    conv_2_size = hp.Int("conv_2 size", 9, 18)
+    conv_2_stride = hp.Int("conv_2 stride", 2, 4)
 
-    conv_3_size = hp.Int("conv_3 size", 5, 17, 2)
-    conv_3_stride = hp.Int("conv_3 stride", 2, 5)
+    conv_3_size = hp.Int("conv_3 size", 9, 18)
+    conv_3_stride = hp.Int("conv_3 stride", 2, 4)
 
-    conv_4_size = hp.Int("conv_4 size", 5, 17, 2)
-    conv_4_stride = hp.Int("conv_4 stride", 2, 5)
+    conv_4_size = hp.Int("conv_4 size", 9, 18)
+    conv_4_stride = hp.Int("conv_4 stride", 2, 4)
 
-    lstm_depth = hp.Int("lstm depth", 1, 10)
-    lstm_breadth = int(2 ** hp.Float("lstm breadth", 6, 12))
+    lstm_depth = hp.Int("lstm depth", 1, 2)
+    lstm_breadth = int(2 ** hp.Float("lstm breadth", 8, 12))
 
     end_depth = hp.Int("end depth", 1, 10)
-    end_breadth = int(2 ** hp.Float("end breadth", 6, 12))
+    end_breadth = int(2 ** hp.Float("end breadth", 8, 12))
     lr = 10 ** hp.Float("learning rate", -3, -2)
 
     dropout_rate = hp.Float("dropout", 0.1, 0.5)
