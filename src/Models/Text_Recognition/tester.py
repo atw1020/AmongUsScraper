@@ -71,7 +71,8 @@ def take_dataset_sample(datasets,
 
 def print_learning_curves(training_path,
                           test_path,
-                          steps=10):
+                          steps=10,
+                          trials=5):
     """
 
     print the learning curves of a model
@@ -79,6 +80,7 @@ def print_learning_curves(training_path,
     :param training_path: path to the training data
     :param test_path: path to the test data
     :param steps: number of dataset steps to take
+    :param trials: number of trials to take
     :return: None
     """
 
@@ -105,23 +107,25 @@ def print_learning_curves(training_path,
         # increment i
         i += 1
 
-        # initialize the model
-        model = initalizer.init_nn(vocab)
-
         # take a random sample from each length of dataset
         dataset = take_dataset_sample(training_data, subset_sizes, float(i) / steps)
 
-        # train a model on the dataset
-        model.fit(dataset,
-                  verbose=0,
-                  epochs=300)
+        for j in range(trials):
 
-        training_acc = model.evaluate(dataset,
+            # initialize the model
+            model = initalizer.init_nn(vocab)
+
+            # train a model on the dataset
+            model.fit(dataset,
+                      verbose=0,
+                      epochs=300)
+
+            training_acc = model.evaluate(dataset,
+                                          verbose=0)
+            test_acc = model.evaluate(test_data,
                                       verbose=0)
-        test_acc = model.evaluate(test_data,
-                                  verbose=0)
 
-        print(int(float(i) * sum(subset_sizes) / steps), training_acc[1], test_acc[1], sep=", ")
+            print(int(float(i) * sum(subset_sizes) / steps), training_acc[1], test_acc[1], sep=", ")
 
 
 def length_accuracy(dataset):
@@ -174,7 +178,8 @@ def main():
     # """
 
     print_learning_curves("Data/Meeting Identifier/Training Data",
-                          "Data/Meeting Identifier/Test Data")
+                          "Data/Meeting Identifier/Test Data",
+                          trials=4)
 
 
 if __name__ == "__main__":
