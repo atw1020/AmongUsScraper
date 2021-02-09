@@ -136,22 +136,20 @@ def main():
                                                         "Test Data"),
                                            vocab=vocab)
 
-    model = train_model(training_data, test_data, vocab)
-    model.save(constants.text_recognition)
+    """model = train_model(training_data, test_data, vocab)
+    model.save(constants.text_recognition)"""
 
-    """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
-                                 objective="val_accuracy",
+    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
+                                 objective="accuracy",
                                  max_trials=50,
                                  executions_per_trial=1,
                                  directory="Models",
                                  project_name="Bayesian Text Recognition")
 
-    cb = TrueAccuracyCallback(training_data)
-
     tuner.search(training_data,
-                 epochs=300,
+                 epochs=5,
                  validation_data=test_data,
-                 callbacks=[])"""
+                 callbacks=[])
 
 
 if __name__ == "__main__":

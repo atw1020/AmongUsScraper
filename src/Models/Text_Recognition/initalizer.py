@@ -95,7 +95,7 @@ def init_nn(vocab,
 
     end_depth = hp.Int("end depth", 1, 10)
     end_breadth = int(2 ** hp.Float("end breadth", 8, 12))
-    lr = 10 ** hp.Float("learning rate", -3, -2)
+    lr = 10 ** hp.Float("learning rate", -4, -1)
 
     dropout_rate = hp.Float("dropout", 0.1, 0.5)
 
