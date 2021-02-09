@@ -46,7 +46,6 @@ def train_model(training_data,
     """
 
     model = initalizer.init_nn(vocab)
-    model.summary()
 
     cb = TrueAccuracyCallback(training_data)
 
@@ -130,17 +129,12 @@ def main():
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Training Data"),
-                                               vocab=vocab,
-                                               batch_size=None)
+                                               vocab=vocab)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "Test Data"),
                                            vocab=vocab)
-
-    for (x1, x2), y in training_data:
-        print(x2)
-        break
 
     model = train_model(training_data, test_data, vocab)
     model.save(constants.text_recognition)

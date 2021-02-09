@@ -39,16 +39,16 @@ def init_hyperparameters():
     hp.Fixed("embedding dim", 9)
 
     hp.Fixed("conv_1 size", 18)
-    hp.Fixed("conv_1 stride", 4)
+    hp.Fixed("conv_1 stride", 2)
 
     hp.Fixed("conv_2 size", 18)
-    hp.Fixed("conv_2 stride", 4)
+    hp.Fixed("conv_2 stride", 2)
 
     hp.Fixed("conv_3 size", 18)
-    hp.Fixed("conv_3 stride", 4)
+    hp.Fixed("conv_3 stride", 2)
 
     hp.Fixed("conv_4 size", 18)
-    hp.Fixed("conv_4 stride", 4)
+    hp.Fixed("conv_4 stride", 2)
 
     hp.Fixed("lstm depth", 2)
     hp.Fixed("lstm breadth", 8)

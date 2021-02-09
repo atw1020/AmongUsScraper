@@ -33,8 +33,7 @@ def read_img(img_path, vocab):
     vocab_size = len(vocab.keys()) + 2
 
     # initialize the text tensor
-    text_tensor = np.zeros((1, 1))
-    text_tensor[0][0] = vocab_size - 2
+    text_tensor = np.array([[vocab_size - 2]])
 
     # load the model
     model = load_model(constants.text_recognition)
@@ -43,7 +42,7 @@ def read_img(img_path, vocab):
     while text_tensor[0][-1] != vocab_size - 1:
 
         # get the next character
-        char = np.argmax(model.predict([image, text_tensor]))
+        char = np.argmax(model.predict([image, text_tensor])[:, -1])
 
         next_char = np.array([[char]])
 
@@ -52,7 +51,8 @@ def read_img(img_path, vocab):
                                      axis=1)
 
     # get the specific characters using argmax
-    chars = text_tensor[1:-1]
+    chars = text_tensor[0][1:-1]
+    print(chars)
 
     # reverse the vocab
     reverse_vocab = text_utils.reverse_vocab(vocab)
@@ -73,7 +73,7 @@ def main():
     text = read_img(os.path.join("Data",
                                  "Meeting Identifier",
                                  "Training Data",
-                                 "RD-DED-Ze-838252205-1388.jpg"), vocab)
+                                 "PR-DED-Pengwin-875385223-800.jpg"), vocab)
 
     print('outputs "', text, '"', sep="")
 
