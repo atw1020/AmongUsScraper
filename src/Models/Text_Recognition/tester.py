@@ -179,7 +179,7 @@ def main():
 
     length_accuracy(training_data)"""
 
-
+    print_learning_curves()
 
 
 if __name__ == "__main__":
