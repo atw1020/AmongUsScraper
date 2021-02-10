@@ -102,6 +102,7 @@ def print_learning_curves(training_path,
                      for i in range(constants.name_length)]
 
     test_data = data_generator.gen_dataset(test_path,
+                                           input_dim=input_shape,
                                            vocab=vocab)
 
     print("treatment", "Dataset Size", "training accuracy", "test accuracy", sep=", ")
