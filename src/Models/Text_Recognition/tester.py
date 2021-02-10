@@ -71,6 +71,7 @@ def take_dataset_sample(datasets,
 
 def print_learning_curves(training_path,
                           test_path,
+                          run_name,
                           steps=10,
                           trials=5):
     """
@@ -79,6 +80,7 @@ def print_learning_curves(training_path,
 
     :param training_path: path to the training data
     :param test_path: path to the test data
+    :param run_name: name of the current treatment group
     :param steps: number of dataset steps to take
     :param trials: number of trials to take
     :return: None
@@ -99,7 +101,7 @@ def print_learning_curves(training_path,
     test_data = data_generator.gen_dataset(test_path,
                                            vocab=vocab)
 
-    print("Dataset Size", "training accuracy", "test accuracy", sep=", ")
+    print("treatment", "Dataset Size", "training accuracy", "test accuracy", sep=", ")
 
     # take subsets from the dataset
     for i in range(steps):
@@ -125,7 +127,11 @@ def print_learning_curves(training_path,
             test_acc = model.evaluate(test_data,
                                       verbose=0)
 
-            print(int(float(i) * sum(subset_sizes) / steps), training_acc[1], test_acc[1], sep=", ")
+            print(run_name,
+                  int(float(i) * sum(subset_sizes) / steps),
+                  training_acc[1],
+                  test_acc[1],
+                  sep=", ")
 
 
 def length_accuracy(dataset):
@@ -163,7 +169,7 @@ def main():
     :return:
     """
 
-    vocab = trainer.get_model_vocab()
+    """vocab = trainer.get_model_vocab()
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
@@ -171,10 +177,9 @@ def main():
                                                vocab=vocab,
                                                shuffle=False)
 
-    length_accuracy(training_data)
+    length_accuracy(training_data)"""
 
-    model = load_model(constants.text_recognition)
-    model.evaluate(training_data)
+
 
 
 if __name__ == "__main__":
