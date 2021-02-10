@@ -6,6 +6,8 @@ Author: Arthur Wesley
 
 import os
 
+from tensorflow.keras.callbacks import Callback
+
 from src import constants
 from src.Models.Text_Recognition import initalizer
 from src.Models.Text_Recognition import text_utils
@@ -102,13 +104,14 @@ def train_model(training_data,
     :return: trained model
     """
 
-    model = initalizer.init_nn(vocab,
-                               image_dimensions=constants.meeting_dimensions,
-                               lr=0.001)
+    model = initalizer.init_nn(vocab)
+
+    cb = TrueAccuracyCallback(training_data)
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=50)
+              epochs=300,
+              callbacks=[cb])
 
     return model
 
@@ -135,6 +138,33 @@ def get_model_vocab():
     return text_utils.merge_vocab((train_vocab, test_vocab, high_res_vocab))
 
 
+class TrueAccuracyCallback(Callback):
+
+    def __init__(self, training_data):
+        """
+
+        initalize the callback
+
+        :param training_data: training data to evaluate
+        """
+        super().__init__()
+
+        # initialize the training data
+        self.training_data = training_data
+
+    def on_epoch_end(self, epoch, logs=None):
+        """
+
+        print the true accuracy at the end of the epoch
+
+        :param epoch: current epoch
+        :param logs: data logs from the epoch
+        :return: None
+        """
+
+        self.model.evaluate(self.training_data)
+
+
 def main():
     """
 
@@ -148,8 +178,7 @@ def main():
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Training Data"),
-                                               vocab=vocab,
-                                               batch_size=1)
+                                               vocab=vocab)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",

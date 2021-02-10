@@ -13,7 +13,119 @@ from tensorflow.keras.metrics import SparseCategoricalAccuracy
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 
 from src import constants
-from src.Models.Text_Recognition import trainer, text_utils, data_generator
+from src.Models.Text_Recognition import initalizer, trainer, text_utils, data_generator
+
+
+def take_dataset_sample(datasets,
+                        subset_sizes,
+                        current_fraction):
+    """
+
+    take a random sample of a dataset that is divided into subsets of different
+    sizes
+
+    :param datasets: list of sub-datasets
+    :param subset_sizes: sizes of the subsets
+    :param current_fraction: the current fraction of the dataset to use
+    :return: random sample of sub-datasets
+    """
+
+    # get the sample sizes
+    sample_size = [int(current_fraction * subset_sizes[j])
+                   for j in range(constants.name_length)]
+
+    # unbatch the elements
+    datasets = [dataset.unbatch() for dataset in datasets]
+
+    current_dataset = [datasets[j].take(sample_size[j])
+                       for j in range(constants.name_length)]
+
+    # batch the datasets
+    for i in range(constants.name_length):
+
+        if sample_size[i] != 0:
+            current_dataset[i] = current_dataset[i].batch(sample_size[i])
+
+    # concatenate the datasets
+    i = 0
+
+    while sample_size[i] < 1:
+        # keep increasing i until we find something that works
+        i += 1
+
+    dataset = current_dataset[i]
+    i += 1
+
+    # concatenate the rest
+    while i < constants.name_length:
+
+        # concatenate only if data exists
+        if sample_size[i] > 0:
+            dataset = dataset.concatenate(current_dataset[i])
+
+        # either way, increment the loop counter
+        i += 1
+
+    return dataset.shuffle(buffer_size=1000)
+
+
+def print_learning_curves(training_path,
+                          test_path,
+                          steps=10,
+                          trials=5):
+    """
+
+    print the learning curves of a model
+
+    :param training_path: path to the training data
+    :param test_path: path to the test data
+    :param steps: number of dataset steps to take
+    :param trials: number of trials to take
+    :return: None
+    """
+
+    # initialize constants
+    subset_sizes = data_generator.get_dataset_sizes(training_path)
+    vocab = trainer.get_model_vocab()
+
+    # load the data
+    training_data = [data_generator.gen_dataset_batchless(training_path,
+                                                          i + 1,
+                                                          vocab,
+                                                          1,
+                                                          subset_sizes[i])
+                     for i in range(constants.name_length)]
+
+    test_data = data_generator.gen_dataset(test_path,
+                                           vocab=vocab)
+
+    print("Dataset Size", "training accuracy", "test accuracy", sep=", ")
+
+    # take subsets from the dataset
+    for i in range(steps):
+
+        # increment i
+        i += 1
+
+        # take a random sample from each length of dataset
+        dataset = take_dataset_sample(training_data, subset_sizes, float(i) / steps)
+
+        for j in range(trials):
+
+            # initialize the model
+            model = initalizer.init_nn(vocab)
+
+            # train a model on the dataset
+            model.fit(dataset,
+                      verbose=0,
+                      epochs=300)
+
+            training_acc = model.evaluate(dataset,
+                                          verbose=0)
+            test_acc = model.evaluate(test_data,
+                                      verbose=0)
+
+            print(int(float(i) * sum(subset_sizes) / steps), training_acc[1], test_acc[1], sep=", ")
 
 
 def length_accuracy(dataset):
@@ -55,11 +167,14 @@ def main():
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
-                                                            "Training Data"),
+                                                            "Test Data"),
                                                vocab=vocab,
                                                shuffle=False)
 
     length_accuracy(training_data)
+
+    model = load_model(constants.text_recognition)
+    model.evaluate(training_data)
 
 
 if __name__ == "__main__":

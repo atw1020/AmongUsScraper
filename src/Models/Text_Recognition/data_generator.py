@@ -55,6 +55,28 @@ def get_name_length_indices(directory):
     return indices
 
 
+def get_dataset_sizes(directory):
+    """
+
+    get the sizes of the different lengthed datasets in a directory
+
+    :param directory: directory to get the names from
+    :return: list that maps from length of items to number of training examples
+    """
+
+    files = os.listdir(directory)
+
+    if ".DS_Store" in files:
+        files.remove(".DS_Store")
+
+    sizes = [0 for i in range(constants.name_length)]
+
+    for file in files:
+        sizes[len(name_from_filepath(file)) - 1] += 1
+
+    return sizes
+
+
 def generator(directory, length, vocab):
     """
 
@@ -80,7 +102,7 @@ def generator(directory, length, vocab):
     j = 0
     while j < len(files):
 
-        if length != len(name_from_filepath(files[j])):
+        if length != len(name_from_filepath(files[j])) and length is not None:
             j += 1
             continue
 
@@ -115,6 +137,7 @@ def gen_dataset_batchless(path,
     :param vocab: vocabulary to use
     :param batch_size: size of the batches to divide the dataset into
     :param input_dim: the dimension of the input images
+    :param max_batch_size: maximum size of this batch
     :return: dataset
     """
 
@@ -129,7 +152,10 @@ def gen_dataset_batchless(path,
     # now that we have the dataset, split it into many datasets where each contains inputs
     # of the same length
 
-    return dataset.batch(batch_size)
+    if batch_size is None:
+        return dataset.batch(max_batch_size)
+    else:
+        return dataset.batch(batch_size)
 
 
 def gen_dataset(path,
@@ -152,9 +178,13 @@ def gen_dataset(path,
     if vocab is None:
         vocab = text_utils.get_vocab(text_utils.get_names(path))
 
+    max_batch_sizes = get_dataset_sizes(path)
+
     datasets = [gen_dataset_batchless(path,
                                       i + 1,
                                       vocab,
+                                      batch_size,
+                                      max_batch_sizes[i]) for i in range(constants.name_length)]
                                       batch_size,
                                       input_dim) for i in range(constants.name_length)]
 
@@ -167,7 +197,7 @@ def gen_dataset(path,
     # shuffle the dataset
 
     if shuffle:
-        return dataset.shuffle(buffer_size=8 * batch_size)
+        return dataset.shuffle(buffer_size=1000)
     else:
         return dataset
 
@@ -184,12 +214,8 @@ def main():
                         "Meeting Identifier",
                         "Training Data")
 
-    dataset = gen_dataset(path)
-
-    for (x1, x2), y in dataset:
-        print(x2)
-        print(y)
-        break
+    dataset = gen_dataset(path,
+                          batch_size=None)
 
 
 if __name__ == "__main__":
