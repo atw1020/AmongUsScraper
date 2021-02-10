@@ -93,7 +93,8 @@ def train_random_model(training_data,
 
 def train_model(training_data,
                 test_data,
-                vocab):
+                vocab,
+                resolution=constants.meeting_dimensions):
     """
 
     train a model on the specified dataset
@@ -101,10 +102,12 @@ def train_model(training_data,
     :param training_data: the dataset to train on
     :param test_data: validation data
     :param vocab: vocabulary to use
+    :param resolution: resolution of the network to train
     :return: trained model
     """
 
-    model = initalizer.init_nn(vocab)
+    model = initalizer.init_nn(vocab,
+                               image_dimensions=resolution)
 
     cb = TrueAccuracyCallback(training_data)
 
@@ -175,7 +178,7 @@ def main():
 
     vocab = get_model_vocab()
 
-    training_data = data_generator.gen_dataset(os.path.join("Data",
+    """training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Training Data"),
                                                vocab=vocab)
@@ -183,7 +186,7 @@ def main():
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "Test Data"),
-                                           vocab=vocab)
+                                           vocab=vocab)"""
 
     # train the model
 
@@ -197,7 +200,14 @@ def main():
                                                vocab=vocab,
                                                input_dim=constants.meeting_dimensions_420p)
 
-    model = train_model(training_data, test_data, vocab)
+    high_res_test_data = data_generator.gen_dataset("Data/Meeting Identifier/High Res Test Data",
+                                                    vocab=vocab,
+                                                    input_dim=constants.meeting_dimensions_420p)
+
+    model = train_model(high_res_data,
+                        high_res_test_data,
+                        vocab,
+                        resolution=constants.meeting_dimensions_420p)
     model.save(constants.text_recognition)
 
 
