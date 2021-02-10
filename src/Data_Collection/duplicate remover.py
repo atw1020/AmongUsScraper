@@ -5,6 +5,7 @@ Removes images of the same end screen from a directory
 """
 
 import os
+import shutil
 
 
 def is_end_screen(filename):
@@ -126,16 +127,21 @@ def get_player_duplicates(player, images):
     return [image for image in images if status in image]
 
 
-def remove_player_duplicates(directory):
+def remove_player_duplicates(input_directory, output_directory):
     """
 
     delete all of the duplicated players in the specified directory
 
-    :param directory: directory to clean
+    :param input_directory: directory to clean
+    :param output_directory: directory to put the output images
     :return: None
     """
 
-    files = sorted(os.listdir(directory))
+    # make an output if it doesn't already exist
+    if not os.path.exists(output_directory):
+        os.mkdir(output_directory)
+
+    files = sorted(os.listdir(input_directory))
 
     i = 0
 
@@ -145,10 +151,11 @@ def remove_player_duplicates(directory):
 
         for duplicate in duplicates:
             # remove the files from the list of duplicates
-
             files.remove(duplicate)
 
-        # copy the file to the new directory
+        # copy the file to the output directory
+        shutil.copy(os.path.join(input_directory, files[i]),
+                    os.path.join(output_directory, files[i]))
 
         i += 1
 
@@ -161,15 +168,10 @@ def main():
     :return: None
     """
 
-    # remove_end_duplicates("Data/Temp Images")
+    # remove_end_duplicates("Data/High Res Test Data Images")
 
-    files = sorted(os.listdir("Data/Meeting Identifier/High Res Training Data"))
-    players = ["-".join(file.split("-")[:3]) for file in files]
-
-    print(len(players))
-    print(len(set(players)))
-
-    remove_player_duplicates("Data/Meeting Identifier/High Res Training Data")
+    remove_player_duplicates("Data/Meeting Identifier/High Res Training Data",
+                             "Data/Meeting Identifier/Reduced High Res Training Data")
 
 
 if __name__ == "__main__":

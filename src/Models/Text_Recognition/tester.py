@@ -185,7 +185,7 @@ def main():
     length_accuracy(training_data)"""
 
     print_learning_curves("Data/Meeting Identifier/High Res Training Data",
-                          "Data/Meeting Identifier/Temp",
+                          "Data/Meeting Identifier/High Res Test Data",
                           "480p model",
                           input_shape=constants.meeting_dimensions_420p)
 

@@ -227,7 +227,7 @@ def main():
                                     """
 
     crop_all_meetings(os.path.join("Data",
-                                   "Temp Images"))
+                                   "High Res Test Data Images"))
 
 
 if __name__ == "__main__":
