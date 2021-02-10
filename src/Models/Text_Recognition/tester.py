@@ -73,7 +73,8 @@ def print_learning_curves(training_path,
                           test_path,
                           run_name,
                           steps=10,
-                          trials=5):
+                          trials=5,
+                          input_shape=constants.meeting_dimensions):
     """
 
     print the learning curves of a model
@@ -83,6 +84,7 @@ def print_learning_curves(training_path,
     :param run_name: name of the current treatment group
     :param steps: number of dataset steps to take
     :param trials: number of trials to take
+    :param input_shape: shape of the input images
     :return: None
     """
 
@@ -95,7 +97,8 @@ def print_learning_curves(training_path,
                                                           i + 1,
                                                           vocab,
                                                           1,
-                                                          subset_sizes[i])
+                                                          subset_sizes[i],
+                                                          input_shape)
                      for i in range(constants.name_length)]
 
     test_data = data_generator.gen_dataset(test_path,
@@ -179,7 +182,10 @@ def main():
 
     length_accuracy(training_data)"""
 
-    print_learning_curves()
+    print_learning_curves("Data/Meeting Identifier/High Res Training Data",
+                          "Data/Meeting Identifier/Temp",
+                          "480p model",
+                          input_shape=constants.meeting_dimensions_420p)
 
 
 if __name__ == "__main__":
