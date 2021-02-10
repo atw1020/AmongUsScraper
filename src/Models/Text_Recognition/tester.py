@@ -73,7 +73,7 @@ def print_learning_curves(training_path,
                           test_path,
                           run_name,
                           steps=10,
-                          trials=5,
+                          trials=2,
                           input_shape=constants.meeting_dimensions):
     """
 
@@ -186,7 +186,7 @@ def main():
 
     print_learning_curves("Data/Meeting Identifier/High Res Training Data",
                           "Data/Meeting Identifier/High Res Test Data",
-                          "480p model",
+                          "480p reduced model",
                           input_shape=constants.meeting_dimensions_420p)
 
 
