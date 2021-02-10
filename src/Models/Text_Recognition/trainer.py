@@ -142,13 +142,12 @@ def main():
     tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
                                  objective="accuracy",
                                  max_trials=50,
-                                 executions_per_trial=1,
+                                 executions_per_trial=2,
                                  directory="Models",
                                  project_name="Bayesian Text Recognition")
 
     tuner.search(training_data,
-                 epochs=5,
-                 validation_data=test_data,
+                 epochs=300,
                  callbacks=[])
 
 
