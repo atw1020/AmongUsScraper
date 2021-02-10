@@ -118,7 +118,8 @@ def print_learning_curves(training_path,
         for j in range(trials):
 
             # initialize the model
-            model = initalizer.init_nn(vocab)
+            model = initalizer.init_nn(vocab,
+                                       image_dimensions=input_shape)
 
             # train a model on the dataset
             model.fit(dataset,
