@@ -73,7 +73,7 @@ def print_learning_curves(training_path,
                           test_path,
                           run_name,
                           steps=10,
-                          trials=5,
+                          trials=3,
                           input_shape=constants.meeting_dimensions):
     """
 

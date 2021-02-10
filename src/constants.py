@@ -79,7 +79,7 @@ name_length = 10
 # classifier_dropout rate
 classifier_dropout = 0.3  # 0.25
 crewmate_identifier_dropout = 0.4
-text_rec_dropout = 0.5
+text_rec_dropout = 0.3
 
 learning_curve_extension = " test data.txt"
 
