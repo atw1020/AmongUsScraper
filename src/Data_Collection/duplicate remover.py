@@ -135,19 +135,20 @@ def remove_player_duplicates(directory):
     :return: None
     """
 
-    files = os.listdir(directory)
+    files = sorted(os.listdir(directory))
 
     i = 0
 
-    while i < len(files):
+    while i < len(files) - 2:
 
-        duplicates = get_player_duplicates(files[i], files[:i] + files[i + 1:])
+        duplicates = get_player_duplicates(files[i], files[i + 1:])
 
         for duplicate in duplicates:
-            # remove the file
-            # os.remove(os.path.join(directory, duplicate))
+            # remove the files from the list of duplicates
 
             files.remove(duplicate)
+
+        # copy the file to the new directory
 
         i += 1
 
@@ -162,12 +163,13 @@ def main():
 
     # remove_end_duplicates("Data/Temp Images")
 
-    images = os.listdir("Data/Meeting Identifier/Training Data")
+    files = sorted(os.listdir("Data/Meeting Identifier/High Res Training Data"))
+    players = ["-".join(file.split("-")[:3]) for file in files]
 
-    duplicates = get_player_duplicates(images[0], images)
-    print(duplicates)
+    print(len(players))
+    print(len(set(players)))
 
-    # remove_player_duplicates("Data/Meeting Identifier/Test Data")
+    remove_player_duplicates("Data/Meeting Identifier/High Res Training Data")
 
 
 if __name__ == "__main__":
