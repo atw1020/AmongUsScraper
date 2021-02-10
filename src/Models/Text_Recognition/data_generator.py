@@ -127,6 +127,7 @@ def gen_dataset_batchless(path,
                           length,
                           vocab,
                           batch_size,
+                          max_batch_size,
                           input_dim):
     """
 
@@ -136,8 +137,8 @@ def gen_dataset_batchless(path,
     :param length: length of the strings to generate the dataset for
     :param vocab: vocabulary to use
     :param batch_size: size of the batches to divide the dataset into
-    :param input_dim: the dimension of the input images
     :param max_batch_size: maximum size of this batch
+    :param input_dim: the dimension of the input images
     :return: dataset
     """
 
@@ -184,8 +185,7 @@ def gen_dataset(path,
                                       i + 1,
                                       vocab,
                                       batch_size,
-                                      max_batch_sizes[i]) for i in range(constants.name_length)]
-                                      batch_size,
+                                      max_batch_sizes[i],
                                       input_dim) for i in range(constants.name_length)]
 
     # concatenate the datasets
@@ -212,10 +212,13 @@ def main():
 
     path = os.path.join("Data",
                         "Meeting Identifier",
-                        "Training Data")
+                        "High Res Training Data")
 
     dataset = gen_dataset(path,
                           batch_size=None)
+
+    for (x1, x2), y in dataset:
+        print(x1.shape)
 
 
 if __name__ == "__main__":
