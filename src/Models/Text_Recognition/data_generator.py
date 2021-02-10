@@ -215,6 +215,7 @@ def main():
                         "High Res Training Data")
 
     dataset = gen_dataset(path,
+                          input_dim=constants.meeting_dimensions_420p,
                           batch_size=None)
 
     for (x1, x2), y in dataset:
