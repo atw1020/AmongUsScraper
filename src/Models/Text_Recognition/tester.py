@@ -149,6 +149,7 @@ def length_accuracy(dataset):
     """
 
     model = load_model(constants.text_recognition)
+    model.summary()
 
     for x, y in dataset:
         # create the accuracy evaluation object
@@ -174,21 +175,22 @@ def main():
     :return:
     """
 
-    """vocab = trainer.get_model_vocab()
+    vocab = trainer.get_model_vocab()
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Test Data"),
                                                vocab=vocab,
-                                               shuffle=False)
+                                               shuffle=False,
+                                               input_dim=constants.meeting_dimensions_420p)
 
-    length_accuracy(training_data)"""
+    length_accuracy(training_data)
 
-    print_learning_curves("Data/Meeting Identifier/Reduced High Res Training Data",
+    """print_learning_curves("Data/Meeting Identifier/Reduced High Res Training Data",
                           "Data/Meeting Identifier/High Res Test Data",
                           "480p reduced model",
                           input_shape=constants.meeting_dimensions_420p,
-                          trials=3)
+                          trials=3)"""
 
 
 if __name__ == "__main__":
