@@ -10,7 +10,7 @@ certifi==2020.12.5
 cffi==1.14.4
 chardet==4.0.0
 colorama==0.4.4
-cryptography==3.3.1
+cryptography>=3.3.2
 dill==0.3.3
 ffmpeg-python==0.2.0
 flatbuffers==1.12
