@@ -113,7 +113,7 @@ def train_model(training_data,
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=300,
+              epochs=1000,
               callbacks=[cb])
 
     return model
@@ -196,11 +196,12 @@ def main():
                        automatic=True,
                        repeats=50)"""
 
-    high_res_data = data_generator.gen_dataset("Data/Meeting Identifier/High Res Training Data",
+    high_res_data = data_generator.gen_dataset("Data/Meeting Identifier/Reduced High Res Training Data",
                                                vocab=vocab,
-                                               input_dim=constants.meeting_dimensions_420p)
+                                               input_dim=constants.meeting_dimensions_420p,
+                                               batch_size=None)
 
-    high_res_test_data = data_generator.gen_dataset("Data/Meeting Identifier/High Res Test Data",
+    high_res_test_data = data_generator.gen_dataset("Data/Meeting Identifier/Reduced High Res Test Data",
                                                     vocab=vocab,
                                                     input_dim=constants.meeting_dimensions_420p)
 
