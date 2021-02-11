@@ -24,7 +24,7 @@ from src import constants
 from src.Data_Collection import web_scrapper
 from src.Preprocessing import cropper
 
-temp_images = os.path.join("Data", "Temp Images")
+temp_images = os.path.join("Data", "High Res Test Data Images")
 
 
 class DataCollector:
@@ -410,7 +410,8 @@ def main():
         print()
     """
 
-    games = ["817942495", "776770697", "897395686", "893041446", "891659775", "895991033"]
+    games = ["902168866", "900054083", "903653110", "899380674", "901954000",
+             "901979563"]
 
     for game in games:
 

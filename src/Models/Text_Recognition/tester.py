@@ -73,7 +73,8 @@ def print_learning_curves(training_path,
                           test_path,
                           run_name,
                           steps=10,
-                          trials=5):
+                          trials=5,
+                          input_shape=constants.meeting_dimensions):
     """
 
     print the learning curves of a model
@@ -83,6 +84,7 @@ def print_learning_curves(training_path,
     :param run_name: name of the current treatment group
     :param steps: number of dataset steps to take
     :param trials: number of trials to take
+    :param input_shape: shape of the input images
     :return: None
     """
 
@@ -95,10 +97,12 @@ def print_learning_curves(training_path,
                                                           i + 1,
                                                           vocab,
                                                           1,
-                                                          subset_sizes[i])
+                                                          subset_sizes[i],
+                                                          input_shape)
                      for i in range(constants.name_length)]
 
     test_data = data_generator.gen_dataset(test_path,
+                                           input_dim=input_shape,
                                            vocab=vocab)
 
     print("treatment", "Dataset Size", "training accuracy", "test accuracy", sep=", ")
@@ -115,7 +119,8 @@ def print_learning_curves(training_path,
         for j in range(trials):
 
             # initialize the model
-            model = initalizer.init_nn(vocab)
+            model = initalizer.init_nn(vocab,
+                                       image_dimensions=input_shape)
 
             # train a model on the dataset
             model.fit(dataset,
@@ -144,6 +149,7 @@ def length_accuracy(dataset):
     """
 
     model = load_model(constants.text_recognition)
+    model.summary()
 
     for x, y in dataset:
         # create the accuracy evaluation object
@@ -154,8 +160,8 @@ def length_accuracy(dataset):
 
         accuracy.update_state(y, prediction)
 
-        print(y[0].numpy())
-        print(np.argmax(prediction, axis=-1)[0])
+        print(y.numpy())
+        print(np.argmax(prediction, axis=-1))
 
         print("sequences of length", x[1].shape[1] - 1,
               "had an accuracy of", accuracy.result().numpy())
@@ -171,16 +177,32 @@ def main():
 
     vocab = trainer.get_model_vocab()
 
-    training_data = data_generator.gen_dataset(os.path.join("Data",
-                                                            "Meeting Identifier",
-                                                            "Test Data"),
-                                               vocab=vocab,
-                                               shuffle=False)
+    reduced_test_data = data_generator.gen_dataset(os.path.join("Data",
+                                                                "Meeting Identifier",
+                                                                "Reduced High Res Test Data"),
+                                                   vocab=vocab,
+                                                   shuffle=False,
+                                                   input_dim=constants.meeting_dimensions_420p)
 
-    length_accuracy(training_data)
+    test_data = data_generator.gen_dataset(os.path.join("Data",
+                                                        "Meeting Identifier",
+                                                        "High Res Test Data"),
+                                           vocab=vocab,
+                                           shuffle=False,
+                                           input_dim=constants.meeting_dimensions_420p)
 
     model = load_model(constants.text_recognition)
-    model.evaluate(training_data)
+
+    model.evaluate(reduced_test_data)
+    model.evaluate(test_data)
+
+    """length_accuracy(training_data)"""
+
+    """print_learning_curves("Data/Meeting Identifier/Reduced High Res Training Data",
+                          "Data/Meeting Identifier/High Res Test Data",
+                          "480p reduced model",
+                          input_shape=constants.meeting_dimensions_420p,
+                          trials=3)"""
 
 
 if __name__ == "__main__":

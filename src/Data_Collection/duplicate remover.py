@@ -5,6 +5,7 @@ Removes images of the same end screen from a directory
 """
 
 import os
+import shutil
 
 
 def is_end_screen(filename):
@@ -126,28 +127,35 @@ def get_player_duplicates(player, images):
     return [image for image in images if status in image]
 
 
-def remove_player_duplicates(directory):
+def remove_player_duplicates(input_directory, output_directory):
     """
 
     delete all of the duplicated players in the specified directory
 
-    :param directory: directory to clean
+    :param input_directory: directory to clean
+    :param output_directory: directory to put the output images
     :return: None
     """
 
-    files = os.listdir(directory)
+    # make an output if it doesn't already exist
+    if not os.path.exists(output_directory):
+        os.mkdir(output_directory)
+
+    files = sorted(os.listdir(input_directory))
 
     i = 0
 
-    while i < len(files):
+    while i < len(files) - 2:
 
-        duplicates = get_player_duplicates(files[i], files[:i] + files[i + 1:])
+        duplicates = get_player_duplicates(files[i], files[i + 1:])
 
         for duplicate in duplicates:
-            # remove the file
-            # os.remove(os.path.join(directory, duplicate))
-
+            # remove the files from the list of duplicates
             files.remove(duplicate)
+
+        # copy the file to the output directory
+        shutil.copy(os.path.join(input_directory, files[i]),
+                    os.path.join(output_directory, files[i]))
 
         i += 1
 
@@ -160,14 +168,10 @@ def main():
     :return: None
     """
 
-    # remove_end_duplicates("Data/Temp Images")
+    # remove_end_duplicates("Data/High Res Test Data Images")
 
-    images = os.listdir("Data/Meeting Identifier/Training Data")
-
-    duplicates = get_player_duplicates(images[0], images)
-    print(duplicates)
-
-    # remove_player_duplicates("Data/Meeting Identifier/Test Data")
+    remove_player_duplicates("Data/Meeting Identifier/High Res Test Data",
+                             "Data/Meeting Identifier/Reduced High Res Test Data")
 
 
 if __name__ == "__main__":

@@ -92,6 +92,36 @@ def crop_meeting(image):
     return crops
 
 
+def crop_meeting_480p(image):
+    """
+
+    crop the members out of the given meeting image (480p version)
+
+    :param image: image to crop crewmates from
+    :return: cropped images
+    """
+
+    boxes = [
+        (115, 90, 405, 150),
+        (405, 90, 695, 150),
+        (115, 150, 405, 210),
+        (405, 150, 695, 210),
+        (115, 210, 405, 270),
+        (405, 210, 695, 270),
+        (115, 270, 405, 330),
+        (405, 270, 695, 330),
+        (115, 330, 405, 390),
+        (405, 330, 695, 390)
+    ]
+
+    crops = []
+
+    for i in range(len(boxes)):
+        crops.append(image.crop(boxes[i]))
+
+    return crops
+
+
 def crop_all_crewmates(directory, output_directory):
     """
 
@@ -166,7 +196,7 @@ def crop_all_meetings(directory):
         path = os.path.join(directory, file)
 
         image = Image.open(path)
-        crops = crop_meeting(image)
+        crops = crop_meeting_480p(image)
 
         for i, crop in enumerate(crops):
             # save the file two directories up
@@ -197,7 +227,7 @@ def main():
                                     """
 
     crop_all_meetings(os.path.join("Data",
-                                   "Temp Images"))
+                                   "High Res Test Data Images"))
 
 
 if __name__ == "__main__":

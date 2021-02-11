@@ -91,6 +91,9 @@ def generator(directory, length, vocab):
     # get a list of all of the names
     files = os.listdir(directory)
 
+    if ".DS_Store" in files:
+        files.remove(".DS_Store")
+
     # sort the files by name length
     files.sort(key=lambda file: len(name_from_filepath(file)), reverse=True)
 
@@ -124,7 +127,8 @@ def gen_dataset_batchless(path,
                           length,
                           vocab,
                           batch_size,
-                          max_batch_size):
+                          max_batch_size,
+                          input_dim):
     """
 
     generate a dataset
@@ -134,14 +138,15 @@ def gen_dataset_batchless(path,
     :param vocab: vocabulary to use
     :param batch_size: size of the batches to divide the dataset into
     :param max_batch_size: maximum size of this batch
+    :param input_dim: the dimension of the input images
     :return: dataset
     """
 
     dataset = tf.data.Dataset.from_generator(lambda: generator(path, length, vocab),
-                                             output_signature=((tf.TensorSpec(shape=constants.meeting_dimensions + (3,),
+                                             output_signature=((tf.TensorSpec(shape=input_dim + (3,),
                                                                               dtype=tf.int8),
                                                                 tf.TensorSpec(shape=(None,),
-                                                                                    dtype=tf.float64)),
+                                                                              dtype=tf.float64)),
                                                                tf.TensorSpec(shape=(None,),
                                                                              dtype=tf.int8)))
 
@@ -157,7 +162,8 @@ def gen_dataset_batchless(path,
 def gen_dataset(path,
                 batch_size=32,
                 vocab=None,
-                shuffle=True):
+                shuffle=True,
+                input_dim=constants.meeting_dimensions):
     """
 
     generate a dataset in batches
@@ -166,6 +172,7 @@ def gen_dataset(path,
     :param batch_size: size of the batches to generate
     :param vocab: vocabulary to use
     :param shuffle: whether or not to shuffle the dataset
+    :param input_dim: dimension of the input images
     :return: dataset with batches
     """
 
@@ -178,7 +185,8 @@ def gen_dataset(path,
                                       i + 1,
                                       vocab,
                                       batch_size,
-                                      max_batch_sizes[i]) for i in range(constants.name_length)]
+                                      max_batch_sizes[i],
+                                      input_dim) for i in range(constants.name_length)]
 
     # concatenate the datasets
     dataset = datasets[0]
@@ -204,10 +212,14 @@ def main():
 
     path = os.path.join("Data",
                         "Meeting Identifier",
-                        "Training Data")
+                        "High Res Training Data")
 
     dataset = gen_dataset(path,
+                          input_dim=constants.meeting_dimensions_420p,
                           batch_size=None)
+
+    for (x1, x2), y in dataset:
+        print(x1.shape)
 
 
 if __name__ == "__main__":

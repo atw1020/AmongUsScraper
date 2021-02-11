@@ -62,6 +62,7 @@ def init_random_nn(vocab):
 
 
 def init_nn(vocab,
+            image_dimensions=constants.meeting_dimensions,
             conv_size=18,
             conv_stride=4,
             pool_1=0,
@@ -77,6 +78,7 @@ def init_nn(vocab,
 
     creates the neural network
 
+    :param image_dimensions: dimensions of the input images
     :param embedding_dim: dimension of the embedding layer
     :param early_merge: whether or not to merge the text and image networks before or
                         after the LSTM
@@ -107,7 +109,7 @@ def init_nn(vocab,
 
     # CNN
 
-    image_input_layer = layers.Input(shape=constants.meeting_dimensions + (3,))
+    image_input_layer = layers.Input(shape=image_dimensions + (3,))
     batch_norm = layers.BatchNormalization()(image_input_layer)
 
     convolution = layers.Conv2D(filters=16,
@@ -240,7 +242,7 @@ def main():
 
     model = init_nn(vocab)
     model.summary()
-    plot_model(model, to_file="RNN.png")
+    # plot_model(model, to_file="RNN.png")
 
 
 if __name__ == "__main__":
