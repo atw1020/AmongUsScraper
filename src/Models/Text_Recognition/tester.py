@@ -177,16 +177,26 @@ def main():
 
     vocab = trainer.get_model_vocab()
 
-    training_data = data_generator.gen_dataset(os.path.join("Data",
-                                                            "Meeting Identifier",
-                                                            "Reduced High Res Training Data"),
-                                               vocab=vocab,
-                                               shuffle=False,
-                                               input_dim=constants.meeting_dimensions_420p)
+    reduced_test_data = data_generator.gen_dataset(os.path.join("Data",
+                                                                "Meeting Identifier",
+                                                                "Reduced High Res Test Data"),
+                                                   vocab=vocab,
+                                                   shuffle=False,
+                                                   input_dim=constants.meeting_dimensions_420p)
 
-    # model = load_model(constants.text_recognition)
+    test_data = data_generator.gen_dataset(os.path.join("Data",
+                                                        "Meeting Identifier",
+                                                        "High Res Test Data"),
+                                           vocab=vocab,
+                                           shuffle=False,
+                                           input_dim=constants.meeting_dimensions_420p)
 
-    length_accuracy(training_data)
+    model = load_model(constants.text_recognition)
+
+    model.evaluate(reduced_test_data)
+    model.evaluate(test_data)
+
+    """length_accuracy(training_data)"""
 
     """print_learning_curves("Data/Meeting Identifier/Reduced High Res Training Data",
                           "Data/Meeting Identifier/High Res Test Data",
