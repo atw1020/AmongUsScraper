@@ -160,8 +160,8 @@ def length_accuracy(dataset):
 
         accuracy.update_state(y, prediction)
 
-        print(y[0].numpy())
-        print(np.argmax(prediction, axis=-1)[0])
+        print(y.numpy())
+        print(np.argmax(prediction, axis=-1))
 
         print("sequences of length", x[1].shape[1] - 1,
               "had an accuracy of", accuracy.result().numpy())
@@ -179,10 +179,12 @@ def main():
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
-                                                            "Test Data"),
+                                                            "Reduced High Res Training Data"),
                                                vocab=vocab,
                                                shuffle=False,
                                                input_dim=constants.meeting_dimensions_420p)
+
+    # model = load_model(constants.text_recognition)
 
     length_accuracy(training_data)
 

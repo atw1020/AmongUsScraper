@@ -16,15 +16,55 @@ from src.Models.Text_Recognition.trainer import get_model_vocab
 from src.Models.Text_Recognition import text_utils
 
 
-def read_img(img_path, vocab):
+def read_img_analysis(directory, vocab):
+    """
+
+    reads all of the images from a directory and analyzes them
+
+    :param directory:
+    :param vocab:
+    :return:
+    """
+
+    files = os.listdir(directory)
+
+    model = load_model(constants.text_recognition)
+
+    output_frequencies = dict()
+
+    for file in files:
+
+        predicted_name = read_img(os.path.join(directory, file),
+                                  vocab,
+                                  model)
+
+        if predicted_name not in output_frequencies:
+            output_frequencies[predicted_name] = 1
+        else:
+            output_frequencies[predicted_name] += 1
+
+        real_name = file.split("-")[2]
+
+    for key in output_frequencies.keys():
+        print(key, ": ", output_frequencies[key], sep="")
+
+
+def read_img(img_path,
+             vocab,
+             model=None):
     """
 
     read text from an image
 
     :param img_path: path to the image
     :param vocab: vocabulary to translate
+    :param model: keras model to load the image with
     :return: string of the player name in the image
     """
+
+    if model is None:
+        # load the model
+        model = load_model(constants.text_recognition)
 
     # load the image
     image = img_to_array(load_img(img_path))
@@ -34,9 +74,6 @@ def read_img(img_path, vocab):
 
     # initialize the text tensor
     text_tensor = np.array([[vocab_size - 2]])
-
-    # load the model
-    model = load_model(constants.text_recognition)
 
     # loop through the characters
     while text_tensor[0][-1] != vocab_size - 1:
@@ -69,12 +106,17 @@ def main():
 
     vocab = get_model_vocab()
 
-    text = read_img(os.path.join("Data",
-                                 "Meeting Identifier",
-                                 "High Res Training Data",
-                                 "BK-DED-RayC-9-895991033-580-0.jpg"), vocab)
+    read_img_analysis(os.path.join("Data",
+                                   "Meeting Identifier",
+                                   "Reduced High Res Training Data"),
+                      vocab)
 
-    print('outputs "', text, '"', sep="")
+    """text = read_img(os.path.join("Data",
+                                 "Meeting Identifier",
+                                 "High Res Test Data",
+                                 "BK-DED-KatInASuit-8-841174127-1126-0.jpg"), vocab)
+
+    print('outputs "', text, '"', sep="")"""
 
 
 if __name__ == "__main__":

@@ -170,8 +170,8 @@ def main():
 
     # remove_end_duplicates("Data/High Res Test Data Images")
 
-    remove_player_duplicates("Data/Meeting Identifier/High Res Training Data",
-                             "Data/Meeting Identifier/Reduced High Res Training Data")
+    remove_player_duplicates("Data/Meeting Identifier/High Res Test Data",
+                             "Data/Meeting Identifier/Reduced High Res Test Data")
 
 
 if __name__ == "__main__":
