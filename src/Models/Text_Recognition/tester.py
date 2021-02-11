@@ -149,7 +149,6 @@ def length_accuracy(dataset):
     """
 
     model = load_model(constants.text_recognition)
-    model.summary()
 
     for x, y in dataset:
         # create the accuracy evaluation object
@@ -160,8 +159,8 @@ def length_accuracy(dataset):
 
         accuracy.update_state(y, prediction)
 
-        print(y.numpy())
-        print(np.argmax(prediction, axis=-1))
+        print(y[0].numpy())
+        print(np.argmax(prediction, axis=-1)[0])
 
         print("sequences of length", x[1].shape[1] - 1,
               "had an accuracy of", accuracy.result().numpy())

@@ -5,8 +5,12 @@ Author: Arthur Wesley
 """
 
 import os
+import copy
 
 from tensorflow.keras.callbacks import Callback
+
+from kerastuner.tuners import BayesianOptimization
+from kerastuner import HyperParameters
 
 from src import constants
 from src.Models.Text_Recognition import initalizer
@@ -26,69 +30,6 @@ def get_vocab(directory):
     names = text_utils.get_names(directory)
 
     return text_utils.get_vocab(names)
-
-
-def train_random_model(training_data,
-                       test_data,
-                       vocab,
-                       repeats=10,
-                       automatic=False):
-    """
-
-    train a randomly generated model
-
-    :param training_data: dataset to train on
-    :param test_data: testing data
-    :param vocab: vocabulary
-    :param repeats: number of times to repeat the experiment
-    :param automatic: whether or not to automaticaly store the results
-    :return: None
-    """
-
-    hyperparameters = initalizer.get_random_hyperparameters()
-
-    keys = sorted(hyperparameters.keys())
-    print(", ".join(keys), "training accuracy", "test accuracy", sep=", ")
-
-    for i in range(repeats):
-
-        while True:
-            try:
-                model, kwargs = initalizer.init_random_nn(vocab)
-                break
-            except ValueError:
-                continue
-
-        print(", ".join([str(kwargs[key]) for key in keys]))
-
-        # fit the model
-        model.fit(training_data,
-                  validation_data=test_data,
-                  epochs=300)
-
-        training_accuracy = model.evaluate(training_data)[1]
-        test_accuracy = model.evaluate(test_data)[1]
-
-        # print the values
-        print(", ".join([str(kwargs[key]) for key in keys]),
-              training_accuracy,
-              test_accuracy,
-              sep=", ")
-
-        if not automatic:
-            input("process completed, press any key to continue...")
-
-        else:
-            # automatically store the results and continue
-            with open("src/Models/Text_Recognition/text recognition hyperparameters.txt", "a") as file:
-
-                # write the data
-                items = [str(kwargs[key]) for key in keys] + [str(training_accuracy), str(test_accuracy)]
-
-                file.write(", ".join(items))
-
-                # write the newline
-                file.write("\n")
 
 
 def train_model(training_data,
@@ -155,6 +96,19 @@ class TrueAccuracyCallback(Callback):
         # initialize the training data
         self.training_data = training_data
 
+    def __copy__(self):
+        return type(self)(self.training_data)
+
+    def __deepcopy__(self, memodict={}):
+        id_self = id(self)
+        _copy = memodict[id_self]
+
+        if _copy is None:
+            _copy = type(self)(copy.deepcopy(self.training_data, memodict))
+            memodict[id_self] = _copy
+
+        return _copy
+
     def on_epoch_end(self, epoch, logs=None):
         """
 
@@ -178,38 +132,28 @@ def main():
 
     vocab = get_model_vocab()
 
-    """training_data = data_generator.gen_dataset(os.path.join("Data",
+    training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Training Data"),
                                                vocab=vocab)
 
-    test_data = data_generator.gen_dataset(os.path.join("Data",
+    """test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "Test Data"),
                                            vocab=vocab)"""
 
-    # train the model
+    """model = train_model(training_data, test_data, vocab)
+    model.save(constants.text_recognition)"""
 
-    """train_random_model(training_data,
-                       test_data,
-                       vocab,
-                       automatic=True,
-                       repeats=50)"""
+    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
+                                 objective="accuracy",
+                                 max_trials=50,
+                                 executions_per_trial=2,
+                                 directory="Models",
+                                 project_name="Bayesian Text Recognition")
 
-    high_res_data = data_generator.gen_dataset("Data/Meeting Identifier/Reduced High Res Training Data",
-                                               vocab=vocab,
-                                               input_dim=constants.meeting_dimensions_420p,
-                                               batch_size=None)
-
-    high_res_test_data = data_generator.gen_dataset("Data/Meeting Identifier/Reduced High Res Test Data",
-                                                    vocab=vocab,
-                                                    input_dim=constants.meeting_dimensions_420p)
-
-    model = train_model(high_res_data,
-                        high_res_test_data,
-                        vocab,
-                        resolution=constants.meeting_dimensions_420p)
-    model.save(constants.text_recognition)
+    tuner.search(training_data,
+                 epochs=300)
 
 
 if __name__ == "__main__":

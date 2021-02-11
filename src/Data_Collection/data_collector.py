@@ -24,7 +24,7 @@ from src import constants
 from src.Data_Collection import web_scrapper
 from src.Preprocessing import cropper
 
-temp_images = os.path.join("Data", "High Res Test Data Images")
+temp_images = os.path.join("Data", "Temp Images")
 
 
 class DataCollector:

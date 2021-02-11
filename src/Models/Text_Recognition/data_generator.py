@@ -142,13 +142,18 @@ def gen_dataset_batchless(path,
     :return: dataset
     """
 
-    dataset = tf.data.Dataset.from_generator(lambda: generator(path, length, vocab),
-                                             output_signature=((tf.TensorSpec(shape=input_dim + (3,),
+    dataset = tf.data.Dataset.from_generator(
+        lambda: generator(path, length, vocab),
+        output_signature=(
+            (
+                tf.TensorSpec(shape=input_dim + (3,),
                                                                               dtype=tf.int8),
                                                                 tf.TensorSpec(shape=(None,),
-                                                                              dtype=tf.float64)),
-                                                               tf.TensorSpec(shape=(None,),
-                                                                             dtype=tf.int8)))
+                                                                              dtype=tf.float64)
+            ),
+            tf.TensorSpec(shape=(None,),
+                          dtype=tf.int8))
+    )
 
     # now that we have the dataset, split it into many datasets where each contains inputs
     # of the same length
@@ -186,7 +191,8 @@ def gen_dataset(path,
                                       vocab,
                                       batch_size,
                                       max_batch_sizes[i],
-                                      input_dim) for i in range(constants.name_length)]
+                                      input_dim)
+                for i in range(constants.name_length)]
 
     # concatenate the datasets
     dataset = datasets[0]
