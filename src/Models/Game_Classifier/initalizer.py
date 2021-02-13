@@ -45,8 +45,12 @@ def init_nn():
 
     opt = Adam(learning_rate=0.0001)
 
-    model = keras.Model(inputs=input_layer, outputs=output, name="Game_Classifier")
-    model.compile(loss="sparse_categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+    model = keras.Model(inputs=input_layer,
+                        outputs=output,
+                        name="Game_Classifier")
+    model.compile(loss="sparse_categorical_crossentropy",
+                  optimizer=opt,
+                  metrics=["accuracy"])
 
     return model
 
@@ -72,11 +76,6 @@ def main():
 
     :return:
     """
-
-    print(os.getcwd())
-
-    result = import_image("Design Docs/Resources/Case 2 Gameplay.jpg")
-    print(result.shape)
 
     model = init_nn()
     model.summary()

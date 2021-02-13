@@ -4,9 +4,11 @@ Author: Arthur Wesley
 
 """
 
-import numpy as np
-import tensorflow as tf
+import os
 
+import numpy as np
+
+import tensorflow as tf
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 from sklearn.metrics import classification_report
@@ -23,19 +25,23 @@ def get_failed_training_images():
     :return:
     """
 
+    path = os.path.join("Data",
+                        "Crewmate Identifier",
+                        "Test Data")
+
     # load the model
-    model = tf.keras.models.load_model("Game Classifier.h5")
+    model = tf.keras.models.load_model(constants.crewmate_identifier)
 
     # load the data
-    training_data, files = image_dataset_from_directory("Data/Game Classifier/Training Data",
-                                                        image_size=constants.dimensions,
+    training_data, files = image_dataset_from_directory(path,
+                                                        image_size=constants.crewmate_dimensions,
                                                         shuffle=False,
                                                         return_filepaths=True)
 
     step = 32
     index = 0
 
-    # make the predictions
+    # make the game_classifier_predictions
     for X, y in training_data:
 
         # predict and get the softmax
@@ -48,7 +54,13 @@ def get_failed_training_images():
         if not np.array_equal(y, y_pred):
             for i in range(len(y_pred)):
                 if y_pred[i] != y[i]:
-                    print("miss-classification of image", files[index + i])
+                    # move the file up one directory
+
+                    basename = os.path.basename(files[index + i])
+
+                    os.rename(files[index + i],
+                              os.path.join(path,
+                                           basename))
 
         index += step
 
@@ -106,12 +118,12 @@ def get_training_and_test_accuracy():
 
     """
 
-    model = tf.keras.models.load_model("Game Classifier.h5")
+    model = tf.keras.models.load_model(constants.crewmate_identifier)
 
-    training_data = image_dataset_from_directory("Data/Game Classifier/Training Data",
-                                                 image_size=constants.dimensions)
-    test_data = image_dataset_from_directory("Data/Game Classifier/Test Data",
-                                             image_size=constants.dimensions)
+    training_data = image_dataset_from_directory("Data/Crewmate Identifier/Training Data",
+                                                 image_size=constants.crewmate_dimensions)
+    test_data = image_dataset_from_directory("Data/Crewmate Identifier/Test Data",
+                                             image_size=constants.crewmate_dimensions)
 
     model.evaluate(training_data)
     model.evaluate(test_data)
@@ -130,7 +142,18 @@ def main():
 
     # get_training_and_test_accuracy()
 
+    test_data = image_dataset_from_directory("Data/Crewmate Identifier/Test Data",
+                                             shuffle=False,
+                                             image_size=constants.crewmate_dimensions)
 
+    model = tf.keras.models.load_model(constants.crewmate_identifier)
+
+    labels = np.concatenate([labels for images, labels in test_data])
+    predictions = np.argmax(model.predict(test_data), axis=1)
+
+    print(classification_report(predictions,
+                                labels,
+                                target_names=constants.crewmate_color_ids))
 
 
 if __name__ == "__main__":

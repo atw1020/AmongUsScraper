@@ -9,6 +9,8 @@ import hashlib
 
 from twitchdl import twitch
 
+from src import constants
+
 
 def is_name_test(name):
     """
@@ -80,26 +82,54 @@ def sort_classifier_crude_data():
         os.rename(start_path + file, output)
 
 
-def sort_winner_crude_data():
+def sort_crewmate_identifier_data(output_dir):
     """
 
-    sorts through the data for the winner identifier and sorts it into training and test
-    data
+    sorts the crewmate identifier data
 
-    :return: None (renames files)
+    :return:
     """
 
-    path = os.path.join("Data", "Winner Identifier")
+    path = os.path.join("Data", "Crewmate Identifier")
 
     files = os.listdir(os.path.join(path, "Crude Data"))
+
+    for file in files:
+
+        if file == ".DS_Store":
+            continue
+
+        label = file.split("-")[0]
+
+        label = constants.colors_dict[label]
+
+        os.rename(os.path.join(path, "Crude Data", file),
+                  os.path.join(output_dir, label, file))
+
+
+def sort_meeting_data():
+    """
+
+    sorts meeting data into training and test data based on the person who
+    uploaded it
+
+    :return:
+    """
+
+    start_path = "Data/Meeting Identifier/Crude Data/"
+
+    files = os.listdir(start_path)
 
     player_names = dict()
 
     for file in files:
 
-        items = file.split("-")
+        if file == ".DS_Store":
+            continue
 
-        video_id = items[1]
+        # split the filepath on the dash
+        items = file.split("-")
+        video_id = items[3]
 
         if video_id in player_names:
             # if we already have the player name cached, use it
@@ -107,7 +137,7 @@ def sort_winner_crude_data():
         else:
             # otherwise, get the player name from the video ID
             video = twitch.get_video(video_id)
-            player_name = video['channel']['display_name']
+            player_name = video['creator']['displayName']
 
             # cache the player name
             player_names[video_id] = player_name
@@ -117,8 +147,9 @@ def sort_winner_crude_data():
         else:
             data_set = "Training Data"
 
-        os.rename(os.path.join(path, "Crude Data", file),
-                  os.path.join(path, data_set, "ext", file))
+        output = os.path.join("Data", "Meeting Identifier", data_set, file)
+
+        os.rename(start_path + file, output)
 
 
 def main():
@@ -130,7 +161,12 @@ def main():
     """
 
     sort_classifier_crude_data()
-    sort_winner_crude_data()
+
+    sort_crewmate_identifier_data(os.path.join("Data",
+                                               "Crewmate Identifier",
+                                               "Test Data"))
+
+    sort_meeting_data()
 
     """
     streamers = ["Blunder", "shofu", "Kara", "Pokimane", "5up", "captainsparklez",

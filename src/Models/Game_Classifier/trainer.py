@@ -51,7 +51,7 @@ def main():
                                              image_size=constants.dimensions)
 
     model.evaluate(test_data)
-    model.save("Game Classifier.h5")
+    model.save(constants.game_classifier)
 
 
 if __name__ == "__main__":
