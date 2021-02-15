@@ -5,7 +5,6 @@ Author: Arthur Wesley
 """
 
 import os
-import random
 
 from tensorflow.keras import Model
 from tensorflow.keras import layers

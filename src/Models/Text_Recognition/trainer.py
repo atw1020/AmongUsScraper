@@ -49,6 +49,7 @@ def train_model(training_data,
 
     model = initalizer.init_nn(vocab,
                                image_dimensions=resolution)
+    model.summary()
 
     cb = TrueAccuracyCallback(training_data)
 
@@ -137,15 +138,18 @@ def main():
                                                             "Training Data"),
                                                vocab=vocab)
 
-    """test_data = data_generator.gen_dataset(os.path.join("Data",
+    test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "Test Data"),
-                                           vocab=vocab)"""
+                                           vocab=vocab)
 
-    """model = train_model(training_data, test_data, vocab)
-    model.save(constants.text_recognition)"""
+    for (x1, x2), y in training_data.take(1):
+        print(x2.shape)
 
-    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
+    model = train_model(training_data, test_data, vocab)
+    model.save(constants.text_recognition)
+
+    """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
                                  objective="accuracy",
                                  max_trials=50,
                                  executions_per_trial=2,
@@ -153,7 +157,7 @@ def main():
                                  project_name="Bayesian Text Recognition")
 
     tuner.search(training_data,
-                 epochs=300)
+                 epochs=300)"""
 
 
 if __name__ == "__main__":
