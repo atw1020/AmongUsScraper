@@ -144,7 +144,7 @@ def main():
                                            vocab=vocab)
 
     for (x1, x2), y in training_data.take(1):
-        print(x2.shape)
+        print(x2)
 
     model = train_model(training_data, test_data, vocab)
     model.save(constants.text_recognition)

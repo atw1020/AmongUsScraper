@@ -100,6 +100,9 @@ def init_nn(vocab,
 
     dropout_rate = hp.Float("dropout", 0.1, 0.5)
 
+    # due to bug with tensorflow macos
+    apple_silicon = True
+
     # reset the session
     K.clear_session()
 
@@ -161,21 +164,39 @@ def init_nn(vocab,
                          activation="relu",)(flatten)
 
     for i in range(lstm_depth - 1):
-        GRU = layers.GRU(lstm_breadth,
-                         activation="relu",
-                         recurrent_dropout=dropout_rate,
-                         return_sequences=True)(temp,
-                                                initial_state=dense)
+
+        if apple_silicon:
+
+            GRU = layers.GRU(lstm_breadth,
+                             # recurrent_dropout=dropout_rate,
+                             return_sequences=True)(temp,
+                                                    initial_state=dense)
+
+        else:
+
+            GRU = layers.GRU(lstm_breadth,
+                             recurrent_dropout=dropout_rate,
+                             return_sequences=True)(temp,
+                                                    initial_state=dense)
+
         dropout = layers.Dropout(rate=dropout_rate)(GRU)
         batch_norm = layers.BatchNormalization()(dropout)
 
         temp = batch_norm
 
-    GRU = layers.GRU(lstm_breadth,
-                     activation="relu",
-                     recurrent_dropout=dropout_rate,
-                     return_sequences=True)(temp,
-                                            initial_state=dense)
+    if apple_silicon:
+
+        GRU = layers.GRU(lstm_breadth,
+                         # recurrent_dropout=dropout_rate,
+                         return_sequences=True)(temp,
+                                                initial_state=dense)
+
+    else:
+
+        GRU = layers.GRU(lstm_breadth,
+                         recurrent_dropout=dropout_rate,
+                         return_sequences=True)(temp,
+                                                initial_state=dense)
 
     temp = GRU
 
