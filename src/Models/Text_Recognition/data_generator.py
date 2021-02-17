@@ -6,8 +6,6 @@ data generator
 
 import os
 
-import numpy as np
-
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
@@ -121,6 +119,36 @@ def generator(directory, length, vocab):
         yield (x1, x2), y
 
         j += 1
+
+
+def random_generator(directory, length, vocab):
+    """
+
+    generate a random dataset
+
+    :param directory: pacified argument to shadow generator()
+    :param length: length of the sequences
+    :param vocab: vocabulary to use
+    :return:
+    """
+
+    vocab_size = len(vocab.keys()) + 2
+
+    for i in range(5):
+
+        # yield random data
+        x1 = tf.random.uniform(shape=(32, 45, 220, 3),
+                               dtype=tf.dtypes.uint32,
+                               minval=0, maxval=255)
+        x2 = tf.random.uniform(shape=(32, length + 1),
+                               dtype=tf.dtypes.uint32,
+                               minval=0, maxval=vocab_size - 1)
+
+        y = tf.random.uniform(shape=(32, length + 1),
+                               dtype=tf.dtypes.uint32,
+                               minval=0, maxval=vocab_size - 1)
+
+        yield (x1, x2), y
 
 
 def gen_dataset_batchless(path,

@@ -7,6 +7,8 @@ Author: Arthur Wesley
 import os
 import copy
 
+import tensorflow as tf
+
 from tensorflow.keras.callbacks import Callback
 
 from kerastuner.tuners import BayesianOptimization
@@ -143,8 +145,28 @@ def main():
                                                         "Test Data"),
                                            vocab=vocab)
 
-    for (x1, x2), y in training_data.take(1):
-        print(x2)
+    for (x1, x2), y in training_data:
+        print(x1.shape)
+        print(x2.shape)
+
+        print(y.shape)
+
+    model = initalizer.init_nn(vocab)
+
+    """for x, y in training_data:
+
+        with tf.GradientTape() as Tape:
+
+            y_pred = model(x, training=True)
+
+            loss = model.compiled_loss(y, y_pred)
+
+        trainable_vars = model.trainable_variables
+        gradients = Tape.gradient(loss, trainable_vars)
+
+        model.optimizer.apply_gradients(zip(gradients, trainable_vars))
+        model.compiled_metrics.update_state(y, y_pred)"""
+
 
     model = train_model(training_data, test_data, vocab)
     model.save(constants.text_recognition)
