@@ -137,15 +137,15 @@ def random_generator(directory, length, vocab):
     for i in range(5):
 
         # yield random data
-        x1 = tf.random.uniform(shape=(32, 45, 220, 3),
-                               dtype=tf.dtypes.uint32,
+        x1 = tf.random.uniform(shape=(32, constants.meeting_dimensions_420p, 3),
+                               dtype=tf.dtypes.int32,
                                minval=0, maxval=255)
         x2 = tf.random.uniform(shape=(32, length + 1),
-                               dtype=tf.dtypes.uint32,
+                               dtype=tf.dtypes.int32,
                                minval=0, maxval=vocab_size - 1)
 
         y = tf.random.uniform(shape=(32, length + 1),
-                               dtype=tf.dtypes.uint32,
+                               dtype=tf.dtypes.int32,
                                minval=0, maxval=vocab_size - 1)
 
         yield (x1, x2), y
@@ -177,9 +177,9 @@ def gen_dataset_batchless(path,
         output_signature=(
             (
                 tf.TensorSpec(shape=input_dim + (3,),
-                                                                              dtype=tf.int8),
-                                                                tf.TensorSpec(shape=(None,),
-                                                                              dtype=tf.float64)
+                              dtype=tf.int8),
+                tf.TensorSpec(shape=(None,),
+                              dtype=tf.float64)
             ),
             tf.TensorSpec(shape=(None,),
                           dtype=tf.int8))
@@ -198,7 +198,8 @@ def gen_dataset(path,
                 batch_size=32,
                 vocab=None,
                 shuffle=True,
-                input_dim=constants.meeting_dimensions):
+                input_dim=constants.meeting_dimensions,
+                random_dataset=False):
     """
 
     generate a dataset in batches
@@ -208,8 +209,14 @@ def gen_dataset(path,
     :param vocab: vocabulary to use
     :param shuffle: whether or not to shuffle the dataset
     :param input_dim: dimension of the input images
+    :param random_dataset: whether or not to use a random dataset
     :return: dataset with batches
     """
+
+    if random_dataset:
+        generator_func = random_generator
+    else:
+        generator_func = generator
 
     if vocab is None:
         vocab = text_utils.get_vocab(text_utils.get_names(path))
@@ -221,7 +228,8 @@ def gen_dataset(path,
                                       vocab,
                                       batch_size,
                                       max_batch_sizes[i],
-                                      input_dim)
+                                      input_dim,
+                                      generator_func=generator_func)
                 for i in range(constants.name_length)]
 
     # concatenate the datasets
@@ -252,7 +260,8 @@ def main():
 
     dataset = gen_dataset(path,
                           input_dim=constants.meeting_dimensions_420p,
-                          batch_size=None)
+                          batch_size=None,
+                          random_dataset=True)
 
     for (x1, x2), y in dataset:
         print(x1.shape)
