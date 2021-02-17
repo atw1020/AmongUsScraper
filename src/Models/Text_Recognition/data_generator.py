@@ -156,7 +156,8 @@ def gen_dataset_batchless(path,
                           vocab,
                           batch_size,
                           max_batch_size,
-                          input_dim):
+                          input_dim,
+                          generator_func=generator):
     """
 
     generate a dataset
@@ -167,11 +168,12 @@ def gen_dataset_batchless(path,
     :param batch_size: size of the batches to divide the dataset into
     :param max_batch_size: maximum size of this batch
     :param input_dim: the dimension of the input images
+    :param generator_func: generator function to use (replaced for apple silicon testing)
     :return: dataset
     """
 
     dataset = tf.data.Dataset.from_generator(
-        lambda: generator(path, length, vocab),
+        lambda: generator_func(path, length, vocab),
         output_signature=(
             (
                 tf.TensorSpec(shape=input_dim + (3,),
