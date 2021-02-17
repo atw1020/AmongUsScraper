@@ -125,6 +125,30 @@ class TrueAccuracyCallback(Callback):
         self.model.evaluate(self.training_data)
 
 
+class ShapeMismatchCallback(Callback):
+
+    def __init__(self):
+        """
+
+        initialize the callback
+
+        """
+        super().__init__()
+
+    def on_batch_begin(self, batch, logs=None):
+        """
+
+        runs on the beginning of a batch
+
+        :param batch: current batch
+        :param logs: logs from the current batch (ie. accuracy)
+        :return:
+        """
+
+        print(batch)
+        print(logs)
+
+
 def main():
     """
 
@@ -137,21 +161,16 @@ def main():
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
-                                                            "Training Data"),
-                                               vocab=vocab)
+                                                            "High res Training Data"),
+                                               # random_dataset=True,
+                                               input_dim=constants.meeting_dimensions_420p,
+                                               vocab=vocab,
+                                               shuffle=False)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "Test Data"),
                                            vocab=vocab)
-
-    for (x1, x2), y in training_data:
-        print(x1.shape)
-        print(x2.shape)
-
-        print(y.shape)
-
-    model = initalizer.init_nn(vocab)
 
     """for x, y in training_data:
 
@@ -167,8 +186,10 @@ def main():
         model.optimizer.apply_gradients(zip(gradients, trainable_vars))
         model.compiled_metrics.update_state(y, y_pred)"""
 
-
-    model = train_model(training_data, test_data, vocab)
+    model = train_model(training_data,
+                        test_data,
+                        vocab,
+                        resolution=constants.meeting_dimensions_420p)
     model.save(constants.text_recognition)
 
     """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),

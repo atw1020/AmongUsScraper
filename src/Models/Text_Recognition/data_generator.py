@@ -134,8 +134,6 @@ def random_generator(directory, length, vocab):
 
     vocab_size = len(vocab.keys()) + 2
 
-
-
     for i in range(5):
 
         # yield random data
@@ -260,12 +258,13 @@ def main():
                         "Meeting Identifier",
                         "High Res Training Data")
 
-    dataset = gen_dataset(path,
-                          input_dim=constants.meeting_dimensions_420p,
-                          batch_size=None,
-                          random_dataset=True)
+    training_data = gen_dataset(os.path.join("Data",
+                                             "Meeting Identifier",
+                                             "Training Data"),
+                                random_dataset=True,
+                                input_dim=constants.meeting_dimensions_420p)
 
-    for (x1, x2), y in dataset:
+    for (x1, x2), y in training_data:
 
         print("=" * 60)
 
