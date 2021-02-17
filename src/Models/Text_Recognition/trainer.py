@@ -153,9 +153,9 @@ class ShapeMismatchCallback(Callback):
         print("\ncurrent batch shape:")
 
         print("x1:", x1.shape)
-        print("x1:", x2.shape)
+        print("x2:", x2.shape)
 
-        print("x1:", y.shape)
+        print("y:", y.shape)
 
 
 def main():
