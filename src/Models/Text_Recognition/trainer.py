@@ -53,7 +53,7 @@ def train_model(training_data,
                                image_dimensions=resolution)
     model.summary()
 
-    cb = ShapeMismatchCallback(training_data)  # TrueAccuracyCallback(training_data)
+    cb = TrueAccuracyCallback(training_data)
 
     model.fit(training_data,
               validation_data=test_data,
@@ -125,39 +125,6 @@ class TrueAccuracyCallback(Callback):
         self.model.evaluate(self.training_data)
 
 
-class ShapeMismatchCallback(Callback):
-
-    def __init__(self, training_data):
-        """
-
-        initialize the callback
-
-        """
-
-        super().__init__()
-
-        self.training_data = iter(training_data)
-
-    def on_batch_begin(self, batch, logs=None):
-        """
-
-        runs on the beginning of a batch
-
-        :param batch: current batch
-        :param logs: logs from the current batch (ie. accuracy)
-        :return:
-        """
-
-        (x1, x2), y = next(self.training_data)
-
-        print("\ncurrent batch shape:")
-
-        print("x1:", x1.shape)
-        print("x2:", x2.shape)
-
-        print("y:", y.shape)
-
-
 def main():
     """
 
@@ -173,35 +140,23 @@ def main():
                                                             "High res Training Data"),
                                                # random_dataset=True,
                                                input_dim=constants.meeting_dimensions_420p,
-                                               vocab=vocab,
-                                               shuffle=False)
+                                               shuffle=False,
+                                               vocab=vocab)
 
-    test_data = data_generator.gen_dataset(os.path.join("Data",
+    """test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "Test Data"),
-                                           vocab=vocab)
+                                           vocab=vocab)"""
 
-    """for x, y in training_data:
-
-        with tf.GradientTape() as Tape:
-
-            y_pred = model(x, training=True)
-
-            loss = model.compiled_loss(y, y_pred)
-
-        trainable_vars = model.trainable_variables
-        gradients = Tape.gradient(loss, trainable_vars)
-
-        model.optimizer.apply_gradients(zip(gradients, trainable_vars))
-        model.compiled_metrics.update_state(y, y_pred)"""
-
-    model = train_model(training_data,
+    """model = train_model(training_data,
                         test_data,
                         vocab,
                         resolution=constants.meeting_dimensions_420p)
-    model.save(constants.text_recognition)
+    model.save(constants.text_recognition)"""
 
-    """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
+    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
+                                                               hp,
+                                                               image_dimensions=constants.meeting_dimensions_420p),
                                  objective="accuracy",
                                  max_trials=50,
                                  executions_per_trial=2,
@@ -209,7 +164,7 @@ def main():
                                  project_name="Bayesian Text Recognition")
 
     tuner.search(training_data,
-                 epochs=300)"""
+                 epochs=300)
 
 
 if __name__ == "__main__":
