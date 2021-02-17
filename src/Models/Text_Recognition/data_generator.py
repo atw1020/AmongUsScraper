@@ -134,19 +134,21 @@ def random_generator(directory, length, vocab):
 
     vocab_size = len(vocab.keys()) + 2
 
+
+
     for i in range(5):
 
         # yield random data
-        x1 = tf.random.uniform(shape=(32, constants.meeting_dimensions_420p, 3),
-                               dtype=tf.dtypes.int32,
-                               minval=0, maxval=255)
-        x2 = tf.random.uniform(shape=(32, length + 1),
-                               dtype=tf.dtypes.int32,
-                               minval=0, maxval=vocab_size - 1)
+        x1 = tf.random.uniform(shape=constants.meeting_dimensions_420p + (3,),
+                               minval=0, maxval=256,
+                               dtype=tf.dtypes.int32)
+        x2 = tf.random.uniform(shape=(length + 1,),
+                               minval=0, maxval=64,
+                               dtype=tf.dtypes.int32)
 
-        y = tf.random.uniform(shape=(32, length + 1),
-                               dtype=tf.dtypes.int32,
-                               minval=0, maxval=vocab_size - 1)
+        y = tf.random.uniform(shape=(length + 1,),
+                              minval=0, maxval=vocab_size,
+                              dtype=tf.dtypes.int32)
 
         yield (x1, x2), y
 
@@ -264,7 +266,13 @@ def main():
                           random_dataset=True)
 
     for (x1, x2), y in dataset:
+
+        print("=" * 60)
+
         print(x1.shape)
+        print(x2.shape)
+
+        print(y.shape)
 
 
 if __name__ == "__main__":
