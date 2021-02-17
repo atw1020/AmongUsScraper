@@ -53,7 +53,7 @@ def train_model(training_data,
                                image_dimensions=resolution)
     model.summary()
 
-    cb = TrueAccuracyCallback(training_data)
+    cb = ShapeMismatchCallback(training_data)  # TrueAccuracyCallback(training_data)
 
     model.fit(training_data,
               validation_data=test_data,
@@ -127,13 +127,16 @@ class TrueAccuracyCallback(Callback):
 
 class ShapeMismatchCallback(Callback):
 
-    def __init__(self):
+    def __init__(self, training_data):
         """
 
         initialize the callback
 
         """
+
         super().__init__()
+
+        self.training_data = iter(training_data)
 
     def on_batch_begin(self, batch, logs=None):
         """
@@ -145,8 +148,14 @@ class ShapeMismatchCallback(Callback):
         :return:
         """
 
-        print(batch)
-        print(logs)
+        (x1, x2), y = next(self.training_data)
+
+        print("\ncurrent batch shape:")
+
+        print("x1:", x1.shape)
+        print("x1:", x2.shape)
+
+        print("x1:", y.shape)
 
 
 def main():
