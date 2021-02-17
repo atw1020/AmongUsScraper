@@ -137,7 +137,7 @@ def main():
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
-                                                            "High res Training Data"),
+                                                            "Reduced High res Training Data"),
                                                # random_dataset=True,
                                                input_dim=constants.meeting_dimensions_420p,
                                                vocab=vocab)
