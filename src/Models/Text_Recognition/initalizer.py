@@ -49,11 +49,11 @@ def init_hyperparameters():
     hp.Fixed("conv_4 size", 18)
     hp.Fixed("conv_4 stride", 2)
 
-    hp.Fixed("lstm depth", 2)
-    hp.Fixed("lstm breadth", 8)
+    hp.Fixed("lstm depth", 5)  # 2)
+    hp.Fixed("lstm breadth", 11)  # 8)
 
-    hp.Fixed("end depth", 1)
-    hp.Fixed("end breadth", 8)
+    hp.Fixed("end depth", 5)  # 1)
+    hp.Fixed("end breadth", 11)  # 8)
 
     hp.Fixed("learning rate", -3)
     hp.Fixed("dropout", constants.text_rec_dropout)
@@ -197,6 +197,8 @@ def init_nn(vocab,
                          recurrent_dropout=dropout_rate,
                          return_sequences=True)(temp,
                                                 initial_state=dense)
+
+    print(GRU)
 
     temp = GRU
 
