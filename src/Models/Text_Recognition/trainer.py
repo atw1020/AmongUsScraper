@@ -6,6 +6,7 @@ Author: Arthur Wesley
 
 import os
 import copy
+import time
 
 import tensorflow as tf
 
@@ -125,6 +126,24 @@ class TrueAccuracyCallback(Callback):
         self.model.evaluate(self.training_data)
 
 
+class TimeHistory(Callback):
+
+    def __init__(self):
+        super().__init__()
+
+        self.times = []
+        self.epoch_time_start = 0
+
+    def on_train_begin(self, logs={}):
+        self.times = []
+
+    def on_epoch_begin(self, batch, logs={}):
+        self.epoch_time_start = time.time()
+
+    def on_epoch_end(self, batch, logs={}):
+        self.times.append(time.time() - self.epoch_time_start)
+
+
 def main():
     """
 
@@ -140,9 +159,10 @@ def main():
                                                             "Reduced High res Training Data"),
                                                # random_dataset=True,
                                                input_dim=constants.meeting_dimensions_420p,
+                                               # random_dataset=True,
                                                vocab=vocab)
 
-    """test_data = data_generator.gen_dataset(os.path.join("Data",
+    test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "High Res Test Data"),
                                            input_dim=constants.meeting_dimensions_420p,
@@ -152,9 +172,9 @@ def main():
                         test_data,
                         vocab,
                         resolution=constants.meeting_dimensions_420p)
-    model.save(constants.text_recognition)"""
+    model.save(constants.text_recognition)
 
-    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
+    """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
                                                                hp,
                                                                image_dimensions=constants.meeting_dimensions_420p),
                                  objective="accuracy",
@@ -164,7 +184,7 @@ def main():
                                  project_name="Bayesian Text Recognition")
 
     tuner.search(training_data,
-                 epochs=300)
+                 epochs=300)"""
 
 
 if __name__ == "__main__":
