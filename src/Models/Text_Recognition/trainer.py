@@ -58,7 +58,7 @@ def train_model(training_data,
     model.fit(training_data,
               validation_data=test_data,
               epochs=300,
-              callbacks=[cb])
+              callbacks=[])
 
     return model
 
@@ -142,7 +142,7 @@ def main():
                                                input_dim=constants.meeting_dimensions_420p,
                                                vocab=vocab)
 
-    test_data = data_generator.gen_dataset(os.path.join("Data",
+    """test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "High Res Test Data"),
                                            input_dim=constants.meeting_dimensions_420p,
@@ -152,9 +152,9 @@ def main():
                         test_data,
                         vocab,
                         resolution=constants.meeting_dimensions_420p)
-    model.save(constants.text_recognition)
+    model.save(constants.text_recognition)"""
 
-    """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
+    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
                                                                hp,
                                                                image_dimensions=constants.meeting_dimensions_420p),
                                  objective="accuracy",
@@ -164,7 +164,7 @@ def main():
                                  project_name="Bayesian Text Recognition")
 
     tuner.search(training_data,
-                 epochs=300)"""
+                 epochs=300)
 
 
 if __name__ == "__main__":
