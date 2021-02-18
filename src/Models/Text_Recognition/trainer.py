@@ -10,7 +10,9 @@ import time as t
 
 import tensorflow as tf
 
+from tensorflow import config
 from tensorflow.keras.callbacks import Callback
+from tensorflow.python.compiler import mlcompute
 
 from kerastuner.tuners import BayesianOptimization
 from kerastuner import HyperParameters
@@ -59,7 +61,7 @@ def train_model(training_data,
     model.fit(training_data,
               validation_data=test_data,
               epochs=300,
-              callbacks=[])
+              callbacks=[cb])
 
     return model
 
@@ -152,45 +154,31 @@ def main():
     :return:
     """
 
+    # Select CPU device.
+    mlcompute.set_mlc_device(device_name='gpu')
+    config.run_functions_eagerly(False)
+
     vocab = get_model_vocab()
 
-    """test_data = data_generator.gen_dataset(os.path.join("Data",
+    training_data = data_generator.gen_dataset(os.path.join("Data",
+                                                            "Meeting Identifier",
+                                                            "Reduced High res Training Data"),
+                                               input_dim=constants.meeting_dimensions_420p,
+                                               batch_size=None,
+                                               shuffle=False,
+                                               vocab=vocab)
+
+    test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "High Res Test Data"),
                                            input_dim=constants.meeting_dimensions_420p,
-                                           vocab=vocab)"""
+                                           vocab=vocab)
 
-    batch_sizes = [2 ** i for i in range(6, 7)]
-
-    cb = TimeHistory()
-
-    print("Batch Size, Time")
-
-    for batch_size in batch_sizes:
-
-        training_data = data_generator.gen_dataset(os.path.join("Data",
-                                                                "Meeting Identifier",
-                                                                "Reduced High res Training Data"),
-                                                   input_dim=constants.meeting_dimensions_420p,
-                                                   batch_size=batch_size,
-                                                   vocab=vocab)
-
-        model = initalizer.init_nn(vocab,
-                                   image_dimensions=constants.meeting_dimensions_420p)
-
-        model.fit(training_data,
-                  epochs=3,
-                  verbose=1,
-                  callbacks=[cb])
-
-        for time in cb.times:
-            print(batch_size, time, sep=", ")
-
-    """model = train_model(training_data,
+    model = train_model(training_data,
                         test_data,
                         vocab,
                         resolution=constants.meeting_dimensions_420p)
-        model.save(constants.text_recognition)"""
+    model.save(constants.text_recognition)
 
     """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
                                                                hp,
