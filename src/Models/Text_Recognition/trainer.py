@@ -160,13 +160,13 @@ def main():
                                            input_dim=constants.meeting_dimensions_420p,
                                            vocab=vocab)"""
 
-    batch_sizes = [2 ** i for i in range(7)]
+    batch_sizes = [2 ** i for i in range(6, 7)]
 
     cb = TimeHistory()
 
     print("Batch Size, Time")
 
-    for batch_size in reversed(batch_sizes):
+    for batch_size in batch_sizes:
 
         training_data = data_generator.gen_dataset(os.path.join("Data",
                                                                 "Meeting Identifier",
@@ -180,7 +180,7 @@ def main():
 
         model.fit(training_data,
                   epochs=3,
-                  verbose=0,
+                  verbose=1,
                   callbacks=[cb])
 
         for time in cb.times:
