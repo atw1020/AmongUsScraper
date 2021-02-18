@@ -6,7 +6,7 @@ Author: Arthur Wesley
 
 import os
 import copy
-import time
+import time as t
 
 import tensorflow as tf
 
@@ -138,10 +138,10 @@ class TimeHistory(Callback):
         self.times = []
 
     def on_epoch_begin(self, batch, logs={}):
-        self.epoch_time_start = time.time()
+        self.epoch_time_start = t.time()
 
     def on_epoch_end(self, batch, logs={}):
-        self.times.append(time.time() - self.epoch_time_start)
+        self.times.append(t.time() - self.epoch_time_start)
 
 
 def main():
@@ -154,25 +154,43 @@ def main():
 
     vocab = get_model_vocab()
 
-    training_data = data_generator.gen_dataset(os.path.join("Data",
-                                                            "Meeting Identifier",
-                                                            "Reduced High res Training Data"),
-                                               # random_dataset=True,
-                                               input_dim=constants.meeting_dimensions_420p,
-                                               # random_dataset=True,
-                                               vocab=vocab)
-
-    test_data = data_generator.gen_dataset(os.path.join("Data",
+    """test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
                                                         "High Res Test Data"),
                                            input_dim=constants.meeting_dimensions_420p,
-                                           vocab=vocab)
+                                           vocab=vocab)"""
 
-    model = train_model(training_data,
+    batch_sizes = [2 ** i for i in range(7)]
+
+    cb = TimeHistory()
+
+    print("Batch Size, Time")
+
+    for batch_size in reversed(batch_sizes):
+
+        training_data = data_generator.gen_dataset(os.path.join("Data",
+                                                                "Meeting Identifier",
+                                                                "Reduced High res Training Data"),
+                                                   input_dim=constants.meeting_dimensions_420p,
+                                                   batch_size=batch_size,
+                                                   vocab=vocab)
+
+        model = initalizer.init_nn(vocab,
+                                   image_dimensions=constants.meeting_dimensions_420p)
+
+        model.fit(training_data,
+                  epochs=3,
+                  verbose=0,
+                  callbacks=[cb])
+
+        for time in cb.times:
+            print(batch_size, time, sep=", ")
+
+    """model = train_model(training_data,
                         test_data,
                         vocab,
                         resolution=constants.meeting_dimensions_420p)
-    model.save(constants.text_recognition)
+        model.save(constants.text_recognition)"""
 
     """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
                                                                hp,

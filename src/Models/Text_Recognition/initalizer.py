@@ -198,8 +198,6 @@ def init_nn(vocab,
                          return_sequences=True)(temp,
                                                 initial_state=dense)
 
-    print(GRU)
-
     temp = GRU
 
     dropout = layers.Dropout(rate=dropout_rate)(temp)
