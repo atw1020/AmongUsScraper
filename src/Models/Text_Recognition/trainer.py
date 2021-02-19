@@ -60,8 +60,7 @@ def train_model(training_data,
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=300,
-              callbacks=[cb])
+              epochs=300)
 
     return model
 
@@ -154,17 +153,12 @@ def main():
     :return:
     """
 
-    """# Select CPU device.
-    mlcompute.set_mlc_device(device_name='gpu')
-    config.run_functions_eagerly(False)"""
-
     vocab = get_model_vocab()
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Reduced High res Training Data"),
                                                input_dim=constants.meeting_dimensions_420p,
-                                               batch_size=None,
                                                vocab=vocab)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
