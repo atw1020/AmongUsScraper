@@ -38,7 +38,9 @@ class ModelFitter:
         # each epoch
         for i in range(epochs):
 
-            # progress bar
+            # reset the metrics
+            for metric in self.model.compiled_metrics.metrics:
+                metric.reset_states()
 
             # go thorough the dataset
             for x, y in tqdm(dataset,
@@ -65,12 +67,26 @@ class ModelFitter:
                 # update the metrics
                 self.model.compiled_metrics.update_state(y, y_pred)
 
-            print("epoch", i, end=":  ")
+            print("=" * 60)
+
+            print("epoch", i, end=":\n")
 
             for metric in self.model.compiled_metrics.metrics:
-                print(metric.name, metric.result().numpy(), end="")
+                print("training", metric.name, metric.result().numpy())
+
+                # reset the metrics
+                metric.reset_states()
+
+            # run the metrics on the test data
+            for x, y in validation_data:
+                y_pred = self.model(x)
+
+                self.model.compiled_metrics.update_state(y, y_pred)
+
+            for metric in self.model.compiled_metrics.metrics:
+                print("test", metric.name, metric.result().numpy())
 
             for callback in callbacks:
                 callback.on_epoch_end()
 
-            print()
+            print("=" * 60)
