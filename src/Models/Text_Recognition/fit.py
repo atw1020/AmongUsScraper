@@ -22,7 +22,6 @@ class ModelFitter:
         """
 
         self.model = model
-        self.num_batches = None
 
     def fit(self,
             dataset,
@@ -30,12 +29,14 @@ class ModelFitter:
             validation_data=None,
             callbacks=[]):
 
-        if self.num_batches is None:
+        num_training_batches = 0
+        num_test_batches = 0
 
-            self.num_batches = 0
+        for item in dataset:
+            num_training_batches += 1
 
-            for item in dataset:
-                self.num_batches += 1
+        for item in validation_data:
+            num_test_batches += 1
 
         output_length = 80
 
@@ -51,7 +52,7 @@ class ModelFitter:
 
             # go thorough the dataset
             for x, y in tqdm(dataset,
-                             total=self.num_batches,
+                             total=num_training_batches,
                              ncols=output_length,
                              unit="batch",
                              desc="epoch " + str(i + 1) + "/" + str(epochs)):
@@ -87,7 +88,11 @@ class ModelFitter:
                 metric.reset_states()
 
             # run the metrics on the test data
-            for x, y in validation_data:
+            for x, y in tqdm(dataset,
+                             total=num_test_batches,
+                             ncols=output_length,
+                             unit="batch",
+                             desc="testing..."):
                 y_pred = self.model(x)
 
                 self.model.compiled_metrics.update_state(y, y_pred)
