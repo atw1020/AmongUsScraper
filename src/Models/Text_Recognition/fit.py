@@ -7,32 +7,44 @@ Author Arthur wesley
 from tensorflow import GradientTape
 
 
-def fit(model,
-        dataset,
-        epochs=1,
-        validation_data=None,
-        callbacks=[]):
+class ModelFitter:
 
-    # each epoch
-    for i in range(epochs):
+    def __init__(self, model):
+        """
 
-        # go thorough the dataset
-        for x, y in dataset:
+        initialize the model fitter
 
-            with GradientTape() as tape:
+        :param model:
+        """
 
-                # make the predictions
-                y_pred = model(x, training=True)
+        self.model = model
 
-                # compute the loss
-                loss = model.compiled_loss(y, y_pred)
+    def fit(self,
+            dataset,
+            epochs=1,
+            validation_data=None,
+            callbacks=[]):
 
-            # compute the gradients
-            trainable_vars = model.trainable_vars
-            gradients = tape.gradient(loss, trainable_vars)
+        # each epoch
+        for i in range(epochs):
 
-            # update the weights
-            model.optimizer.apply_gradients(zip(gradients, trainable_vars))
+            # go thorough the dataset
+            for x, y in dataset:
 
-            # update the metrics
-            model.metrics.compiled_metrics.update_state(y, y_pred)
+                with GradientTape() as tape:
+
+                    # make the predictions
+                    y_pred = self.model(x, training=True)
+
+                    # compute the loss
+                    loss = self.model.compiled_loss(y, y_pred)
+
+                # compute the gradients
+                trainable_vars = self.model.trainable_vars
+                gradients = tape.gradient(loss, trainable_vars)
+
+                # update the weights
+                self.model.optimizer.apply_gradients(zip(gradients, trainable_vars))
+
+                # update the metrics
+                self.model.metrics.compiled_metrics.update_state(y, y_pred)
