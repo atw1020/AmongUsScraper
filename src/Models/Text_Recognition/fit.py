@@ -46,6 +46,10 @@ class ModelFitter:
             for metric in self.model.compiled_metrics.metrics:
                 metric.reset_states()
 
+            tqdm.write("=" * output_length)
+
+            tqdm.write("epoch " + str(i + 1) + "/" + str(epochs))
+
             # go thorough the dataset
             for x, y in tqdm(dataset,
                              total=self.num_batches,
@@ -70,10 +74,6 @@ class ModelFitter:
 
                 # update the metrics
                 self.model.compiled_metrics.update_state(y, y_pred)
-
-            tqdm.write("=" * output_length)
-
-            tqdm.write("epoch " + str(i) + "/" + str(epochs))
 
             for metric in self.model.compiled_metrics.metrics:
 
