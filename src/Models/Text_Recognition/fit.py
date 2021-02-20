@@ -37,7 +37,6 @@ class ModelFitter:
 
         for item in validation_data:
             num_test_batches += 1
-
         output_length = 80
 
         # each epoch
@@ -90,7 +89,7 @@ class ModelFitter:
             sleep(0.05)
 
             # run the metrics on the test data
-            for x, y in tqdm(dataset,
+            for x, y in tqdm(validation_data,
                              total=num_test_batches,
                              ncols=output_length,
                              unit="batch",
