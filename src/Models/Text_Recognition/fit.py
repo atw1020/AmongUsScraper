@@ -87,6 +87,8 @@ class ModelFitter:
                 # reset the metrics
                 metric.reset_states()
 
+            sleep(0.05)
+
             # run the metrics on the test data
             for x, y in tqdm(dataset,
                              total=num_test_batches,
