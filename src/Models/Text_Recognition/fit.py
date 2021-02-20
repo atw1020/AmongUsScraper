@@ -67,12 +67,12 @@ class ModelFitter:
                 # update the metrics
                 self.model.compiled_metrics.update_state(y, y_pred)
 
-            print("=" * 60)
+            tqdm.write("=" * 60)
 
-            print("epoch", i, end=":\n")
+            tqdm.write("epoch " + str(i))
 
             for metric in self.model.compiled_metrics.metrics:
-                print("training", metric.name, metric.result().numpy())
+                tqdm.write("training " + metric.name + " " + str(metric.result().numpy()))
 
                 # reset the metrics
                 metric.reset_states()
@@ -84,9 +84,9 @@ class ModelFitter:
                 self.model.compiled_metrics.update_state(y, y_pred)
 
             for metric in self.model.compiled_metrics.metrics:
-                print("test", metric.name, metric.result().numpy())
+                tqdm.write("test " + metric.name + " " + str(metric.result().numpy()))
 
             for callback in callbacks:
                 callback.on_epoch_end()
 
-            print("=" * 60)
+            tqdm.write("=" * 60)
