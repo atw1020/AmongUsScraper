@@ -18,9 +18,9 @@ from kerastuner.tuners import BayesianOptimization
 from kerastuner import HyperParameters
 
 from src import constants
-from src.Models.Text_Recognition import initalizer
-from src.Models.Text_Recognition import text_utils
-from src.Models.Text_Recognition import data_generator
+from src.Models.Text_Recognition.fit import ModelFitter
+from src.Models.Text_Recognition import initalizer, text_utils, data_generator
+
 
 
 def get_vocab(directory):
@@ -167,11 +167,19 @@ def main():
                                            input_dim=constants.meeting_dimensions_420p,
                                            vocab=vocab)
 
-    model = train_model(training_data,
+    model = initalizer.init_nn(vocab,
+                               image_dimensions=constants.meeting_dimensions_420p)
+
+    fitter = ModelFitter(model)
+    fitter.fit(training_data,
+               epochs=300,
+               validation_data=test_data)
+
+    """model = train_model(training_data,
                         test_data,
                         vocab,
                         resolution=constants.meeting_dimensions_420p)
-    model.save(constants.text_recognition)
+    model.save(constants.text_recognition)"""
 
     """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
                                                                hp,

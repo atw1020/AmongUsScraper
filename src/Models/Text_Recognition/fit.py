@@ -4,6 +4,8 @@ Author Arthur wesley
 
 """
 
+from progressbar import Bar, Percentage, ProgressBar
+
 from tensorflow import GradientTape
 
 
@@ -18,6 +20,7 @@ class ModelFitter:
         """
 
         self.model = model
+        self.num_batches = None
 
     def fit(self,
             dataset,
@@ -25,11 +28,24 @@ class ModelFitter:
             validation_data=None,
             callbacks=[]):
 
+        if self.num_batches is None:
+
+            self.num_batches = 0
+
+            for item in dataset:
+                self.num_batches += 1
+
         # each epoch
         for i in range(epochs):
 
+            # progressbar
+            bar = ProgressBar(maxval=self.num_batches,
+                              widgets=[Bar('=', '[', ']'), ' ', Percentage()])
+
+            bar.start()
+
             # go thorough the dataset
-            for x, y in dataset:
+            for i, (x, y) in enumerate(dataset):
 
                 with GradientTape() as tape:
 
@@ -40,11 +56,15 @@ class ModelFitter:
                     loss = self.model.compiled_loss(y, y_pred)
 
                 # compute the gradients
-                trainable_vars = self.model.trainable_vars
-                gradients = tape.gradient(loss, trainable_vars)
+                trainable_variables = self.model.trainable_variables
+                gradients = tape.gradient(loss, trainable_variables)
 
                 # update the weights
-                self.model.optimizer.apply_gradients(zip(gradients, trainable_vars))
+                self.model.optimizer.apply_gradients(zip(gradients, trainable_variables))
 
                 # update the metrics
-                self.model.metrics.compiled_metrics.update_state(y, y_pred)
+                self.model.compiled_metrics.update_state(y, y_pred)
+
+                bar.update(i + 1)
+
+            print("epoch", i, self.model.metrics.result().numpy())
