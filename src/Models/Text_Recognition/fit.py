@@ -47,15 +47,14 @@ class ModelFitter:
                 metric.reset_states()
 
             tqdm.write("=" * output_length)
-
-            tqdm.write("epoch " + str(i + 1) + "/" + str(epochs))
+            sleep(0.05)
 
             # go thorough the dataset
             for x, y in tqdm(dataset,
                              total=self.num_batches,
                              ncols=output_length,
                              unit="batch",
-                             desc="training"):
+                             desc="epoch " + str(i + 1) + "/" + str(epochs)):
 
                 with GradientTape() as tape:
 
@@ -104,6 +103,3 @@ class ModelFitter:
 
             for callback in callbacks:
                 callback.on_epoch_end()
-
-            tqdm.write("=" * output_length)
-            sleep(0.05)
