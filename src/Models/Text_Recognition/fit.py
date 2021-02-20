@@ -4,7 +4,7 @@ Author Arthur wesley
 
 """
 
-from progressbar import Bar, Percentage, ProgressBar
+from tqdm import tqdm
 
 from tensorflow import GradientTape
 
@@ -38,14 +38,14 @@ class ModelFitter:
         # each epoch
         for i in range(epochs):
 
-            # progressbar
-            bar = ProgressBar(maxval=self.num_batches,
-                              widgets=[Bar('=', '[', ']'), ' ', Percentage()])
-
-            bar.start()
+            # progress bar
 
             # go thorough the dataset
-            for i, (x, y) in enumerate(dataset):
+            for x, y in tqdm(dataset,
+                             total=self.num_batches,
+                             ncols=100,
+                             unit="batch",
+                             desc="training"):
 
                 with GradientTape() as tape:
 
@@ -65,6 +65,12 @@ class ModelFitter:
                 # update the metrics
                 self.model.compiled_metrics.update_state(y, y_pred)
 
-                bar.update(i + 1)
+            print("epoch", i, end=":  ")
 
-            print("epoch", i, self.model.metrics.result().numpy())
+            for metric in self.model.compiled_metrics.metrics:
+                print(metric.name, metric.result().numpy(), end="")
+
+            for callback in callbacks:
+                callback.on_epoch_end()
+
+            print()
