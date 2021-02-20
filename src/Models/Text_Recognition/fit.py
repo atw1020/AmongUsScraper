@@ -73,7 +73,7 @@ class ModelFitter:
 
             tqdm.write("=" * output_length)
 
-            tqdm.write("epoch " + str(i))
+            tqdm.write("epoch " + str(i) + "/" + str(epochs))
 
             for metric in self.model.compiled_metrics.metrics:
 
@@ -102,9 +102,8 @@ class ModelFitter:
 
                 tqdm.write(initial_string + middle_string + final_string)
 
-                sleep(0.01)
-
             for callback in callbacks:
                 callback.on_epoch_end()
 
             tqdm.write("=" * output_length)
+            sleep(0.05)
