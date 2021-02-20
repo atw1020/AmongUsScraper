@@ -4,6 +4,8 @@ Author Arthur wesley
 
 """
 
+from time import sleep
+
 from tqdm import tqdm
 
 from tensorflow import GradientTape
@@ -99,6 +101,8 @@ class ModelFitter:
                 middle_string = " " * (output_length - len(initial_string) - len(final_string))
 
                 tqdm.write(initial_string + middle_string + final_string)
+
+                sleep(0.01)
 
             for callback in callbacks:
                 callback.on_epoch_end()
