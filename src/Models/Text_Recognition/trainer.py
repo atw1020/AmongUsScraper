@@ -54,7 +54,7 @@ def train_model(training_data,
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=1000,
+              epochs=300,
               callbacks=[cb])
 
     return model
@@ -134,15 +134,20 @@ def main():
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
-                                                            "Training Data"),
+                                                            "Reduced High Res Training Data"),
+                                               input_dim=constants.meeting_dimensions_420p,
                                                vocab=vocab)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
-                                                        "Test Data"),
+                                                        "High Res Test Data"),
+                                           input_dim=constants.meeting_dimensions_420p,
                                            vocab=vocab)
 
-    model = train_model(training_data, test_data, vocab)
+    model = train_model(training_data,
+                        test_data,
+                        vocab,
+                        resolution=constants.meeting_dimensions_420p)
     model.save(constants.text_recognition)
 
     """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
