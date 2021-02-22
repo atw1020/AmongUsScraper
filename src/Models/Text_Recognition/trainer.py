@@ -170,6 +170,8 @@ def main():
     model = initalizer.init_nn(vocab,
                                image_dimensions=constants.meeting_dimensions_420p)
 
+    model.summary()
+
     fitter = ModelFitter(model)
     fitter.fit(training_data,
                epochs=300,
