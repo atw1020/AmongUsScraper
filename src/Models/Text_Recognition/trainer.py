@@ -12,7 +12,6 @@ import tensorflow as tf
 
 from tensorflow import config
 from tensorflow.keras.callbacks import Callback
-from tensorflow.python.compiler import mlcompute
 
 from kerastuner.tuners import BayesianOptimization
 from kerastuner import HyperParameters

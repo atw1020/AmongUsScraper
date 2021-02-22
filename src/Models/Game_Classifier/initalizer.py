@@ -26,13 +26,16 @@ def init_nn():
     input_layer = layers.Input(shape=constants.dimensions + (3,))
 
     # 2D convolutions
-    convolution =   layers.Conv2D(filters=8, kernel_size=11, strides=5, activation="relu", padding="same")(input_layer)
-    dropout     =   layers.Dropout(rate=constants.classifier_dropout)(convolution)
+    convolution =   layers.Conv2D(filters=8, kernel_size=11, strides=5, padding="same")(input_layer)
+    relu        =   layers.LeakyReLU()(convolution)
+    dropout     =   layers.Dropout(rate=constants.classifier_dropout)(relu)
     # pooling     =   layers.MaxPooling2D(pool_size=2)(classifier_dropout)
-    convolution2=   layers.Conv2D(filters=16, kernel_size=11, strides=5, activation="relu", padding="same")(dropout)
-    dropout2    =   layers.Dropout(rate=constants.classifier_dropout)(convolution2)
-    convolution3=   layers.Conv2D(filters=32, kernel_size=11, strides=5, activation="relu", padding="same")(dropout2)
-    dropout3    =   layers.Dropout(rate=constants.classifier_dropout)(convolution3)
+    convolution =   layers.Conv2D(filters=16, kernel_size=11, strides=5, padding="same")(dropout)
+    relu        =   layers.LeakyReLU()(convolution)
+    dropout2    =   layers.Dropout(rate=constants.classifier_dropout)(relu)
+    convolution =   layers.Conv2D(filters=32, kernel_size=11, strides=5, padding="same")(dropout2)
+    relu        =   layers.LeakyReLU()(convolution)
+    dropout3    =   layers.Dropout(rate=constants.classifier_dropout)(relu)
 
     # flatten & feed into fully connected layers
     flatten = layers.Flatten()(dropout3)
