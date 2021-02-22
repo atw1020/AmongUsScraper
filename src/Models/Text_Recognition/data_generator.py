@@ -6,8 +6,6 @@ data generator
 
 import os
 
-import numpy as np
-
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
@@ -123,12 +121,43 @@ def generator(directory, length, vocab):
         j += 1
 
 
+def random_generator(directory, length, vocab):
+    """
+
+    generate a random dataset
+
+    :param directory: pacified argument to shadow generator()
+    :param length: length of the sequences
+    :param vocab: vocabulary to use
+    :return:
+    """
+
+    vocab_size = len(vocab.keys()) + 2
+
+    for i in range(5):
+
+        # yield random data
+        x1 = tf.random.uniform(shape=constants.meeting_dimensions_420p + (3,),
+                               minval=0, maxval=256,
+                               dtype=tf.dtypes.int32)
+        x2 = tf.random.uniform(shape=(length + 1,),
+                               minval=0, maxval=64,
+                               dtype=tf.dtypes.int32)
+
+        y = tf.random.uniform(shape=(length + 1,),
+                              minval=0, maxval=vocab_size,
+                              dtype=tf.dtypes.int32)
+
+        yield (x1, x2), y
+
+
 def gen_dataset_batchless(path,
                           length,
                           vocab,
                           batch_size,
                           max_batch_size,
-                          input_dim):
+                          input_dim,
+                          generator_func=generator):
     """
 
     generate a dataset
@@ -139,17 +168,18 @@ def gen_dataset_batchless(path,
     :param batch_size: size of the batches to divide the dataset into
     :param max_batch_size: maximum size of this batch
     :param input_dim: the dimension of the input images
+    :param generator_func: generator function to use (replaced for apple silicon testing)
     :return: dataset
     """
 
     dataset = tf.data.Dataset.from_generator(
-        lambda: generator(path, length, vocab),
+        lambda: generator_func(path, length, vocab),
         output_signature=(
             (
                 tf.TensorSpec(shape=input_dim + (3,),
-                                                                              dtype=tf.int8),
-                                                                tf.TensorSpec(shape=(None,),
-                                                                              dtype=tf.float64)
+                              dtype=tf.int8),
+                tf.TensorSpec(shape=(None,),
+                              dtype=tf.float64)
             ),
             tf.TensorSpec(shape=(None,),
                           dtype=tf.int8))
@@ -168,7 +198,8 @@ def gen_dataset(path,
                 batch_size=32,
                 vocab=None,
                 shuffle=True,
-                input_dim=constants.meeting_dimensions):
+                input_dim=constants.meeting_dimensions,
+                random_dataset=False):
     """
 
     generate a dataset in batches
@@ -178,8 +209,14 @@ def gen_dataset(path,
     :param vocab: vocabulary to use
     :param shuffle: whether or not to shuffle the dataset
     :param input_dim: dimension of the input images
+    :param random_dataset: whether or not to use a random dataset
     :return: dataset with batches
     """
+
+    if random_dataset:
+        generator_func = random_generator
+    else:
+        generator_func = generator
 
     if vocab is None:
         vocab = text_utils.get_vocab(text_utils.get_names(path))
@@ -191,7 +228,8 @@ def gen_dataset(path,
                                       vocab,
                                       batch_size,
                                       max_batch_sizes[i],
-                                      input_dim)
+                                      input_dim,
+                                      generator_func=generator_func)
                 for i in range(constants.name_length)]
 
     # concatenate the datasets
@@ -220,12 +258,20 @@ def main():
                         "Meeting Identifier",
                         "High Res Training Data")
 
-    dataset = gen_dataset(path,
-                          input_dim=constants.meeting_dimensions_420p,
-                          batch_size=None)
+    training_data = gen_dataset(os.path.join("Data",
+                                             "Meeting Identifier",
+                                             "Training Data"),
+                                random_dataset=True,
+                                input_dim=constants.meeting_dimensions_420p)
 
-    for (x1, x2), y in dataset:
+    for (x1, x2), y in training_data:
+
+        print("=" * 60)
+
         print(x1.shape)
+        print(x2.shape)
+
+        print(y.shape)
 
 
 if __name__ == "__main__":
