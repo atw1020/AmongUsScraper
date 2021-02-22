@@ -101,7 +101,7 @@ def init_nn(vocab,
     dropout_rate = hp.Float("dropout", 0.1, 0.5)
 
     # due to bug with tensorflow macos
-    apple_silicon = False  # True
+    apple_silicon = True
 
     # reset the session
     K.clear_session()
