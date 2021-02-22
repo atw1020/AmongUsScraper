@@ -12,6 +12,7 @@ import tensorflow as tf
 
 from tensorflow import config
 from tensorflow.keras.callbacks import Callback
+from tensorflow.python.compiler import mlcompute
 
 from kerastuner.tuners import BayesianOptimization
 from kerastuner import HyperParameters
@@ -19,7 +20,6 @@ from kerastuner import HyperParameters
 from src import constants
 from src.Models.Text_Recognition.fit import ModelFitter
 from src.Models.Text_Recognition import initalizer, text_utils, data_generator
-
 
 
 def get_vocab(directory):
@@ -153,6 +153,8 @@ def main():
     """
 
     vocab = get_model_vocab()
+
+    mlcompute.set_mlc_device(device_name="gpu")
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
