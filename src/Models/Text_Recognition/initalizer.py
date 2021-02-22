@@ -225,6 +225,8 @@ def init_nn(vocab,
                   optimizer=opt,
                   metrics=["accuracy"])
 
+    model.summary()
+
     return model
 
 
