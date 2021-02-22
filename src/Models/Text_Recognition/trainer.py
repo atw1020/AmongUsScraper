@@ -167,7 +167,7 @@ def main():
                                            input_dim=constants.meeting_dimensions_420p,
                                            vocab=vocab)
 
-    model = initalizer.init_nn(vocab,
+    """model = initalizer.init_nn(vocab,
                                image_dimensions=constants.meeting_dimensions_420p)
 
     model.summary()
@@ -175,13 +175,13 @@ def main():
     fitter = ModelFitter(model)
     fitter.fit(training_data,
                epochs=300,
-               validation_data=test_data)
+               validation_data=test_data)"""
 
-    """model = train_model(training_data,
+    model = train_model(training_data,
                         test_data,
                         vocab,
                         resolution=constants.meeting_dimensions_420p)
-    model.save(constants.text_recognition)"""
+    model.save(constants.text_recognition)
 
     """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
                                                                hp,
