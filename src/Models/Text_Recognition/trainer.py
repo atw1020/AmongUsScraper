@@ -136,6 +136,7 @@ def main():
                                                             "Meeting Identifier",
                                                             "Reduced High Res Training Data"),
                                                input_dim=constants.meeting_dimensions_420p,
+                                               batch_size=None,
                                                vocab=vocab)
 
     test_data = data_generator.gen_dataset(os.path.join("Data",
