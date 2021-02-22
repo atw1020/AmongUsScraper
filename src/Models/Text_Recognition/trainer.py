@@ -154,8 +154,6 @@ def main():
 
     vocab = get_model_vocab()
 
-    mlcompute.set_mlc_device(device_name="gpu")
-
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
                                                             "Reduced High res Training Data"),
