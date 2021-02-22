@@ -15,8 +15,6 @@ from tensorflow.keras.optimizers import Adam
 
 from tensorflow.keras import backend as K
 
-from kerastuner import HyperParameters
-
 from src import constants
 from src.Models.Text_Recognition import trainer
 
@@ -27,82 +25,84 @@ def repeat_vector(args):
     return layers.RepeatVector(K.shape(sequence_layer)[1])(layer_to_repeat)
 
 
-def init_hyperparameters():
+def get_random_hyperparameters():
     """
 
-    initializes the hyperparameters for the model
+    generate a random set of hyperparameters for the neural network
 
-    :return:
+    :return: random set of hyperparameters
     """
 
-    hp = HyperParameters()
-    hp.Fixed("embedding dim", 9)
+    return {
+        "conv_size": random.randint(9, 18),
+        "conv_stride": random.randint(3, 4),
+        "pool_1": random.randint(0, 1),
+        "pool_2": 0,  # random.randint(0, 1),
+        "embedding_dim": 2 ** random.randint(7, 9),
+        "early_merge": 0,  # random.randint(0, 1),
+        "lstm_breadth": 2 ** random.randint(8, 12),
+        "lstm_depth": random.randint(1, 2),
+        "end_breadth": 2 ** random.randint(8, 12),
+        "end_depth": random.randint(1, 10),
+        "lr": 0.001  # 10 ** (random.random() - 3)
+    }
 
-    hp.Fixed("conv_1 size", 18)
-    hp.Fixed("conv_1 stride", 2)
 
-    hp.Fixed("conv_2 size", 18)
-    hp.Fixed("conv_2 stride", 2)
+def init_random_nn(vocab):
+    """
 
-    hp.Fixed("conv_3 size", 18)
-    hp.Fixed("conv_3 stride", 2)
+    initializes a neural network with random hyper-parameters
 
-    hp.Fixed("conv_4 size", 18)
-    hp.Fixed("conv_4 stride", 2)
+    :param vocab: vocab to create the neural network for
+    :return: tuple of the network and a dictionary of its hyperparameters
+    """
 
-    hp.Fixed("lstm depth", 2)
-    hp.Fixed("lstm breadth", 8)
-
-    hp.Fixed("end depth", 1)
-    hp.Fixed("end breadth", 8)
-
-    hp.Fixed("learning rate", -3)
-    hp.Fixed("dropout", constants.text_rec_dropout)
-
-    return hp
+    kwargs = get_random_hyperparameters()
+    return init_nn(vocab, **kwargs), kwargs
 
 
 def init_nn(vocab,
-            hp=None,
-            image_dimensions=constants.meeting_dimensions):
+            image_dimensions=constants.meeting_dimensions,
+            conv_size=18,
+            conv_stride=4,
+            pool_1=0,
+            pool_2=0,
+            embedding_dim=512,
+            early_merge=0,
+            lstm_breadth=256,
+            lstm_depth=2,
+            end_breadth=256,
+            end_depth=1,
+            lr=0.003):
     """
 
     creates the neural network
 
-    :param vocab: vocabulary to use
-    :param hp: hyperparameters used
     :param image_dimensions: dimensions of the input images
+    :param embedding_dim: dimension of the embedding layer
+    :param early_merge: whether or not to merge the text and image networks before or
+                        after the LSTM
+    :param pool_2: whether or not to use the first pooling layer
+    :param pool_1: whether or not to use the second pooling layer
+    :param conv_stride: stride of each convolution
+    :param conv_size: size of each convolution
+    :param vocab: vocabulary to use
+    :param lstm_breadth: number of units in the LSTM
+    :param lstm_depth: number of LSTM layers
+    :param end_depth: number of layers at the end
+    :param end_breadth: breadth of the last layers of the network
+    :param lr: learning rate of the network
     :return: initialized model
     """
 
-    if hp is None:
-        hp = init_hyperparameters()
-
-    embedding_dim = int(2 ** hp.Float("embedding dim", 7, 9))
-
-    conv_1_size = hp.Int("conv_1 size", 9, 18)
-    conv_1_stride = hp.Int("conv_1 stride", 2, 4)
-
-    conv_2_size = hp.Int("conv_2 size", 9, 18)
-    conv_2_stride = hp.Int("conv_2 stride", 2, 4)
-
-    conv_3_size = hp.Int("conv_3 size", 9, 18)
-    conv_3_stride = hp.Int("conv_3 stride", 2, 4)
-
-    conv_4_size = hp.Int("conv_4 size", 9, 18)
-    conv_4_stride = hp.Int("conv_4 stride", 2, 4)
-
-    lstm_depth = hp.Int("lstm depth", 1, 2)
-    lstm_breadth = int(2 ** hp.Float("lstm breadth", 8, 12))
-
-    end_depth = hp.Int("end depth", 1, 10)
-    end_breadth = int(2 ** hp.Float("end breadth", 8, 12))
-    lr = 10 ** hp.Float("learning rate", -4, -1)
-
-    dropout_rate = hp.Float("dropout", 0.1, 0.5)
-
     # reset the session
     K.clear_session()
+
+    # convert booleans from integers to booleans
+    pool_1 = bool(pool_1)
+    pool_2 = bool(pool_2)
+
+    early_merge = bool(early_merge)
 
     # get the size of the vocabulary
     vocab_size = len(vocab.keys()) + 2
@@ -113,40 +113,48 @@ def init_nn(vocab,
     batch_norm = layers.BatchNormalization()(image_input_layer)
 
     convolution = layers.Conv2D(filters=16,
-                                kernel_size=conv_1_size,
-                                strides=conv_1_stride,
+                                kernel_size=conv_size,
+                                strides=conv_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=dropout_rate)(convolution)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=32,
-                                kernel_size=conv_2_size,
-                                strides=conv_2_stride,
+                                kernel_size=conv_size,
+                                strides=conv_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=dropout_rate)(convolution)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     temp = batch_norm
 
+    if pool_1:
+        temp = layers.MaxPooling2D(pool_size=2,
+                                   strides=2)(temp)
+
     convolution = layers.Conv2D(filters=64,
-                                kernel_size=conv_3_size,
-                                strides=conv_3_stride,
+                                kernel_size=conv_size,
+                                strides=conv_stride,
                                 activation="relu",
                                 padding="same")(temp)
-    dropout = layers.Dropout(rate=dropout_rate)(convolution)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=128,
-                                kernel_size=conv_4_size,
-                                strides=conv_4_stride,
+                                kernel_size=conv_size,
+                                strides=conv_stride,
                                 activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=dropout_rate)(convolution)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     batch_norm = layers.BatchNormalization()(dropout)
 
     temp = batch_norm
+
+    if pool_2:
+        temp = layers.MaxPooling2D(pool_size=2,
+                                   strides=2)(temp)
 
     flatten = layers.Flatten()(temp)
 
@@ -156,7 +164,20 @@ def init_nn(vocab,
     embedding = layers.Embedding(input_dim=vocab_size,
                                  output_dim=embedding_dim)(rnn_input)
 
-    temp = embedding
+    if early_merge:
+
+        flatten_size = flatten.type_spec.shape[1]
+
+        # repeat the flatten vector
+        repeat = layers.Lambda(repeat_vector,
+                               output_shape=(None, flatten_size))([flatten, embedding])
+
+        # concatenate the embedding and repeat
+        concatenate = layers.Concatenate()([embedding, repeat])
+        temp = concatenate
+
+    else:
+        temp = embedding
 
     dense = layers.Dense(lstm_breadth,
                          activation="relu",)(flatten)
@@ -164,29 +185,29 @@ def init_nn(vocab,
     for i in range(lstm_depth - 1):
         GRU = layers.GRU(lstm_breadth,
                          activation="relu",
-                         recurrent_dropout=dropout_rate,
+                         recurrent_dropout=constants.text_rec_dropout,
                          return_sequences=True)(temp,
                                                 initial_state=dense)
-        dropout = layers.Dropout(rate=dropout_rate)(GRU)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(GRU)
         batch_norm = layers.BatchNormalization()(dropout)
 
         temp = batch_norm
 
     GRU = layers.GRU(lstm_breadth,
                      activation="relu",
-                     recurrent_dropout=dropout_rate,
+                     recurrent_dropout=constants.text_rec_dropout,
                      return_sequences=True)(temp,
                                             initial_state=dense)
 
     temp = GRU
 
-    dropout = layers.Dropout(rate=dropout_rate)(temp)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(temp)
     batch_norm = layers.BatchNormalization()(dropout)
 
     for i in range(end_depth):
         dense = layers.Dense(units=end_breadth,
                              activation="relu")(batch_norm)
-        dropout = layers.Dropout(rate=dropout_rate)(dense)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(dense)
         batch_norm = layers.BatchNormalization()(dropout)
 
     dense = layers.Dense(units=vocab_size,
