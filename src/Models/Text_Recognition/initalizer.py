@@ -212,7 +212,7 @@ def init_nn(vocab,
     dense = layers.Dense(units=vocab_size,
                          activation="sigmoid")(batch_norm)
 
-    output = layers.Softmax()(relu)
+    output = layers.Softmax()(dense)
 
     model = Model(inputs=[image_input_layer, rnn_input],
                   outputs=output,
