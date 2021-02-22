@@ -177,13 +177,13 @@ def main():
                epochs=300,
                validation_data=test_data)"""
 
-    """model = train_model(training_data,
+    model = train_model(training_data,
                         test_data,
                         vocab,
                         resolution=constants.meeting_dimensions_420p)
-    model.save(constants.text_recognition)"""
+    model.save(constants.text_recognition)
 
-    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
+    """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
                                                                hp,
                                                                image_dimensions=constants.meeting_dimensions_420p),
                                  objective="accuracy",
@@ -193,7 +193,7 @@ def main():
                                  project_name="Bayesian Text Recognition")
 
     tuner.search(training_data,
-                 epochs=300)
+                 epochs=300)"""
 
 
 if __name__ == "__main__":

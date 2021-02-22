@@ -117,17 +117,17 @@ def init_nn(vocab,
     convolution = layers.Conv2D(filters=16,
                                 kernel_size=conv_1_size,
                                 strides=conv_1_stride,
-                                activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=dropout_rate)(convolution)
+    relu = layers.LeakyReLU()(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(relu)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=32,
                                 kernel_size=conv_2_size,
                                 strides=conv_2_stride,
-                                activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=dropout_rate)(convolution)
+    relu = layers.LeakyReLU()(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(relu)
     batch_norm = layers.BatchNormalization()(dropout)
 
     temp = batch_norm
@@ -135,17 +135,17 @@ def init_nn(vocab,
     convolution = layers.Conv2D(filters=64,
                                 kernel_size=conv_3_size,
                                 strides=conv_3_stride,
-                                activation="relu",
                                 padding="same")(temp)
-    dropout = layers.Dropout(rate=dropout_rate)(convolution)
+    relu = layers.LeakyReLU()(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(relu)
     batch_norm = layers.BatchNormalization()(dropout)
 
     convolution = layers.Conv2D(filters=128,
                                 kernel_size=conv_4_size,
                                 strides=conv_4_stride,
-                                activation="relu",
                                 padding="same")(batch_norm)
-    dropout = layers.Dropout(rate=dropout_rate)(convolution)
+    relu = layers.LeakyReLU()(convolution)
+    dropout = layers.Dropout(rate=dropout_rate)(relu)
     batch_norm = layers.BatchNormalization()(dropout)
 
     temp = batch_norm
@@ -160,8 +160,8 @@ def init_nn(vocab,
 
     temp = embedding
 
-    dense = layers.Dense(lstm_breadth,
-                         activation="relu",)(flatten)
+    dense = layers.Dense(lstm_breadth)(flatten)
+    relu = layers.LeakyReLU()(dense)
 
     for i in range(lstm_depth - 1):
 
@@ -170,14 +170,14 @@ def init_nn(vocab,
             GRU = layers.GRU(lstm_breadth,
                              # recurrent_dropout=dropout_rate,
                              return_sequences=True)(temp,
-                                                    initial_state=dense)
+                                                    initial_state=relu)
 
         else:
 
             GRU = layers.GRU(lstm_breadth,
                              recurrent_dropout=dropout_rate,
                              return_sequences=True)(temp,
-                                                    initial_state=dense)
+                                                    initial_state=relu)
 
         dropout = layers.Dropout(rate=dropout_rate)(GRU)
         batch_norm = layers.BatchNormalization()(dropout)
@@ -189,14 +189,14 @@ def init_nn(vocab,
         GRU = layers.GRU(lstm_breadth,
                          # recurrent_dropout=dropout_rate,
                          return_sequences=True)(temp,
-                                                initial_state=dense)
+                                                initial_state=relu)
 
     else:
 
         GRU = layers.GRU(lstm_breadth,
                          recurrent_dropout=dropout_rate,
                          return_sequences=True)(temp,
-                                                initial_state=dense)
+                                                initial_state=relu)
 
     temp = GRU
 
@@ -204,15 +204,15 @@ def init_nn(vocab,
     batch_norm = layers.BatchNormalization()(dropout)
 
     for i in range(end_depth):
-        dense = layers.Dense(units=end_breadth,
-                             activation="relu")(batch_norm)
-        dropout = layers.Dropout(rate=dropout_rate)(dense)
+        dense = layers.Dense(units=end_breadth)(batch_norm)
+        relu = layers.LeakyReLU()(dense)
+        dropout = layers.Dropout(rate=dropout_rate)(relu)
         batch_norm = layers.BatchNormalization()(dropout)
 
     dense = layers.Dense(units=vocab_size,
                          activation="sigmoid")(batch_norm)
 
-    output = layers.Softmax()(dense)
+    output = layers.Softmax()(relu)
 
     model = Model(inputs=[image_input_layer, rnn_input],
                   outputs=output,
