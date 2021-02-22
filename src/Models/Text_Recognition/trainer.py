@@ -6,16 +6,20 @@ Author: Arthur Wesley
 
 import os
 import copy
+import time as t
 
+import tensorflow as tf
+
+from tensorflow import config
 from tensorflow.keras.callbacks import Callback
 
 from kerastuner.tuners import BayesianOptimization
 from kerastuner import HyperParameters
 
 from src import constants
-from src.Models.Text_Recognition import initalizer
-from src.Models.Text_Recognition import text_utils
-from src.Models.Text_Recognition import data_generator
+from src.Models.Text_Recognition.fit import ModelFitter
+from src.Models.Text_Recognition import initalizer, text_utils, data_generator
+
 
 
 def get_vocab(directory):
@@ -49,13 +53,13 @@ def train_model(training_data,
 
     model = initalizer.init_nn(vocab,
                                image_dimensions=resolution)
+    model.summary()
 
     cb = TrueAccuracyCallback(training_data)
 
     model.fit(training_data,
               validation_data=test_data,
-              epochs=1000,
-              callbacks=[cb])
+              epochs=300)
 
     return model
 
@@ -122,6 +126,24 @@ class TrueAccuracyCallback(Callback):
         self.model.evaluate(self.training_data)
 
 
+class TimeHistory(Callback):
+
+    def __init__(self):
+        super().__init__()
+
+        self.times = []
+        self.epoch_time_start = 0
+
+    def on_train_begin(self, logs={}):
+        self.times = []
+
+    def on_epoch_begin(self, batch, logs={}):
+        self.epoch_time_start = t.time()
+
+    def on_epoch_end(self, batch, logs={}):
+        self.times.append(t.time() - self.epoch_time_start)
+
+
 def main():
     """
 
@@ -134,18 +156,36 @@ def main():
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",
-                                                            "Training Data"),
+                                                            "Reduced High res Training Data"),
+                                               input_dim=constants.meeting_dimensions_420p,
+                                               # batch_size=None,
                                                vocab=vocab)
 
-    """test_data = data_generator.gen_dataset(os.path.join("Data",
+    test_data = data_generator.gen_dataset(os.path.join("Data",
                                                         "Meeting Identifier",
-                                                        "Test Data"),
-                                           vocab=vocab)"""
+                                                        "High Res Test Data"),
+                                           input_dim=constants.meeting_dimensions_420p,
+                                           vocab=vocab)
 
-    """model = train_model(training_data, test_data, vocab)
-    model.save(constants.text_recognition)"""
+    """model = initalizer.init_nn(vocab,
+                               image_dimensions=constants.meeting_dimensions_420p)
 
-    tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab, hp),
+    model.summary()
+
+    fitter = ModelFitter(model)
+    fitter.fit(training_data,
+               epochs=300,
+               validation_data=test_data)"""
+
+    model = train_model(training_data,
+                        test_data,
+                        vocab,
+                        resolution=constants.meeting_dimensions_420p)
+    model.save(constants.text_recognition)
+
+    """tuner = BayesianOptimization(lambda hp: initalizer.init_nn(vocab,
+                                                               hp,
+                                                               image_dimensions=constants.meeting_dimensions_420p),
                                  objective="accuracy",
                                  max_trials=50,
                                  executions_per_trial=2,
@@ -153,7 +193,7 @@ def main():
                                  project_name="Bayesian Text Recognition")
 
     tuner.search(training_data,
-                 epochs=300)
+                 epochs=300)"""
 
 
 if __name__ == "__main__":

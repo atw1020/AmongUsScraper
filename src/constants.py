@@ -77,7 +77,7 @@ dataset_fractions = [0.1 * i for i in range(10)]
 name_length = 10
 
 # classifier_dropout rate
-classifier_dropout = 0.3  # 0.25
+classifier_dropout = 0.2  # 0.25
 crewmate_identifier_dropout = 0.4
 text_rec_dropout = 0.3
 

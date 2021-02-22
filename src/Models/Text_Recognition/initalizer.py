@@ -5,7 +5,6 @@ Author: Arthur Wesley
 """
 
 import os
-import random
 
 from tensorflow.keras import Model
 from tensorflow.keras import layers
@@ -39,22 +38,22 @@ def init_hyperparameters():
     hp.Fixed("embedding dim", 9)
 
     hp.Fixed("conv_1 size", 18)
-    hp.Fixed("conv_1 stride", 2)
+    hp.Fixed("conv_1 stride", 4)
 
     hp.Fixed("conv_2 size", 18)
-    hp.Fixed("conv_2 stride", 2)
+    hp.Fixed("conv_2 stride", 4)
 
     hp.Fixed("conv_3 size", 18)
-    hp.Fixed("conv_3 stride", 2)
+    hp.Fixed("conv_3 stride", 4)
 
     hp.Fixed("conv_4 size", 18)
-    hp.Fixed("conv_4 stride", 2)
+    hp.Fixed("conv_4 stride", 4)
 
     hp.Fixed("lstm depth", 2)
-    hp.Fixed("lstm breadth", 8)
+    hp.Fixed("lstm breadth",  8)
 
-    hp.Fixed("end depth", 1)
-    hp.Fixed("end breadth", 8)
+    hp.Fixed("end depth",  1)
+    hp.Fixed("end breadth",  8)
 
     hp.Fixed("learning rate", -3)
     hp.Fixed("dropout", constants.text_rec_dropout)
@@ -100,6 +99,9 @@ def init_nn(vocab,
     lr = 10 ** hp.Float("learning rate", -4, -1)
 
     dropout_rate = hp.Float("dropout", 0.1, 0.5)
+
+    # due to bug with tensorflow macos
+    apple_silicon = True
 
     # reset the session
     K.clear_session()
@@ -162,21 +164,39 @@ def init_nn(vocab,
                          activation="relu",)(flatten)
 
     for i in range(lstm_depth - 1):
-        GRU = layers.GRU(lstm_breadth,
-                         activation="relu",
-                         recurrent_dropout=dropout_rate,
-                         return_sequences=True)(temp,
-                                                initial_state=dense)
+
+        if apple_silicon:
+
+            GRU = layers.GRU(lstm_breadth,
+                             # recurrent_dropout=dropout_rate,
+                             return_sequences=True)(temp,
+                                                    initial_state=dense)
+
+        else:
+
+            GRU = layers.GRU(lstm_breadth,
+                             recurrent_dropout=dropout_rate,
+                             return_sequences=True)(temp,
+                                                    initial_state=dense)
+
         dropout = layers.Dropout(rate=dropout_rate)(GRU)
         batch_norm = layers.BatchNormalization()(dropout)
 
         temp = batch_norm
 
-    GRU = layers.GRU(lstm_breadth,
-                     activation="relu",
-                     recurrent_dropout=dropout_rate,
-                     return_sequences=True)(temp,
-                                            initial_state=dense)
+    if apple_silicon:
+
+        GRU = layers.GRU(lstm_breadth,
+                         # recurrent_dropout=dropout_rate,
+                         return_sequences=True)(temp,
+                                                initial_state=dense)
+
+    else:
+
+        GRU = layers.GRU(lstm_breadth,
+                         recurrent_dropout=dropout_rate,
+                         return_sequences=True)(temp,
+                                                initial_state=dense)
 
     temp = GRU
 

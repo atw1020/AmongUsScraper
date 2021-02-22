@@ -6,8 +6,10 @@ Author: Arthur Wesley
 
 from src import constants
 
+from tensorflow import config
 from tensorflow.keras import backend as K
 from tensorflow.keras.preprocessing import image_dataset_from_directory
+from tensorflow.python.compiler import mlcompute
 
 from src.Models.Crewmate_Identifier import initalizer
 
@@ -43,6 +45,10 @@ def main():
 
     :return: None
     """
+
+    # Select CPU device.
+    mlcompute.set_mlc_device(device_name='gpu')
+    config.run_functions_eagerly(False)
 
     # print(os.path.exists("Data/Game Classifier/Training Data"))
 

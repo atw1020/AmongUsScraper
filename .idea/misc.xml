@@ -3,9 +3,8 @@
   <component name="ProjectPlainTextFileTypeManager">
     <file url="file://$PROJECT_DIR$/data collector stats.txt" />
     <file url="file://$PROJECT_DIR$/Data/Game Classifier/notes.txt" />
-    <file url="file://$PROJECT_DIR$/Data/Winner Identifier/notes.txt" />
     <file url="file://$PROJECT_DIR$/games.txt" />
     <file url="file://$PROJECT_DIR$/times.txt" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8 (AmongUsScrapper)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8 (AmongUsScraper)" project-jdk-type="Python SDK" />
 </project>
