@@ -8,6 +8,7 @@ from kerastuner import HyperParameters
 
 from tensorflow.keras import layers
 from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
 
 from src import constants
 from src.Models.Text_Recognition.YOLO.loss import YoloLoss
@@ -59,7 +60,7 @@ def init_nn(vocab,
     current = input_layer
 
     for i in range(num_layers):
-        current = layers.Conv2D(filters=2 ** (i + 2),
+        current = layers.Conv2D(filters=2 ** (i + 3),
                                 strides=1,
                                 kernel_size=(vertical_convolution_size,
                                              horizontal_convolution_size),
@@ -93,8 +94,11 @@ def init_nn(vocab,
     model = Model(inputs=input_layer,
                   outputs=output)
 
-    model.compile(optimizer="Adam",
-                  loss=YoloLoss)
+    loss = YoloLoss()
+    optimizer = Adam(learning_rate=0.001)
+
+    model.compile(optimizer=optimizer,
+                  loss=loss)
 
     return model
 

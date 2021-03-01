@@ -11,7 +11,8 @@ import time as t
 from tensorflow.keras.callbacks import Callback
 
 from src import constants
-from src.Models.Text_Recognition.Recurrent_Neural_Network import initalizer, text_utils, data_generator
+from src.Models.Text_Recognition.Recurrent_Neural_Network import initalizer, data_generator
+from src.Models.Text_Recognition import text_utils
 
 
 def get_vocab(directory):

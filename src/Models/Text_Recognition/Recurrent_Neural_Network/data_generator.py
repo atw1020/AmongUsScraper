@@ -10,7 +10,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 from src import constants
-from src.Models.Text_Recognition.Recurrent_Neural_Network import text_utils
+from src.Models.Text_Recognition import text_utils
 
 
 def name_from_filepath(file):

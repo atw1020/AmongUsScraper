@@ -13,7 +13,7 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 from src import constants
 from src.Models.Text_Recognition.Recurrent_Neural_Network.trainer import get_model_vocab
-from src.Models.Text_Recognition.Recurrent_Neural_Network import text_utils
+from src.Models.Text_Recognition import text_utils
 
 
 def read_img_analysis(directory, vocab):
