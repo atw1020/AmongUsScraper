@@ -55,15 +55,42 @@ def init_nn(vocab,
 
     input_layer = layers.Input(shape=image_dimensions + (3,))
 
-    previous = input_layer
+    current = input_layer
 
     for i in range(num_layers):
         pass
 
-    output = previous
+    dimensions = current.type_spec.shape
 
+    # transition to Dense-like outputs
+    pseudo_dense = layers.Conv2D(filters=200,
+                                 strides=1,
+                                 kernel_size=(dimensions[1] + 1 - constants.yolo_output_grid_dim[0],
+                                              dimensions[2] + 1 - constants.yolo_output_grid_dim[1]),
+                                 padding="valid")(current)
 
-    assert output.output_shape == constants.yolo_output_grid_dim + (output_channels,)
+    output = pseudo_dense
 
     model = Model(inputs=input_layer,
                   outputs=output)
+
+    model.compile(optimizer="Adam",
+                  loss="mse")
+
+    return model
+
+
+def main():
+    """
+
+
+
+    :return:
+    """
+
+    model = init_nn({"a": 1})
+    model.summary()
+
+
+if __name__ == "__main__":
+    main()
