@@ -100,13 +100,15 @@ def gen_label(filename,
 
 def generator(path,
               vocab,
+              image_dim=constants.meeting_dimensions_420p,
               grid_dim=constants.yolo_output_grid_dim):
     """
 
     data generator for images in the specified directory
 
-    :param path:
+    :param path: path to the directory that contains the images
     :param vocab: vocabulary of letters to use
+    :param image_dim: dimensions of each image
     :param grid_dim: dimensions of the grid that is placed on the image
     :return:
     """
@@ -120,4 +122,22 @@ def generator(path,
 
         x = load_img(os.path.join(path, file))
 
+        y = gen_label(file,
+                      vocab,
+                      image_dim,
+                      grid_dim)
 
+        yield x, y
+
+
+def main():
+    """
+
+    main testing method
+
+    :return:
+    """
+
+
+if __name__ == "__main__":
+    main()
