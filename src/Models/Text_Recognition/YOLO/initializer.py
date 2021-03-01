@@ -58,7 +58,15 @@ def init_nn(vocab,
     current = input_layer
 
     for i in range(num_layers):
-        pass
+        current = layers.Conv2D(filters=2 ** (i + 2),
+                                strides=1,
+                                kernel_size=(vertical_convolution_size,
+                                             horizontal_convolution_size),
+                                padding="valid")(current)
+
+        if i % 5 == 4:
+            current = layers.MaxPool2D(pool_size=3,
+                                       strides=2)(current)
 
     dimensions = current.type_spec.shape
 
@@ -68,6 +76,16 @@ def init_nn(vocab,
                                  kernel_size=(dimensions[1] + 1 - constants.yolo_output_grid_dim[0],
                                               dimensions[2] + 1 - constants.yolo_output_grid_dim[1]),
                                  padding="valid")(current)
+
+    pseudo_dense = layers.Conv2D(filters=100,
+                                 strides=1,
+                                 kernel_size=1,
+                                 padding="valid")(pseudo_dense)
+
+    pseudo_dense = layers.Conv2D(filters=output_channels,
+                                 strides=1,
+                                 kernel_size=1,
+                                 padding="valid")(pseudo_dense)
 
     output = pseudo_dense
 
