@@ -5,9 +5,11 @@ Author: Arthur Wesley
 """
 
 import os
+import random
 
 import numpy as np
 
+import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 from src import constants
@@ -104,14 +106,16 @@ def gen_label(filename,
 
 def generator(path,
               vocab,
-              image_dim=constants.meeting_dimensions_420p,
-              grid_dim=constants.yolo_output_grid_dim):
+              shuffle,
+              image_dim,
+              grid_dim):
     """
 
     data generator for images in the specified directory
 
     :param path: path to the directory that contains the images
     :param vocab: vocabulary of letters to use
+    :param shuffle: whether or not to shuffle the dataset
     :param image_dim: dimensions of each image
     :param grid_dim: dimensions of the grid that is placed on the image
     :return:
@@ -121,6 +125,9 @@ def generator(path,
 
     if ".DS_Store" in files:
         files.remove(".DS_Store")
+
+    if shuffle:
+        random.shuffle(files)
 
     for file in files:
 
@@ -132,6 +139,45 @@ def generator(path,
                       grid_dim)
 
         yield x, y
+
+
+def gen_dataset(path,
+                vocab,
+                batch_size=32,
+                shuffle=True,
+                image_dim=constants.meeting_dimensions_420p,
+                grid_dim=constants.yolo_output_grid_dim):
+    """
+
+    generate a dataset object for training
+
+    :param path: path to the directory that contains the images
+    :param vocab: vocabulary of letters to use
+    :param batch_size: the size of the batches the data is divided into
+    :param shuffle: whether or not to shuffle the dataset
+    :param image_dim: dimensions of each image
+    :param grid_dim: dimensions of the grid that is placed on the image
+    :return: dataset object for model.fit
+    """
+
+    output_channels = 5 + len(vocab)
+
+    dataset = tf.data.Dataset.from_generator(
+        lambda: generator(path,
+                          vocab,
+                          shuffle,
+                          image_dim,
+                          grid_dim),
+        output_signature=(
+            (
+                tf.TensorSpec(shape=image_dim + (3,),
+                              dtype=tf.int8),
+            ),
+            tf.TensorSpec(shape=grid_dim + (output_channels,),
+                          dtype=tf.float64))
+    )
+
+    return dataset.batch(batch_size)
 
 
 def main():
