@@ -57,28 +57,6 @@ def train_model(training_data,
     return model
 
 
-def get_model_vocab():
-    """
-
-
-
-    :return:
-    """
-
-    # get the vocabularies
-    train_vocab = get_vocab(os.path.join("Data",
-                                         "Meeting Identifier",
-                                         "Training Data"))
-    test_vocab = get_vocab(os.path.join("Data",
-                                        "Meeting Identifier",
-                                        "Test Data"))
-    high_res_vocab = get_vocab(os.path.join("Data",
-                                            "Meeting Identifier",
-                                            "High Res Training Data"))
-
-    return text_utils.merge_vocab((train_vocab, test_vocab, high_res_vocab))
-
-
 class TrueAccuracyCallback(Callback):
 
     def __init__(self, training_data):
@@ -145,7 +123,7 @@ def main():
     :return:
     """
 
-    vocab = get_model_vocab()
+    vocab = text_utils.get_model_vocab()
 
     training_data = data_generator.gen_dataset(os.path.join("Data",
                                                             "Meeting Identifier",

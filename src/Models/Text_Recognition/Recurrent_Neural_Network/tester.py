@@ -12,7 +12,8 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import SparseCategoricalAccuracy
 
 from src import constants
-from src.Models.Text_Recognition.Recurrent_Neural_Network import initalizer, trainer, data_generator
+from src.Models.Text_Recognition import text_utils
+from src.Models.Text_Recognition.Recurrent_Neural_Network import initalizer, data_generator
 
 
 def take_dataset_sample(datasets,
@@ -89,7 +90,7 @@ def print_learning_curves(training_path,
 
     # initialize constants
     subset_sizes = data_generator.get_dataset_sizes(training_path)
-    vocab = trainer.get_model_vocab()
+    vocab = text_utils.get_model_vocab()
 
     # load the data
     training_data = [data_generator.gen_dataset_batchless(training_path,
@@ -173,7 +174,7 @@ def main():
     :return:
     """
 
-    vocab = trainer.get_model_vocab()
+    vocab = text_utils.get_model_vocab()
 
     reduced_test_data = data_generator.gen_dataset(os.path.join("Data",
                                                                 "Meeting Identifier",

@@ -11,6 +11,7 @@ import numpy as np
 from tensorflow.keras.preprocessing.image import load_img
 
 from src import constants
+from src.Models.Text_Recognition import text_utils
 
 
 def cords_from_char_int_pair(text):
@@ -137,6 +138,11 @@ def main():
 
     :return:
     """
+
+    vocab = text_utils.get_names("Data")
+
+    for x, y in generator("Data/YOLO/Training Data", ):
+        print(y)
 
 
 if __name__ == "__main__":

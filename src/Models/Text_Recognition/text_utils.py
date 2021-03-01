@@ -104,6 +104,28 @@ def get_character_label(st, vocab):
     return [vocab[char] for char in st] + [vocab_size - 1]
 
 
+def get_model_vocab():
+    """
+
+
+
+    :return:
+    """
+
+    # get the vocabularies
+    train_vocab = get_vocab(os.path.join("Data",
+                                         "Meeting Identifier",
+                                         "Training Data"))
+    test_vocab = get_vocab(os.path.join("Data",
+                                        "Meeting Identifier",
+                                        "Test Data"))
+    high_res_vocab = get_vocab(os.path.join("Data",
+                                            "Meeting Identifier",
+                                            "High Res Training Data"))
+
+    return merge_vocab((train_vocab, test_vocab, high_res_vocab))
+
+
 def main():
     """
 

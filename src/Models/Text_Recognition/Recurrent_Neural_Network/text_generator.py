@@ -12,7 +12,6 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 from src import constants
-from src.Models.Text_Recognition.Recurrent_Neural_Network.trainer import get_model_vocab
 from src.Models.Text_Recognition import text_utils
 
 
@@ -104,7 +103,7 @@ def main():
     :return:
     """
 
-    vocab = get_model_vocab()
+    vocab = text_utils.get_model_vocab()
 
     read_img_analysis(os.path.join("Data",
                                    "Meeting Identifier",
