@@ -4,6 +4,8 @@ Author: Arthur Wesley
 
 """
 
+from kerastuner import HyperParameters
+
 from tensorflow.keras import layers
 from tensorflow.keras.models import Model
 
@@ -17,6 +19,15 @@ def init_hyperparameters():
 
     :return:
     """
+
+    hp = HyperParameters()
+
+    hp.Fixed("Convolution Layers", 5)
+
+    hp.Fixed("Vertical Convolution", 5)
+    hp.Fixed("Horizontal Convolution", 5)
+
+    return hp
 
 
 def init_nn(vocab,
@@ -33,12 +44,12 @@ def init_nn(vocab,
     """
 
     if hp is None:
-        hp =
+        hp = init_hyperparameters()
 
     num_layers = hp.Int("Convolution Layers", 5, 10)
 
-    vertical_convolution_size = hp.Int("Convolution Layers", 5, 15)
-    horizontal_convolution_size = hp.Int("Convolution Layers", 5, 15)
+    vertical_convolution_size = hp.Int("Vertical Convolution", 5, 15)
+    horizontal_convolution_size = hp.Int("Horizontal Convolution", 5, 15)
 
     output_channels = 5 + len(vocab)
 
