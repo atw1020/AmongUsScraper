@@ -12,7 +12,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import SparseCategoricalAccuracy
 
 from src import constants
-from src.Models.Text_Recognition import initalizer, trainer, data_generator
+from src.Models.Text_Recognition.Recurrent_Neural_Network import initalizer, trainer, data_generator
 
 
 def take_dataset_sample(datasets,

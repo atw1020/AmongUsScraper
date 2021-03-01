@@ -16,7 +16,7 @@ from tensorflow.keras import backend as K
 from kerastuner import HyperParameters
 
 from src import constants
-from src.Models.Text_Recognition import trainer
+from src.Models.Text_Recognition.Recurrent_Neural_Network import trainer
 
 
 def repeat_vector(args):
