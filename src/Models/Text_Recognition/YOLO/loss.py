@@ -32,13 +32,12 @@ class YoloLoss(Loss, ABC):
         # compute mean squared error
         squared_error = math.square(y_pred - y_true)
 
-        # multiply the non pc (probability that an object exists) parameters by the whether or not
-        # an image was contained
-
-        squared_error = np.array([[squared_error[i][0] if y_true[i][0] == 0
-                                  else squared_error[i][j]
-                                  for j in range(len(squared_error[i]))]
-                                  for i in range(len(squared_error))])
+        squared_error = np.array([[[[squared_error[i][j][k][0] if y_true[i][j][k][0] == 0
+                                     else squared_error[i][j][k][l]
+                                     for l in range(len(y_true[i][j][k]))]
+                                     for k in range(len(y_true[i][j]))]
+                                     for j in range(len(y_true[i]))]
+                                     for i in range(len(y_true))])
 
         return tf.reduce_mean(squared_error, axis=-1)
 
@@ -51,16 +50,23 @@ def main():
     :return:
     """
 
-    y_true = np.array([[0, 2, 3, 4],
-                       [1, 2, 3, 4]])
-    y_pred = np.array([[1, 0, 0, 0],
-                       [1, 0, 0, 0]],
+    y_true = np.array([[[[0, 2, 3, 4],
+                         [1, 2, 3, 4]]],
+                       [[[0, 2, 3, 4],
+                         [1, 2, 3, 4]]]])
+    y_pred = np.array([[[1, 0, 0, 0],
+                        [1, 0, 0, 0]],
+                       [[1, 0, 0, 0],
+                        [1, 0, 0, 0]]],
                       dtype="float64")
+
+    print(y_true.shape)
 
     loss = YoloLoss()
 
     result = loss.call(y_true, y_pred)
     print("loss was", result.numpy())
+    print(result.numpy().shape)
 
 
 if __name__ == "__main__":

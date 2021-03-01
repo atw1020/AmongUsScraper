@@ -10,6 +10,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.models import Model
 
 from src import constants
+from src.Models.Text_Recognition.YOLO.loss import YoloLoss
 
 
 def init_hyperparameters():
@@ -93,7 +94,7 @@ def init_nn(vocab,
                   outputs=output)
 
     model.compile(optimizer="Adam",
-                  loss="mse")
+                  loss=YoloLoss)
 
     return model
 
