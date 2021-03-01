@@ -9,7 +9,6 @@ import os
 from tensorflow.keras import Model
 from tensorflow.keras import layers
 
-from tensorflow.keras.utils import plot_model
 from tensorflow.keras.optimizers import Adam
 
 from tensorflow.keras import backend as K

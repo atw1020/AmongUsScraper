@@ -10,10 +10,9 @@ import numpy as np
 
 from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import SparseCategoricalAccuracy
-from tensorflow.keras.preprocessing.image import img_to_array, load_img
 
 from src import constants
-from src.Models.Text_Recognition import initalizer, trainer, text_utils, data_generator
+from src.Models.Text_Recognition import initalizer, trainer, data_generator
 
 
 def take_dataset_sample(datasets,

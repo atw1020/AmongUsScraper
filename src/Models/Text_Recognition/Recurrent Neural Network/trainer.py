@@ -8,16 +8,9 @@ import os
 import copy
 import time as t
 
-import tensorflow as tf
-
-from tensorflow import config
 from tensorflow.keras.callbacks import Callback
 
-from kerastuner.tuners import BayesianOptimization
-from kerastuner import HyperParameters
-
 from src import constants
-from src.Models.Text_Recognition.fit import ModelFitter
 from src.Models.Text_Recognition import initalizer, text_utils, data_generator
 
 
