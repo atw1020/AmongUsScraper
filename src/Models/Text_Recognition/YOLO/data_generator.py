@@ -8,7 +8,7 @@ import os
 
 import numpy as np
 
-from tensorflow.keras.preprocessing.image import load_img
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 from src import constants
 from src.Models.Text_Recognition import text_utils
@@ -47,6 +47,9 @@ def gen_label(filename,
     step_y = image_dim[0] // grid_dimension[0]
     step_x = image_dim[1] // grid_dimension[1]
 
+    print(step_x)
+    print(step_y)
+
     # initialize the output to be all zeros
     output = np.zeros(grid_dimension + (output_channels,),
                       dtype="float64")
@@ -76,25 +79,25 @@ def gen_label(filename,
         # now set the appropriate parameters
 
         # set PC to 1
-        assert output[x, y, 0] == 0
+        assert output[y, x, 0] == 0
 
-        output[x, y, 0] = 1
+        output[y, x, 0] = 1
 
         # note that all numbers are normalized by the step
 
         # set the co-ordinates
-        output[x, y, 1] = (center_x % step_x) / step_x
-        output[x, y, 2] = (center_y % step_y) / step_y
+        output[y, x, 1] = (center_x % step_x) / step_x
+        output[y, x, 2] = (center_y % step_y) / step_y
 
         # set the width and height
-        output[x, y, 3] = width / step_x
-        output[x, y, 4] = height / step_y
+        output[y, x, 3] = width / step_x
+        output[y, x, 4] = height / step_y
 
         # get the character ID
         character_id = vocab[items[0]]
 
         # set the output
-        output[x, y, character_id + 5] = 1
+        output[y, x, character_id + 5] = 1
 
     return output
 
@@ -121,7 +124,7 @@ def generator(path,
 
     for file in files:
 
-        x = load_img(os.path.join(path, file))
+        x = img_to_array(load_img(os.path.join(path, file)))
 
         y = gen_label(file,
                       vocab,
@@ -139,10 +142,13 @@ def main():
     :return:
     """
 
-    vocab = text_utils.get_names("Data")
+    vocab = text_utils.get_model_vocab()
+    print(vocab)
 
-    for x, y in generator("Data/YOLO/Training Data", ):
-        print(y)
+    for x, y in generator("Data/YOLO/Training Data", vocab):
+        print(x.shape)
+        print(y.shape)
+        break
 
 
 if __name__ == "__main__":
