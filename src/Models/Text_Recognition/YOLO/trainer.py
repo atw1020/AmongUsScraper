@@ -7,6 +7,7 @@ Author: Arthur Wesley
 from src import constants
 from src.Models.Text_Recognition import text_utils
 from src.Models.Text_Recognition.YOLO import data_generator, initializer
+from src.Models.Text_Recognition.Recurrent_Neural_Network.trainer import TrueAccuracyCallback
 
 
 def train_network(dataset,
@@ -22,8 +23,11 @@ def train_network(dataset,
 
     model = initializer.init_nn(vocab)
 
+    cb = TrueAccuracyCallback(dataset)
+
     model.fit(dataset,
-              epochs=100)
+              epochs=100,
+              callbacks=[cb])
 
     return model
 
