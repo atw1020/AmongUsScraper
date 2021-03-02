@@ -4,6 +4,7 @@ Author: Arthur Wesley
 
 """
 
+from src import constants
 from src.Models.Text_Recognition import text_utils
 from src.Models.Text_Recognition.YOLO import data_generator, initializer
 
@@ -24,6 +25,8 @@ def train_network(dataset,
     model.fit(dataset,
               epochs=100)
 
+    return model
+
 
 def main():
     """
@@ -39,8 +42,10 @@ def main():
                                          vocab=vocab,
                                          batch_size=1)
 
-    train_network(dataset,
-                  vocab)
+    model = train_network(dataset,
+                          vocab)
+
+    model.save(constants.letter_detection)
 
 
 if __name__ == "__main__":

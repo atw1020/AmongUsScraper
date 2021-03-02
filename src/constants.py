@@ -16,6 +16,7 @@ winning_winner_identifier = "Models/Winner Identifier.h5"
 end_screen_classifier = "Models/End Screen Classifier.h5"
 crewmate_identifier = "Models/Crewmate Identifier.h5"
 text_recognition = "Models/Text Recognition.h5"
+letter_detection = "Models/Letter Detection.h5"
 
 """
 
