@@ -56,15 +56,19 @@ def init_nn(vocab,
     output_channels = 5 + len(vocab)
 
     input_layer = layers.Input(shape=image_dimensions + (3,))
-
-    current = input_layer
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(input_layer)
+    activation = layers.LeakyReLU()(dropout)
+    current = layers.BatchNormalization()(activation)
 
     for i in range(num_layers):
-        current = layers.Conv2D(filters=2 ** (i + 3),
-                                strides=1,
-                                kernel_size=(vertical_convolution_size,
-                                             horizontal_convolution_size),
-                                padding="valid")(current)
+        convolution = layers.Conv2D(filters=2 ** (i + 3),
+                                    strides=1,
+                                    kernel_size=(vertical_convolution_size,
+                                                 horizontal_convolution_size),
+                                    padding="valid")(current)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+        activation = layers.LeakyReLU()(dropout)
+        current = layers.BatchNormalization()(activation)
 
         if i % 5 == 4:
             current = layers.MaxPool2D(pool_size=3,
@@ -78,11 +82,17 @@ def init_nn(vocab,
                                  kernel_size=(dimensions[1] + 1 - constants.yolo_output_grid_dim[0],
                                               dimensions[2] + 1 - constants.yolo_output_grid_dim[1]),
                                  padding="valid")(current)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
+    activation = layers.LeakyReLU()(dropout)
+    current = layers.BatchNormalization()(activation)
 
     pseudo_dense = layers.Conv2D(filters=100,
                                  strides=1,
                                  kernel_size=1,
-                                 padding="valid")(pseudo_dense)
+                                 padding="valid")(current)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
+    activation = layers.LeakyReLU()(dropout)
+    current = layers.BatchNormalization()(activation)
 
     pseudo_dense = layers.Conv2D(filters=output_channels,
                                  strides=1,
