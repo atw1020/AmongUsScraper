@@ -46,20 +46,20 @@ class YoloLoss(Loss):
         :return:
         """
 
-        # H: Height of the output space
-        # W: Width of the output space
-        # O: Number of outputs
-        H, W, O = y_true.shape
+        # get the number of output channels
+        output_channels = y_true.shape[-1]
 
-        raw_squared_error = tf.Variable([[[squared_error[i][j][k] * y_true[i][j][0]
-                                               for k in range(O)]
-                                               for j in range(W)]
-                                               for i in range(H)])
+        # reshape y
+        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
 
-        first_item_squared_error = tf.Variable([[[squared_error[i][j][0] * (1 - y_true[i][j][0])
-                                               for k in range(O)]
-                                               for j in range(W)]
-                                               for i in range(H)])
+        # reshape the squared errors
+        reshaped_squared_errors = tf.reshape(squared_error,
+                                             shape=squared_error.shape + (1,))
+        repeated_first_term = tf.repeat(reshaped_squared_errors[:, :, 0, :],
+                                        output_channels, axis=-1)
+
+        raw_squared_error = tf.multiply(squared_error, y_true_first_term[:, :, 0, :])
+        first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
 
         return raw_squared_error + first_item_squared_error
 
