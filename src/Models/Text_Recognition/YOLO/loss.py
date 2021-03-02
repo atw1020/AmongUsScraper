@@ -4,8 +4,6 @@ Author: Arthur Wesley
 
 """
 
-from abc import ABC
-
 import numpy as np
 
 import tensorflow as tf
@@ -13,7 +11,7 @@ from tensorflow import math
 from tensorflow.keras.losses import Loss
 
 
-class YoloLoss(Loss, ABC):
+class YoloLoss(Loss):
 
     def call(self, y_true, y_pred):
         """
@@ -32,20 +30,34 @@ class YoloLoss(Loss, ABC):
         # compute mean squared error
         squared_error = math.square(y_pred - y_true)
 
-        # M: number of training Examples
+        # stack the squared error and true y to map them
+        stack = tf.stack((squared_error, y_true), axis=0)
+
+        # Update the Loss
+        squared_error = tf.map_fn(lambda x: self.mappable_loss_update(x[0], x[1]),
+                                  stack)
+
+        return tf.reduce_mean(squared_error, axis=-1)
+
+    def mappable_loss_update(self, squared_error, y_true):
+        """
+
+        a function that computes the correct squared errors that can be mapped
+
+        :squared_error
+        :return:
+        """
+
         # H: Height of the output space
         # W: Width of the output space
         # O: Number of outputs
-        M, H, W, O = y_true.shape
+        H, W, O = y_true.shape
 
-        squared_error = np.array([[[[squared_error[i][j][k][0] if y_true[i][j][k][0] == 0
-                                     else squared_error[i][j][k][l]
-                                     for l in range(O)]
-                                     for k in range(W)]
-                                     for j in range(H)]
-                                     for i in range(M)])
-
-        return tf.reduce_mean(squared_error, axis=-1)
+        return np.array([[[squared_error[i][j][0] if y_true[i][j][0] == 0
+                           else squared_error[i][j][k]
+                           for k in range(O)]
+                           for j in range(W)]
+                           for i in range(H)])
 
 
 def main():
@@ -60,13 +72,11 @@ def main():
                          [1, 2, 3, 4]]],
                        [[[0, 2, 3, 4],
                          [1, 2, 3, 4]]]])
-    y_pred = np.array([[[1, 0, 0, 0],
-                        [1, 0, 0, 0]],
-                       [[1, 0, 0, 0],
-                        [1, 0, 0, 0]]],
+    y_pred = np.array([[[[1, 0, 0, 0],
+                         [1, 0, 0, 0]]],
+                       [[[1, 0, 0, 0],
+                         [1, 0, 0, 0]]]],
                       dtype="float64")
-
-    print(y_true.shape)
 
     loss = YoloLoss()
 
