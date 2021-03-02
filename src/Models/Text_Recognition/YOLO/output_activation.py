@@ -20,7 +20,7 @@ class YoloOutput(Layer):
     def __init__(self):
         """
 
-
+        initialization function (only calls super)
 
         """
         super(YoloOutput, self).__init__()
