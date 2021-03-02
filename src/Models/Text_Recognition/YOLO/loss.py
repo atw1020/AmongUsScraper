@@ -35,7 +35,10 @@ class YoloLoss(Loss):
         squared_error = tf.map_fn(lambda x: self.mappable_loss_update(x[0], x[1]),
                                   stack)
 
-        return tf.reduce_mean(squared_error, axis=-1)
+        losses = tf.reduce_mean(squared_error, axis=-1)
+        print(losses)
+
+        return losses
 
     def mappable_loss_update(self, squared_error, y_true):
         """
