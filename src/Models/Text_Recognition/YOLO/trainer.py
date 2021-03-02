@@ -22,7 +22,7 @@ def train_network(dataset,
     model = initializer.init_nn(vocab)
 
     model.fit(dataset,
-              epochs=10)
+              epochs=100)
 
 
 def main():
