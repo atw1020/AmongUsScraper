@@ -32,12 +32,18 @@ class YoloLoss(Loss, ABC):
         # compute mean squared error
         squared_error = math.square(y_pred - y_true)
 
+        # M: number of training Examples
+        # H: Height of the output space
+        # W: Width of the output space
+        # O: Number of outputs
+        M, H, W, O = y_true.shape
+
         squared_error = np.array([[[[squared_error[i][j][k][0] if y_true[i][j][k][0] == 0
                                      else squared_error[i][j][k][l]
-                                     for l in range(len(y_true[i][j][k]))]
-                                     for k in range(len(y_true[i][j]))]
-                                     for j in range(len(y_true[i]))]
-                                     for i in range(len(y_true))])
+                                     for l in range(O)]
+                                     for k in range(W)]
+                                     for j in range(H)]
+                                     for i in range(M)])
 
         return tf.reduce_mean(squared_error, axis=-1)
 
