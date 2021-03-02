@@ -31,7 +31,7 @@ class YoloLoss(Loss):
         squared_error = math.square(y_pred - y_true)
 
         # stack the squared error and true y to map them
-        stack = tf.stack((squared_error, y_true), axis=0)
+        stack = tf.stack((squared_error, y_true), axis=1)
 
         # Update the Loss
         squared_error = tf.map_fn(lambda x: self.mappable_loss_update(x[0], x[1]),
