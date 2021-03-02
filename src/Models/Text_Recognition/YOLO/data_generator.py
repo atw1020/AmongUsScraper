@@ -49,9 +49,6 @@ def gen_label(filename,
     step_y = image_dim[0] // grid_dimension[0]
     step_x = image_dim[1] // grid_dimension[1]
 
-    print(step_x)
-    print(step_y)
-
     # initialize the output to be all zeros
     output = np.zeros(grid_dimension + (output_channels,),
                       dtype="float64")
@@ -168,14 +165,10 @@ def gen_dataset(path,
                           shuffle,
                           image_dim,
                           grid_dim),
-        output_signature=(
-            (
-                tf.TensorSpec(shape=image_dim + (3,),
-                              dtype=tf.int8),
-            ),
-            tf.TensorSpec(shape=grid_dim + (output_channels,),
-                          dtype=tf.float64))
-    )
+        output_signature=(tf.TensorSpec(shape=image_dim + (3,),
+                          dtype=tf.int8),
+                          tf.TensorSpec(shape=grid_dim + (output_channels,),
+                          dtype=tf.float64)))
 
     return dataset.batch(batch_size)
 
@@ -189,9 +182,11 @@ def main():
     """
 
     vocab = text_utils.get_model_vocab()
-    print(vocab)
 
-    for x, y in generator("Data/YOLO/Training Data", vocab):
+    dataset = gen_dataset("Data/YOLO/Training Data",
+                          vocab)
+
+    for x, y in dataset:
         print(x.shape)
         print(y.shape)
         break
