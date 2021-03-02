@@ -4,8 +4,6 @@ Author: Arthur Wesley
 
 """
 
-import numpy as np
-
 import tensorflow as tf
 from tensorflow import math
 from tensorflow.keras.losses import Loss
@@ -53,11 +51,17 @@ class YoloLoss(Loss):
         # O: Number of outputs
         H, W, O = y_true.shape
 
-        return np.array([[[squared_error[i][j][0] if y_true[i][j][0] == 0
-                           else squared_error[i][j][k]
-                           for k in range(O)]
-                           for j in range(W)]
-                           for i in range(H)])
+        raw_squared_error = tf.Variable([[[squared_error[i][j][k] * y_true[i][j][0]
+                                               for k in range(O)]
+                                               for j in range(W)]
+                                               for i in range(H)])
+
+        first_item_squared_error = tf.Variable([[[squared_error[i][j][0] * (1 - y_true[i][j][0])
+                                               for k in range(O)]
+                                               for j in range(W)]
+                                               for i in range(H)])
+
+        return raw_squared_error + first_item_squared_error
 
 
 def main():
@@ -68,11 +72,11 @@ def main():
     :return:
     """
 
-    y_true = np.array([[[[0, 2, 3, 4],
+    y_true = tf.Variable([[[[0, 2, 3, 4],
                          [1, 2, 3, 4]]],
                        [[[0, 2, 3, 4],
                          [1, 2, 3, 4]]]])
-    y_pred = np.array([[[[1, 0, 0, 0],
+    y_pred = tf.Variable([[[[1, 0, 0, 0],
                          [1, 0, 0, 0]]],
                        [[[1, 0, 0, 0],
                          [1, 0, 0, 0]]]],
