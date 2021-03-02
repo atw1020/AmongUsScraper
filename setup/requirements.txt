@@ -1,0 +1,67 @@
+absl-py==0.11.0
+appnope==0.1.2
+astunparse==1.6.3
+backcall==0.2.0
+cached-property==1.5.2
+cachetools==4.2.1
+certifi==2020.6.20
+chardet==4.0.0
+colorama==0.4.4
+decorator==4.4.2
+flatbuffers==1.12
+future==0.18.2
+gast==0.4.0
+google-auth==1.27.0
+google-auth-oauthlib==0.4.2
+google-pasta==0.2.0
+grpcio @ file:///Users/runner/miniforge3/conda-bld/grpcio_1614459138915/work
+h5py @ file:///Users/arthur/tensorflow_macos/arm64/h5py-2.10.0-cp38-cp38-macosx_11_0_arm64.whl
+idna==2.10
+importlib-metadata @ file:///tmp/build/80754af9/importlib-metadata_1602276842396/work
+ipython==7.20.0
+ipython-genutils==0.2.0
+jedi==0.18.0
+joblib==1.0.1
+Keras-Preprocessing==1.1.2
+keras-tuner @ file:///Users/arthur/PycharmProjects/keras-tuner
+Markdown @ file:///home/conda/feedstock_root/build_artifacts/markdown_1614595805172/work
+numpy @ file:///Users/runner/miniforge3/conda-bld/numpy_1612953020292/work
+oauthlib==3.1.0
+olefile==0.46
+opt-einsum==3.3.0
+packaging==20.9
+parso==0.8.1
+pexpect==4.8.0
+pickleshare==0.7.5
+Pillow @ file:///Users/runner/miniforge3/conda-bld/pillow_1614689903202/work
+prompt-toolkit==3.0.16
+protobuf==3.14.0
+ptyprocess==0.7.0
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+Pygments==2.8.0
+pyparsing==2.4.7
+requests==2.25.1
+requests-oauthlib==1.3.0
+rsa==4.7.1
+scikit-learn==0.24.1
+scipy @ file:///Users/runner/miniforge3/conda-bld/scipy_1609457863341/work
+six @ file:///home/linux1/recipes/ci/six_1610970791821/work
+tabulate @ file:///home/conda/feedstock_root/build_artifacts/tabulate_1614001031686/work
+tensorboard==2.4.1
+tensorboard-plugin-wit==1.8.0
+tensorflow-addons-macos @ file:///Users/arthur/tensorflow_macos/arm64/tensorflow_addons_macos-0.1a2-cp38-cp38-macosx_11_0_arm64.whl
+tensorflow-estimator==2.4.0
+tensorflow-macos @ file:///Users/arthur/tensorflow_macos/arm64/tensorflow_macos-0.1a2-cp38-cp38-macosx_11_0_arm64.whl
+termcolor==1.1.0
+terminaltables==3.1.0
+threadpoolctl==2.1.0
+tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1614279180094/work
+traitlets==5.0.5
+typeguard==2.11.1
+typing-extensions==3.7.4.3
+urllib3==1.26.3
+wcwidth==0.2.5
+Werkzeug==1.0.1
+wrapt==1.12.1
+zipp @ file:///tmp/build/80754af9/zipp_1604001098328/work
