@@ -37,7 +37,7 @@ class YoloOutput(Layer):
         # apply sigmoid activation to all but the width and height (items 3 and 4)
         start = sigmoid(inputs[:, :, :, :3])
         middle = inputs[:, :, :, 3:5]
-        end = sigmoid(inputs[5:])
+        end = sigmoid(inputs[:, :, :, 5:])
 
         # concatenate the three
         return concat([start, middle, end], axis=-1)

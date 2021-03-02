@@ -12,6 +12,7 @@ from tensorflow.keras.optimizers import Adam
 
 from src import constants
 from src.Models.Text_Recognition.YOLO.loss import YoloLoss
+from src.Models.Text_Recognition.YOLO.output_activation import YoloOutput
 
 
 def init_hyperparameters():
@@ -97,9 +98,11 @@ def init_nn(vocab,
     pseudo_dense = layers.Conv2D(filters=output_channels,
                                  strides=1,
                                  kernel_size=1,
-                                 padding="valid")(pseudo_dense)
+                                 padding="valid")(current)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
+    current = layers.BatchNormalization()(dropout)
 
-    output = pseudo_dense
+    output = YoloOutput()(current)
 
     model = Model(inputs=input_layer,
                   outputs=output)
