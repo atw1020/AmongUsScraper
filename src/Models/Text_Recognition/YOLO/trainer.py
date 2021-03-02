@@ -26,7 +26,7 @@ def train_network(dataset,
     cb = TrueAccuracyCallback(dataset)
 
     model.fit(dataset,
-              epochs=100,
+              epochs=50,
               callbacks=[cb])
 
     return model
