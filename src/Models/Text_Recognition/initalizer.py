@@ -224,7 +224,7 @@ def init_nn(vocab,
                   optimizer=opt,
                   metrics=["accuracy"])
 
-    model.summary()
+    # model.summary()
 
     return model
 
@@ -242,7 +242,7 @@ def main():
                                             "Training data"))
 
     model = init_nn(vocab)
-    model.summary()
+    # model.summary()
     # plot_model(model, to_file="RNN.png")
 
 
