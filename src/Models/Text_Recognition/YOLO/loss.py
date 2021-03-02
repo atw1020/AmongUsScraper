@@ -36,7 +36,7 @@ class YoloLoss(Loss):
                                   stack)
 
         losses = tf.reduce_mean(squared_error, axis=-1)
-        print(losses)
+        # print(losses)
 
         return losses
 
