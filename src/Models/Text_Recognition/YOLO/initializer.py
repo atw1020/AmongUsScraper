@@ -76,7 +76,7 @@ def init_nn(vocab,
 
     dimensions = current.type_spec.shape
 
-    # transition to Dense-like outputs
+    # transition to Dense-like outputs 
     pseudo_dense = layers.Conv2D(filters=200,
                                  strides=1,
                                  kernel_size=(dimensions[1] + 1 - constants.yolo_output_grid_dim[0],
