@@ -36,7 +36,8 @@ def main():
     vocab = text_utils.get_model_vocab()
 
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
-                                         vocab=vocab)
+                                         vocab=vocab,
+                                         batch_size=16)
 
     train_network(dataset,
                   vocab)
