@@ -32,7 +32,7 @@ def overlap_distance(x1, w1, x2, w2):
     :return:
     """
 
-    return (w1 + w2) / 2 - abs(x1 - x2)
+    return max((w1 + w2) / 2 - abs(x1 - x2), 0)
 
 
 def box_intersection(box1, box2):
@@ -74,6 +74,22 @@ def box_union(box1, box2, intersection=None):
     return box_area(box1) + box_area(box2) - intersection
 
 
+def IoU(box1, box2):
+    """
+
+    calculates the Intersection over Union of the two boxes
+
+    :param box1: first box
+    :param box2: second box
+    :return: intersection of the boxes divided by the union
+    """
+
+    intersection = box_intersection(box1, box2)
+
+    return intersection / box_union(box1, box2,
+                                    intersection=intersection)
+
+
 def main():
     """
 
@@ -82,7 +98,15 @@ def main():
     :return:
     """
 
+    box1 = (0, 0, 2, 2)
+    box2 = (1, 1, 2, 2)
 
+    box3 = (1.5, 1, 3, 2)
+    box4 = (2, 2.5, 2, 3)
+
+    assert IoU(box1, box1) == 1
+    assert IoU(box1, box2) * 7 == 1
+    assert IoU(box3, box4) * 10 == 2
 
 
 if __name__ == "__main__":
