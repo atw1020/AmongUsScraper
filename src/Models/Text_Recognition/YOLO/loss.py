@@ -11,6 +11,21 @@ from tensorflow.keras.losses import Loss
 
 class YoloLoss(Loss):
 
+    def __init__(self,
+                 pc_lambda=1,
+                 mse_lambda=1,
+                 **kwargs):
+        """
+
+        initalizes the loss
+
+        """
+
+        super(YoloLoss, self).__init__()
+
+        self.pc_lambda = pc_lambda
+        self.mse_lambda = mse_lambda
+
     def call(self, y_true, y_pred):
         """
 

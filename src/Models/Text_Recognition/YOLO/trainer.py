@@ -22,6 +22,7 @@ def train_network(dataset,
     """
 
     model = initializer.init_nn(vocab)
+    model.summary()
 
     cb = TrueAccuracyCallback(dataset)
 

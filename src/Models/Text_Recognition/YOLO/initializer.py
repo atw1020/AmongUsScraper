@@ -72,10 +72,11 @@ def init_nn(vocab,
         current = layers.BatchNormalization()(activation)
 
         if i % 5 == 4:
-            current = layers.MaxPool2D(pool_size=3,
+            current = layers.MaxPool2D(pool_size=2,
                                        strides=2)(current)
 
     dimensions = current.type_spec.shape
+    print(dimensions)
 
     # transition to Dense-like outputs 
     pseudo_dense = layers.Conv2D(filters=200,
