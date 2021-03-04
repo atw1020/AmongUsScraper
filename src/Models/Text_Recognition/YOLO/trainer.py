@@ -4,6 +4,9 @@ Author: Arthur Wesley
 
 """
 
+import time
+
+import tensorflow as tf
 from tensorflow.keras.callbacks import Callback
 
 from src import constants
@@ -26,16 +29,16 @@ def train_network(dataset,
     model = initializer.init_nn(vocab)
     model.summary()
 
-    cb = TrueAccuracyCallback(dataset)
+    callbacks = [LossBreakdownCallback(dataset)]
 
     model.fit(dataset,
               epochs=100,
-              callbacks=[cb])
+              callbacks=callbacks)
 
     return model
 
 
-class LossBreakdown(Callback):
+class LossBreakdownCallback(Callback):
 
     def __init__(self, training_data):
         """
@@ -48,13 +51,16 @@ class LossBreakdown(Callback):
 
         self.training_data = training_data
 
-    def on_epoch_end(self):
+    @tf.autograph.experimental.do_not_convert
+    def on_epoch_end(self, epoch, logs=None):
         """
 
         print the loss breakdown at the end of each epoch
 
         :return:
         """
+
+        t0 = time.time()
 
         total_pc_loss, total_mse_loss = 0, 0
 
@@ -71,8 +77,15 @@ class LossBreakdown(Callback):
 
             i += 1
 
+        total_pc_loss = tf.reduce_mean(total_pc_loss).numpy()
+        total_mse_loss = tf.reduce_mean(total_mse_loss).numpy()
+
+        t1 = time.time()
+
         print("pc loss:", total_pc_loss / i)
         print("mse loss:", total_mse_loss / i)
+
+        print("calculation took", t1 - t0, "seconds")
 
 
 def main():
