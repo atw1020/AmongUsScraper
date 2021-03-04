@@ -17,7 +17,7 @@ class YoloOutput(Layer):
 
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
 
         initialization function (only calls super)
