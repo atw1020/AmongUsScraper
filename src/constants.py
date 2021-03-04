@@ -84,7 +84,15 @@ text_rec_dropout = 0.3
 
 learning_curve_extension = " test data.txt"
 
+"""
+
+YOLO parameters
+
+"""
+
+
 yolo_output_grid_dim = (18, 75)
+image_detection_dropoff = 0.5
 
 """
 

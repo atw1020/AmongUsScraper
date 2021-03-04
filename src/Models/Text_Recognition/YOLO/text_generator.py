@@ -7,6 +7,7 @@ Author: Arthur Wesley
 import os
 
 from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.image import save_img
 
 from src import constants
 from src.Models.Text_Recognition import text_utils
@@ -42,8 +43,22 @@ def get_letters(dataset,
 
     predictions = model.predict(dataset)
 
-    # slice the predictions and save
-    print(predictions.shape)
+    # go through the images
+    M, H, V, O = predictions.shape
+
+    # go through all the training examples
+    for i in range(M):
+
+        # reset the found points
+        found_points = []
+
+        for j in range(H):
+            for k in range(V):
+
+                if predictions[i, j, k, 0] > constants.image_detection_dropoff:
+                    found_points.append(((j, k), predictions[i, j, k]))
+
+        print(len(found_points))
 
 
 def main():
