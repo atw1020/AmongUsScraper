@@ -45,13 +45,16 @@ class YoloLoss(Loss):
 
         # stack the squared error and true y to map them
         stack = tf.stack((squared_error, y_true), axis=1)
+        stack_2 = tf.stack((y_true, y_pred), axis=1)
 
         # Update the Loss
         """squared_error = tf.map_fn(lambda x: self.mappable_loss_update(x[0], x[1]),
                                   stack)"""
 
-        pc_loss = tf.map_fn(lambda x: self.mappable_pc_loss(x[0], x[1]),
-                            stack)
+        """pc_loss = tf.map_fn(lambda x: self.mappable_pc_loss(x[0], x[1]),
+                            stack)"""
+        pc_loss = tf.map_fn(lambda x: self.mappable_log_pc_loss(x[0], x[1]),
+                             stack_2)
         mse_loss = tf.map_fn(lambda x: self.mappable_mse_loss(x[0], x[1]),
                              stack)
 
@@ -115,6 +118,40 @@ class YoloLoss(Loss):
 
         return self.pc_lambda * first_item_squared_error
 
+    def mappable_log_pc_loss(self, y_true, y_pred):
+        """
+
+        a mappable tensorflow function that calculates the loss caused by pc (probability of seeing
+        an object)
+
+        :param y_true: true y
+        :param y_pred: predicted y
+        :return:
+        """
+
+        # calculate the log error
+        log_error = tf.multiply(y_true, tf.math.log(y_pred)) + \
+                    tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred)))
+
+        # invert
+        log_error *= -1
+
+        # get the number of output channels
+        output_channels = y_true.shape[-1]
+
+        # reshape y
+        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
+
+        # reshape the squared errors
+        reshaped_squared_errors = tf.reshape(log_error,
+                                             shape=log_error.shape + (1,))
+        repeated_first_term = tf.repeat(reshaped_squared_errors[:, :, 0, :],
+                                        output_channels, axis=-1)
+
+        first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
+
+        return self.pc_lambda * first_item_squared_error
+
     def mappable_mse_loss(self, squared_error, y_true):
         """
 
@@ -130,7 +167,7 @@ class YoloLoss(Loss):
 
         raw_squared_error = tf.multiply(squared_error, y_true_first_term[:, :, 0, :])
 
-        return raw_squared_error
+        return self.mse_lambda * raw_squared_error
 
     def loss_summary(self, y_true, y_pred):
         """
@@ -173,15 +210,16 @@ def main():
                          [1, 2, 3, 4]]],
                        [[[0, 2, 3, 4],
                          [1, 2, 3, 4]]]])
-    y_pred = tf.Variable([[[[1, 0, 0, 0],
-                         [1, 0, 0, 0]]],
-                       [[[1, 0, 0, 0],
-                         [1, 0, 0, 0]]]],
+    y_pred = tf.Variable([[[[0.99, 0, 0, 0],
+                         [0.99, 0, 0, 0]]],
+                       [[[0.99, 0, 0, 0],
+                         [0.99, 0, 0, 0]]]],
                       dtype="float64")
 
     loss = YoloLoss()
 
     result = loss.call(y_true, y_pred)
+    print(result)
     print("loss was", result.numpy())
     print(result.numpy().shape)
 
