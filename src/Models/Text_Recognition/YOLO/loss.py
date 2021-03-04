@@ -132,6 +132,34 @@ class YoloLoss(Loss):
 
         return raw_squared_error
 
+    def loss_summary(self, y_true, y_pred):
+        """
+
+        prints a summary of the loss for the specified dataset (breakdown pc loss vs mse)
+
+        :return: None (prints results)
+        """
+
+        # type casting
+        y_pred = tf.convert_to_tensor(y_pred)
+        y_true = tf.cast(y_true, y_pred.dtype)
+
+        # compute mean squared error
+        squared_error = math.square(y_pred - y_true)
+
+        # stack the squared error and true y to map them
+        stack = tf.stack((squared_error, y_true), axis=1)
+
+        pc_loss = tf.map_fn(lambda x: self.mappable_pc_loss(x[0], x[1]),
+                            stack)
+        mse_loss = tf.map_fn(lambda x: self.mappable_mse_loss(x[0], x[1]),
+                             stack)
+
+        pc_loss =  tf.reduce_mean(pc_loss, axis=-1)
+        mse_loss = tf.reduce_mean(mse_loss, axis=-1)
+
+        return pc_loss, mse_loss
+
 
 def main():
     """

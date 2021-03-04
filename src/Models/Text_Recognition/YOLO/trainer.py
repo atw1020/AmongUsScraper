@@ -4,6 +4,8 @@ Author: Arthur Wesley
 
 """
 
+from tensorflow.keras.callbacks import Callback
+
 from src import constants
 from src.Models.Text_Recognition import text_utils
 from src.Models.Text_Recognition.YOLO import data_generator, initializer
@@ -31,6 +33,46 @@ def train_network(dataset,
               callbacks=[cb])
 
     return model
+
+
+class LossBreakdown(Callback):
+
+    def __init__(self, training_data):
+        """
+
+        initalize the LossBreakdown Object
+
+        :param training_data: dataset to initalize with
+        """
+        super().__init__()
+
+        self.training_data = training_data
+
+    def on_epoch_end(self):
+        """
+
+        print the loss breakdown at the end of each epoch
+
+        :return:
+        """
+
+        total_pc_loss, total_mse_loss = 0, 0
+
+        i = 0
+
+        for x, y_true in self.training_data:
+
+            y_pred = self.model.predict(x)
+
+            pc_loss, mse_loss = self.model.loss.loss_summary(y_true, y_pred)
+
+            total_pc_loss += pc_loss
+            total_mse_loss += mse_loss
+
+            i += 1
+
+        print("pc loss:", total_pc_loss / i)
+        print("mse loss:", total_mse_loss / i)
 
 
 def main():
