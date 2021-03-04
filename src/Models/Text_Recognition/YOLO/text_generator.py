@@ -41,7 +41,10 @@ def get_letters(dataset,
     :return: a string from the image
     """
 
-    predictions = model.predict(dataset)
+    for input_data, output_data in dataset:
+        break
+
+    predictions = model.predict(input_data)
 
     # go through the images
     M, H, V, O = predictions.shape
@@ -55,10 +58,27 @@ def get_letters(dataset,
         for j in range(H):
             for k in range(V):
 
-                if predictions[i, j, k, 0] > constants.image_detection_dropoff:
-                    found_points.append(((j, k), predictions[i, j, k]))
+                if output_data[i, j, k, 0] > constants.image_detection_dropoff:
+                    found_points.append((predictions[i, j, k, 0], (j, k), predictions[i, j, k]))
 
-        print(len(found_points))
+        # sort the points by the probability
+        found_points.sort(key=lambda x: x[0], reverse=True)
+
+        # go through all of the letter points
+        index = 0
+        while index < len(found_points):
+            current_box = found_points[index][2][1:5]
+            x, y = found_points[index][1]
+            actual_box = output_data[i, x, y][1:5]
+            print("=" * 50)
+            print("the probability of this box being a letter was")
+            print(found_points[index][0])
+            print("the correct box was")
+            print(actual_box.numpy())
+            print("the predicted box was")
+            print(current_box)
+
+            index += 1
 
 
 def main():
@@ -73,7 +93,8 @@ def main():
 
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
-                                         batch_size=1)
+                                         batch_size=1,
+                                         shuffle=False)
 
     get_letters(dataset.take(1), load())
 
