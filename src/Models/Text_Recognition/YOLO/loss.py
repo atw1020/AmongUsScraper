@@ -47,8 +47,15 @@ class YoloLoss(Loss):
         stack = tf.stack((squared_error, y_true), axis=1)
 
         # Update the Loss
-        squared_error = tf.map_fn(lambda x: self.mappable_loss_update(x[0], x[1]),
-                                  stack)
+        """squared_error = tf.map_fn(lambda x: self.mappable_loss_update(x[0], x[1]),
+                                  stack)"""
+
+        pc_loss = tf.map_fn(lambda x: self.mappable_pc_loss(x[0], x[1]),
+                            stack)
+        mse_loss = tf.map_fn(lambda x: self.mappable_mse_loss(x[0], x[1]),
+                             stack)
+
+        squared_error = pc_loss + mse_loss
 
         losses = tf.reduce_mean(squared_error, axis=-1)
         # print(losses)
@@ -80,6 +87,50 @@ class YoloLoss(Loss):
         first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
 
         return raw_squared_error + first_item_squared_error
+
+    def mappable_pc_loss(self, squared_error, y_true):
+        """
+
+        a mappable tensorflow function that calculates the loss caused by pc (probability of seeing
+        an object)
+
+        :param squared_error: squared errors
+        :param y_true: true y
+        :return: pc loss
+        """
+
+        # get the number of output channels
+        output_channels = y_true.shape[-1]
+
+        # reshape y
+        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
+
+        # reshape the squared errors
+        reshaped_squared_errors = tf.reshape(squared_error,
+                                             shape=squared_error.shape + (1,))
+        repeated_first_term = tf.repeat(reshaped_squared_errors[:, :, 0, :],
+                                        output_channels, axis=-1)
+
+        first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
+
+        return self.pc_lambda * first_item_squared_error
+
+    def mappable_mse_loss(self, squared_error, y_true):
+        """
+
+        a mappable tensorflow function that calculates the loss caused by mse (non PC errors
+
+        :param squared_error: squared errors
+        :param y_true: true y
+        :return: mse loss of the funtion
+        """
+
+        # reshape y
+        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
+
+        raw_squared_error = tf.multiply(squared_error, y_true_first_term[:, :, 0, :])
+
+        return raw_squared_error
 
 
 def main():
