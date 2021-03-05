@@ -6,6 +6,8 @@ Author: Arthur Wesley
 
 import os
 
+import numpy as np
+
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import save_img
 
@@ -46,16 +48,17 @@ def get_letters(dataset,
     :return: a string from the image
     """
 
-    for input_data, output_data in dataset:
-        break
+    vocab = text_utils.reverse_vocab(vocab)
 
-    predictions = model.predict(input_data)
+    predictions = model.predict(dataset)
 
     # go through the images
     M, V, H, O = predictions.shape
 
     x_step = image_shape[1] / H
     y_step = image_shape[0] / V
+
+    names = []
 
     # go through all the training examples
     for i in range(M):
@@ -75,8 +78,6 @@ def get_letters(dataset,
 
         # sort the points by the probability
         found_boxes.sort(key=lambda x: x[0], reverse=True)
-
-        print(len(found_boxes))
 
         # go through all of the letter points
         index = 0
@@ -118,7 +119,27 @@ def get_letters(dataset,
 
             index += 1
 
-        print(len(found_boxes))
+        letters = []
+
+        # get each letter
+        for box in found_boxes:
+
+            # get the letter
+            letter = vocab[np.argmax(box[2][5:])]
+
+            # append a tuple of the character and the x co-ord of the letter
+            letters.append((letter, box[1][1]))
+
+        # sort the letters
+        letters.sort(key=lambda x: x[1])
+
+        # remove the co-ordinates used for ordering
+        name = "".join([char for char, x in letters])
+
+        print(name)
+        names.append(name)
+
+    return names
 
 
 def main():
@@ -137,7 +158,7 @@ def main():
                                          shuffle=False,
                                          verbose=True)
 
-    get_letters(dataset.take(1),
+    get_letters(dataset.take(10),
                 vocab,
                 load())
 
