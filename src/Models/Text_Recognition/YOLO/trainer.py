@@ -96,9 +96,10 @@ def main():
     :return:
     """
 
+    training_path = "Data/YOLO/Training Data"
     vocab = text_utils.get_model_vocab()
 
-    dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
+    dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
                                          batch_size=1)
 

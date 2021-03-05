@@ -51,6 +51,7 @@ def get_letters(dataset,
     vocab = text_utils.reverse_vocab(vocab)
 
     predictions = model.predict(dataset)
+    images = [x for x, y in dataset]
 
     # go through the images
     M, V, H, O = predictions.shape
@@ -66,6 +67,8 @@ def get_letters(dataset,
         # save a greyscale image
         """greyscale = predictions[i, :, :, 0].reshape((V, H, 1))
         save_img("greyscale.jpg", greyscale)"""
+
+        save_img("test 2.jpg", images[i][0])
 
         # reset the found points
         found_boxes = []
@@ -156,9 +159,9 @@ def main():
                                          vocab,
                                          batch_size=1,
                                          shuffle=False,
-                                         verbose=True)
+                                         verbose=False)
 
-    get_letters(dataset.take(10),
+    get_letters(dataset.take(1),
                 vocab,
                 load())
 

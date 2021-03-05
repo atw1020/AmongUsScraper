@@ -66,7 +66,7 @@ def init_nn(vocab,
     current = layers.BatchNormalization()(activation)
 
     for i in range(num_layers):
-        convolution = layers.Conv2D(filters=int(2 ** ((i + 3) / 2)),
+        convolution = layers.Conv2D(filters=int(2 ** ((i + 5) / 2)),
                                     strides=1,
                                     kernel_size=(vertical_convolution_size,
                                                  horizontal_convolution_size),

@@ -10,7 +10,7 @@ import random
 import numpy as np
 
 import tensorflow as tf
-from tensorflow.keras.preprocessing.image import load_img, img_to_array
+from tensorflow.keras.preprocessing.image import load_img, save_img, img_to_array
 
 from src import constants
 from src.Models.Text_Recognition import text_utils
@@ -103,10 +103,10 @@ def gen_label(filename,
 
 def generator(path,
               vocab,
-              shuffle,
-              image_dim,
-              grid_dim,
-              verbose):
+              shuffle=True,
+              image_dim=constants.meeting_dimensions_420p,
+              grid_dim=constants.yolo_output_grid_dim,
+              verbose=False):
     """
 
     data generator for images in the specified directory
@@ -174,7 +174,7 @@ def gen_dataset(path,
                           grid_dim,
                           verbose),
         output_signature=(tf.TensorSpec(shape=image_dim + (3,),
-                          dtype=tf.int8),
+                          dtype=tf.uint8),
                           tf.TensorSpec(shape=grid_dim + (output_channels,),
                           dtype=tf.float64)))
 
@@ -189,15 +189,16 @@ def main():
     :return:
     """
 
+    path = "Data/YOLO/Training Data"
     vocab = text_utils.get_model_vocab()
 
-    dataset = gen_dataset("Data/YOLO/Training Data",
-                          vocab)
+    dataset = gen_dataset(path,
+                          batch_size=1,
+                          vocab=vocab,
+                          shuffle=False)
 
     for x, y in dataset:
-        print(x.shape)
-        print(y.shape)
-        break
+        save_img("test 3.jpg", x[0])
 
 
 if __name__ == "__main__":
