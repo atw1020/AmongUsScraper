@@ -30,6 +30,8 @@ def init_hyperparameters():
     hp.Fixed("Vertical Convolution", 5)
     hp.Fixed("Horizontal Convolution", 5)
 
+    hp.Fixed("MSE Lambda", 200)
+
     return hp
 
 
@@ -53,6 +55,8 @@ def init_nn(vocab,
 
     vertical_convolution_size = hp.Int("Vertical Convolution", 5, 15)
     horizontal_convolution_size = hp.Int("Horizontal Convolution", 5, 15)
+
+    mse_lambda = hp.Int("MSE Lambda", 50, 500)
 
     output_channels = 5 + len(vocab)
 
@@ -108,7 +112,7 @@ def init_nn(vocab,
     model = Model(inputs=input_layer,
                   outputs=output)
 
-    loss = YoloLoss()
+    loss = YoloLoss(mse_lambda=mse_lambda)
     optimizer = Adam(learning_rate=0.001)
 
     model.compile(optimizer=optimizer,
