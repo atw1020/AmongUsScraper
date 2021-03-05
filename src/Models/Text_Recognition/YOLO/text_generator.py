@@ -11,6 +11,7 @@ from tensorflow.keras.preprocessing.image import save_img
 
 from src import constants
 from src.Models.Text_Recognition import text_utils
+from src.Models.Text_Recognition.YOLO import box_geometry
 from src.Models.Text_Recognition.YOLO import data_generator
 from src.Models.Text_Recognition.YOLO.loss import YoloLoss
 from src.Models.Text_Recognition.YOLO.output_activation import YoloOutput
@@ -30,14 +31,18 @@ def load():
 
 
 def get_letters(dataset,
-                model):
+                vocab,
+                model,
+                image_shape=constants.meeting_dimensions_420p):
     """
 
     generate the letters that appear in on the img_path
 
     dataset to get the letters from
     :param dataset: dataset to get the letters for
+    :param vocab: vocabulary to get the letters from
     :param model: model to use
+    :param image_shape: the dimensions of the images
     :return: a string from the image
     """
 
@@ -47,38 +52,73 @@ def get_letters(dataset,
     predictions = model.predict(input_data)
 
     # go through the images
-    M, H, V, O = predictions.shape
+    M, V, H, O = predictions.shape
+
+    x_step = image_shape[1] / H
+    y_step = image_shape[0] / V
 
     # go through all the training examples
     for i in range(M):
 
+        # save a greyscale image
+        """greyscale = predictions[i, :, :, 0].reshape((V, H, 1))
+        save_img("greyscale.jpg", greyscale)"""
+
         # reset the found points
-        found_points = []
+        found_boxes = []
 
-        for j in range(H):
-            for k in range(V):
+        for j in range(V):
+            for k in range(H):
 
-                if output_data[i, j, k, 0] > constants.image_detection_dropoff:
-                    found_points.append((predictions[i, j, k, 0], (j, k), predictions[i, j, k]))
+                if predictions[i, j, k, 0] > constants.image_detection_dropoff:
+                    found_boxes.append((predictions[i, j, k, 0], (j, k), predictions[i, j, k]))
 
         # sort the points by the probability
-        found_points.sort(key=lambda x: x[0], reverse=True)
+        found_boxes.sort(key=lambda x: x[0], reverse=True)
+
+        print(len(found_boxes))
 
         # go through all of the letter points
         index = 0
-        while index < len(found_points):
-            current_box = found_points[index][2][1:5]
-            x, y = found_points[index][1]
-            actual_box = output_data[i, x, y][1:5]
-            print("=" * 50)
-            print("the probability of this box being a letter was")
-            print(found_points[index][0])
-            print("the correct box was")
-            print(actual_box.numpy())
-            print("the predicted box was")
-            print(current_box)
+        while index < len(found_boxes):
+
+            # unpack the first box
+            x_rel, y_rel, w_rel, h_rel = found_boxes[index][2][1:5]
+            x, y = found_boxes[index][1]
+
+            # get the absolute co-ordinates and absolute width and height
+            x1 = (x + x_rel) * x_step
+            y1 = (y + y_rel) * y_step
+
+            w1 = w_rel * x_step
+            h1 = h_rel * y_step
+
+            box_1 = (x1, y1, w1, h1)
+
+            # go through all of the remaining points
+            for second_box in found_boxes[i + 1:]:
+
+                # unpack the second box
+                x_rel, y_rel, w_rel, h_rel = second_box[2][1:5]
+                x, y = second_box[1]
+
+                # compute the absolute co-ords
+                x2 = (x + x_rel) * x_step
+                y2 = (y + y_rel) * y_step
+
+                w2 = w_rel * x_step
+                h2 = h_rel * y_step
+
+                box_2 = (x2, y2, w2, h2)
+
+                IoU = box_geometry.IoU(box_1, box_2)
+
+                if IoU > constants.IoU_threshold:
+                    found_boxes.remove(second_box)
 
             index += 1
+
+        print(len(found_boxes))
 
 
 def main():
@@ -94,9 +134,12 @@ def main():
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
                                          batch_size=1,
-                                         shuffle=False)
+                                         shuffle=False,
+                                         verbose=True)
 
-    get_letters(dataset.take(1), load())
+    get_letters(dataset.take(1),
+                vocab,
+                load())
 
 
 if __name__ == "__main__":

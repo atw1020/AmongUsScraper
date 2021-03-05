@@ -105,7 +105,8 @@ def generator(path,
               vocab,
               shuffle,
               image_dim,
-              grid_dim):
+              grid_dim,
+              verbose):
     """
 
     data generator for images in the specified directory
@@ -115,6 +116,7 @@ def generator(path,
     :param shuffle: whether or not to shuffle the dataset
     :param image_dim: dimensions of each image
     :param grid_dim: dimensions of the grid that is placed on the image
+    :param verbose: whether or not to give verbose output
     :return:
     """
 
@@ -127,6 +129,9 @@ def generator(path,
         random.shuffle(files)
 
     for file in files:
+
+        if verbose:
+            print(file)
 
         x = img_to_array(load_img(os.path.join(path, file)))
 
@@ -143,7 +148,8 @@ def gen_dataset(path,
                 batch_size=32,
                 shuffle=True,
                 image_dim=constants.meeting_dimensions_420p,
-                grid_dim=constants.yolo_output_grid_dim):
+                grid_dim=constants.yolo_output_grid_dim,
+                verbose=False):
     """
 
     generate a dataset object for training
@@ -154,6 +160,7 @@ def gen_dataset(path,
     :param shuffle: whether or not to shuffle the dataset
     :param image_dim: dimensions of each image
     :param grid_dim: dimensions of the grid that is placed on the image
+    :param verbose: whether or not to give verbose output
     :return: dataset object for model.fit
     """
 
@@ -164,7 +171,8 @@ def gen_dataset(path,
                           vocab,
                           shuffle,
                           image_dim,
-                          grid_dim),
+                          grid_dim,
+                          verbose),
         output_signature=(tf.TensorSpec(shape=image_dim + (3,),
                           dtype=tf.int8),
                           tf.TensorSpec(shape=grid_dim + (output_channels,),
