@@ -32,6 +32,59 @@ def load():
                                       "YoloLoss": YoloLoss})
 
 
+def add_boxes(letters,
+              input_image,
+              x_step,
+              y_step):
+    """
+
+    generates a numpy array
+
+    :param letters: list of letters to draw boxes for
+    :param input_image: image to put the boxes on
+    :param x_step: the horizontal step between output boxes
+    :param y_step: the vertical step between output boxes
+    :return: numpy image with boxes on it
+    """
+
+    color = (21, 53, 232)
+
+    for letter in letters:
+
+        # unpack the first box
+        x_rel, y_rel, w_rel, h_rel = letter[2]
+        x, y = letter[1]
+
+        # get the absolute co-ordinates and absolute width and height
+        x = (x + x_rel) * x_step
+        y = (y + y_rel) * y_step
+
+        w = w_rel * x_step
+        h = h_rel * y_step
+
+        # get the top left corner
+        t = y - h / 2
+        l = x - w / 2
+
+        # color the top
+        for i in range(int(l), int(l + w)):
+            input_image[int(t), int(i)] = color
+
+        # color the left
+        for i in range(int(t), int(t + h)):
+            input_image[int(i), int(l)] = color
+
+        # color the bottom
+        for i in range(int(l), int(l + w)):
+            input_image[int(t + h), int(i)] = color
+
+        # color the right
+        for i in range(int(t), int(t + h)):
+            input_image[int(i), int(l + w)] = color
+
+    return input_image
+
+
 def get_letters(dataset,
                 vocab,
                 model,
@@ -67,8 +120,6 @@ def get_letters(dataset,
         # save a greyscale image
         """greyscale = predictions[i, :, :, 0].reshape((V, H, 1))
         save_img("greyscale.jpg", greyscale)"""
-
-        save_img("test 2.jpg", images[i][0])
 
         # reset the found points
         found_boxes = []
@@ -131,13 +182,18 @@ def get_letters(dataset,
             letter = vocab[np.argmax(box[2][5:])]
 
             # append a tuple of the character and the x co-ord of the letter
-            letters.append((letter, box[1][1]))
+            letters.append((letter, box[1], box[2]))
 
         # sort the letters
-        letters.sort(key=lambda x: x[1])
+        letters.sort(key=lambda x: x[1][1])
+
+        image = add_boxes(letters,
+                          images[i],
+                          x_step,
+                          y_step)
 
         # remove the co-ordinates used for ordering
-        name = "".join([char for char, x in letters])
+        name = "".join([char for char, x, box in letters])
 
         print(name)
         names.append(name)
