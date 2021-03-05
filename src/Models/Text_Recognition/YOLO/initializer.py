@@ -25,7 +25,7 @@ def init_hyperparameters():
 
     hp = HyperParameters()
 
-    hp.Fixed("Convolution Layers", 5)
+    hp.Fixed("Convolution Layers", 10)
 
     hp.Fixed("Vertical Convolution", 5)
     hp.Fixed("Horizontal Convolution", 5)
@@ -66,7 +66,7 @@ def init_nn(vocab,
     current = layers.BatchNormalization()(activation)
 
     for i in range(num_layers):
-        convolution = layers.Conv2D(filters=2 ** (i + 3),
+        convolution = layers.Conv2D(filters=int(2 ** ((i + 3) / 2)),
                                     strides=1,
                                     kernel_size=(vertical_convolution_size,
                                                  horizontal_convolution_size),
@@ -74,10 +74,6 @@ def init_nn(vocab,
         dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
         activation = layers.LeakyReLU()(dropout)
         current = layers.BatchNormalization()(activation)
-
-        if i % 5 == 4:
-            current = layers.MaxPool2D(pool_size=2,
-                                       strides=2)(current)
 
     dimensions = current.type_spec.shape
     print(dimensions)
@@ -113,7 +109,7 @@ def init_nn(vocab,
                   outputs=output)
 
     loss = YoloLoss(mse_lambda=mse_lambda)
-    optimizer = Adam(learning_rate=0.001)
+    optimizer = Adam(learning_rate=0.0001)
 
     model.compile(optimizer=optimizer,
                   loss=loss)

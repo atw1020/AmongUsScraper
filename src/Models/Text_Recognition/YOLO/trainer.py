@@ -32,7 +32,7 @@ def train_network(dataset,
     callbacks = [LossBreakdownCallback(dataset)]
 
     model.fit(dataset,
-              epochs=100,
+              epochs=200,
               callbacks=callbacks)
 
     return model
