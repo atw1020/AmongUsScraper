@@ -49,11 +49,14 @@ def add_boxes(letters,
 
     color = (21, 53, 232)
 
+    # convert tensor into numpy array
+    input_image = input_image.numpy()
+
     for letter in letters:
 
         # unpack the first box
         x_rel, y_rel, w_rel, h_rel = letter[2]
-        x, y = letter[1]
+        y, x = letter[1]
 
         # get the absolute co-ordinates and absolute width and height
         x = (x + x_rel) * x_step
@@ -182,15 +185,16 @@ def get_letters(dataset,
             letter = vocab[np.argmax(box[2][5:])]
 
             # append a tuple of the character and the x co-ord of the letter
-            letters.append((letter, box[1], box[2]))
+            letters.append((letter, box[1], box[2][1:5]))
 
         # sort the letters
         letters.sort(key=lambda x: x[1][1])
 
         image = add_boxes(letters,
-                          images[i],
+                          images[i][0],
                           x_step,
                           y_step)
+        save_img("boxed.jpg", image)
 
         # remove the co-ordinates used for ordering
         name = "".join([char for char, x, box in letters])
