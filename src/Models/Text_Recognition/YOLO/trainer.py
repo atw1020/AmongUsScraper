@@ -4,6 +4,7 @@ Author: Arthur Wesley
 
 """
 
+import sys
 import time
 
 import numpy as np
@@ -106,8 +107,13 @@ class NanWeightsCallback(Callback):
         weights = self.model.weights
 
         for i, layer in enumerate(weights):
-            if np.isnan(np.sum(layer)):
-                print("layer", i, "has a NaN weight")
+
+            weights_sum = np.sum(layer)
+
+            if np.isnan(weights_sum) or np.isinf(weights_sum):
+                print("=" * 50, file=sys.stderr)
+                print("layer", i, "has a NaN weight", file=sys.stderr)
+                print("=" * 50, file=sys.stderr)
 
 
 def main():
