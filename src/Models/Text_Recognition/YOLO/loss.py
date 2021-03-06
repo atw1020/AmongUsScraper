@@ -12,7 +12,8 @@ from tensorflow.keras.losses import Loss
 class YoloLoss(Loss):
 
     def __init__(self,
-                 pc_lambda=1,
+                 positive_case_lambda=1,
+                 negative_case_lambda=1,
                  mse_lambda=1,
                  **kwargs):
         """
@@ -23,7 +24,8 @@ class YoloLoss(Loss):
 
         super(YoloLoss, self).__init__()
 
-        self.pc_lambda = pc_lambda
+        self.positive_case_lambda = positive_case_lambda
+        self.negative_case_lambda = negative_case_lambda
         self.mse_lambda = mse_lambda
 
     def call(self, y_true, y_pred):
@@ -129,11 +131,8 @@ class YoloLoss(Loss):
         """
 
         # calculate the log error
-        log_error = tf.multiply(y_true, tf.math.log(y_pred)) + \
-                    tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred)))
-
-        # invert
-        log_error *= -1
+        log_error = - (self.positive_case_lambda * tf.multiply(y_true, tf.math.log(y_pred)) +
+                       self.negative_case_lambda * tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred))))
 
         # get the number of output channels
         output_channels = y_true.shape[-1]
@@ -149,7 +148,7 @@ class YoloLoss(Loss):
 
         first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
 
-        return self.pc_lambda * first_item_squared_error
+        return first_item_squared_error
 
     def mappable_mse_loss(self, squared_error, y_true):
         """
@@ -186,7 +185,7 @@ class YoloLoss(Loss):
         # stack the squared error and true y to map them
         stack = tf.stack((squared_error, y_true), axis=1)
 
-        pc_loss = tf.map_fn(lambda x: self.mappable_pc_loss(x[0], x[1]),
+        pc_loss = tf.map_fn(lambda x: self.mappable_log_pc_loss(x[0], x[1]),
                             stack)
         mse_loss = tf.map_fn(lambda x: self.mappable_mse_loss(x[0], x[1]),
                              stack)
