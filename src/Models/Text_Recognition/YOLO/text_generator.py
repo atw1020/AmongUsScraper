@@ -121,11 +121,14 @@ def get_letters(dataset,
     for i in range(M):
 
         # save a greyscale image
-        """greyscale = predictions[i, :, :, 0].reshape((V, H, 1))
-        save_img("greyscale.jpg", greyscale)"""
+        greyscale = predictions[i, :, :, 0].reshape((V, H, 1))
+        save_img("greyscale.jpg", greyscale)
 
         # reset the found points
         found_boxes = []
+
+        probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
+        print(probabilities[:10])
 
         for j in range(V):
             for k in range(H):
@@ -218,7 +221,6 @@ def main():
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
                                          batch_size=1,
-                                         shuffle=False,
                                          verbose=False)
 
     get_letters(dataset.take(1),

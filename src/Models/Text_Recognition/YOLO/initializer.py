@@ -25,12 +25,12 @@ def init_hyperparameters():
 
     hp = HyperParameters()
 
-    hp.Fixed("Convolution Layers", 10)
+    hp.Fixed("Convolution Layers", 5)
 
     hp.Fixed("Vertical Convolution", 5)
     hp.Fixed("Horizontal Convolution", 5)
 
-    hp.Fixed("MSE Lambda", 200)
+    hp.Fixed("MSE Lambda", 1)
 
     return hp
 
