@@ -30,7 +30,7 @@ def init_hyperparameters():
     hp.Fixed("Vertical Convolution", 4)
     hp.Fixed("Horizontal Convolution", 5)
 
-    hp.Fixed("MSE Lambda", 1)
+    hp.Fixed("MSE Lambda", 70)
     hp.Fixed("positive case Lambda", 70)
 
     return hp
