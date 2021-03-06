@@ -125,7 +125,7 @@ def main():
                                          vocab=vocab,
                                          batch_size=1)
 
-    model = train_network(dataset.take(10),
+    model = train_network(dataset,
                           vocab)
 
     model.save(constants.letter_detection)
