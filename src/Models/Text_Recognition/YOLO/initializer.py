@@ -116,7 +116,7 @@ def init_nn(vocab,
 
     loss = YoloLoss(mse_lambda=mse_lambda,
                     positive_case_lambda=positive_case_lambda)
-    optimizer = Adam(learning_rate=0.0001)
+    optimizer = Adam(learning_rate=0.001)
 
     model.compile(optimizer=optimizer,
                   loss=loss)

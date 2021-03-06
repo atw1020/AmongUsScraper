@@ -184,9 +184,11 @@ class YoloLoss(Loss):
 
         # stack the squared error and true y to map them
         stack = tf.stack((squared_error, y_true), axis=1)
+        stack_2 = tf.stack((y_true, y_pred), axis=1)
 
+        # Update the Loss
         pc_loss = tf.map_fn(lambda x: self.mappable_log_pc_loss(x[0], x[1]),
-                            stack)
+                            stack_2)
         mse_loss = tf.map_fn(lambda x: self.mappable_mse_loss(x[0], x[1]),
                              stack)
 
