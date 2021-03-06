@@ -6,6 +6,8 @@ Author: Arthur Wesley
 
 import time
 
+import numpy as np
+
 import tensorflow as tf
 from tensorflow.keras.callbacks import Callback
 
@@ -29,7 +31,8 @@ def train_network(dataset,
     model = initializer.init_nn(vocab)
     model.summary()
 
-    callbacks = [LossBreakdownCallback(dataset)]
+    callbacks = [LossBreakdownCallback(dataset),
+                 NanWeightsCallback()]
 
     model.fit(dataset,
               epochs=200,
@@ -88,6 +91,25 @@ class LossBreakdownCallback(Callback):
         print("calculation took", t1 - t0, "seconds")
 
 
+class NanWeightsCallback(Callback):
+
+    def on_epoch_end(self, epoch, logs=None):
+        """
+
+        check to see
+
+        :param epoch:
+        :param logs:
+        :return:
+        """
+
+        weights = self.model.weights
+
+        for i, layer in enumerate(weights):
+            if np.isnan(np.sum(layer)):
+                print("layer", i, "has a NaN weight")
+
+
 def main():
     """
 
@@ -103,7 +125,7 @@ def main():
                                          vocab=vocab,
                                          batch_size=1)
 
-    model = train_network(dataset,
+    model = train_network(dataset.take(10),
                           vocab)
 
     model.save(constants.letter_detection)
