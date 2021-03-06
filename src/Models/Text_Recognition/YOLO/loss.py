@@ -61,7 +61,6 @@ class YoloLoss(Loss):
         squared_error = pc_loss + mse_loss
 
         losses = tf.reduce_mean(squared_error, axis=-1)
-        # print(losses)
 
         return losses
 

@@ -27,7 +27,7 @@ def init_hyperparameters():
 
     hp.Fixed("Convolution Layers", 5)
 
-    hp.Fixed("Vertical Convolution", 5)
+    hp.Fixed("Vertical Convolution", 4)
     hp.Fixed("Horizontal Convolution", 5)
 
     hp.Fixed("MSE Lambda", 1)
@@ -51,7 +51,7 @@ def init_nn(vocab,
     if hp is None:
         hp = init_hyperparameters()
 
-    num_layers = hp.Int("Convolution Layers", 5, 10)
+    num_layers = hp.Int("Convolution Layers", 5, 15)
 
     vertical_convolution_size = hp.Int("Vertical Convolution", 5, 15)
     horizontal_convolution_size = hp.Int("Horizontal Convolution", 5, 15)
