@@ -56,6 +56,8 @@ def gen_label(filename,
     # go through all the letters and set the appropriate values
     letters = filename.split("_")[:-1]
 
+    print("going through letters for", filename)
+
     for letter in letters:
 
         # split the letters into the items
@@ -78,6 +80,7 @@ def gen_label(filename,
         # now set the appropriate parameters
 
         # set PC to 1
+        print(x, y)
         assert output[y, x, 0] == 0
 
         output[y, x, 0] = 1
