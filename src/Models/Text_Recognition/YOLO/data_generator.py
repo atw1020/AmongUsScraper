@@ -15,6 +15,9 @@ from tensorflow.keras.preprocessing.image import load_img, save_img, img_to_arra
 from src import constants
 from src.Models.Text_Recognition import text_utils
 
+total_letters = 0
+overlapping_letters = 0
+
 
 def cords_from_char_int_pair(text):
     """
@@ -43,6 +46,9 @@ def gen_label(filename,
     :param grid_dimension: dimensions
     :return: image tensor
     """
+
+    global total_letters
+    global overlapping_letters
 
     output_channels = 5 + len(vocab)
 
@@ -79,6 +85,8 @@ def gen_label(filename,
 
         # set PC to 1
         # assert output[y, x, 0] == 0
+        if output[y, x, 0] != 0:
+            overlapping_letters += 1
 
         output[y, x, 0] = 1
 
@@ -97,6 +105,8 @@ def gen_label(filename,
 
         # set the output
         output[y, x, character_id + 5] = 1
+
+        total_letters += 1
 
     return output
 
@@ -120,6 +130,12 @@ def generator(path,
     :return:
     """
 
+    global overlapping_letters
+    global total_letters
+
+    overlapping_letters = 0
+    total_letters = 0
+
     files = os.listdir(path)
 
     if ".DS_Store" in files:
@@ -141,6 +157,9 @@ def generator(path,
                       grid_dim)
 
         yield x, y
+
+    # print a summary
+    print("letters overlapped ", overlapping_letters / total_letters, "% of the time", sep="")
 
 
 def gen_dataset(path,
