@@ -77,23 +77,37 @@ def init_nn(vocab,
         activation = layers.LeakyReLU()(dropout)
         current = layers.BatchNormalization()(activation)
 
-        if i % 5 == 4:
-            current = layers.MaxPooling2D(pool_size=2,
-                                          strides=2)(current)
+    # complex calculations that determine the dimension of the dense YOLO layers
 
+    # get the dimensions of the last layer
     dimensions = current.type_spec.shape
     print(dimensions)
 
+    # update the ideal image dimensions based on how much the image has been downscaled
+    ideal_height = constants.ideal_letter_dimensions[0] * dimensions[1] / image_dimensions[0]
+    ideal_width  = constants.ideal_letter_dimensions[1] * dimensions[2] / image_dimensions[1]
+
+    # calculate the best whole number stride based on the idea dimensions
+    stride_x = max(int((dimensions[2] - ideal_width) /
+                       (constants.yolo_output_grid_dim[1] - 1) + 0.5), 1)
+
+    stride_y = max(int((dimensions[1] - ideal_height) /
+                       (constants.yolo_output_grid_dim[0] - 1) + 0.5), 1)
+
+    # using the exact strides, compute the actual dimensions that need to be used
+    kernel_x = dimensions[2] - (constants.yolo_output_grid_dim[1] - 1) * stride_x
+    kernel_y = dimensions[1] - (constants.yolo_output_grid_dim[0] - 1) * stride_y
+
     # transition to Dense-like outputs 
     pseudo_dense = layers.Conv2D(filters=200,
-                                 strides=1,
-                                 kernel_size=(dimensions[1] + 1 - constants.yolo_output_grid_dim[0],
-                                              dimensions[2] + 1 - constants.yolo_output_grid_dim[1]),
+                                 kernel_size=(kernel_y, kernel_x),
+                                 strides=(stride_y, stride_x),
                                  padding="valid")(current)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
     activation = layers.LeakyReLU()(dropout)
     current = layers.BatchNormalization()(activation)
 
+    # dense layers
     pseudo_dense = layers.Conv2D(filters=100,
                                  strides=1,
                                  kernel_size=1,
