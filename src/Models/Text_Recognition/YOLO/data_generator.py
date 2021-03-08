@@ -78,7 +78,7 @@ def gen_label(filename,
         # now set the appropriate parameters
 
         # set PC to 1
-        assert output[y, x, 0] == 0
+        # assert output[y, x, 0] == 0
 
         output[y, x, 0] = 1
 
