@@ -47,8 +47,13 @@ def add_boxes(letters,
     :return: numpy image with boxes on it
     """
 
+    color = (21, 53, 232)
+
     # convert tensor into numpy array
     input_image = input_image.numpy()
+
+    # get the image dimensions
+    H, W, C = input_image.shape
 
     for letter in letters:
 
@@ -69,19 +74,19 @@ def add_boxes(letters,
 
         # color the top
         for i in range(int(l), int(l + w)):
-            input_image[int(t), int(i)] = constants.box_color
+            input_image[min(int(t), H - 1), min(int(i), W - 1)] = color
 
         # color the left
         for i in range(int(t), int(t + h)):
-            input_image[int(i), int(l)] = constants.box_color
+            input_image[min(int(i), H - 1), min(int(l), W - 1)] = color
 
         # color the bottom
         for i in range(int(l), int(l + w)):
-            input_image[int(t + h), int(i)] = constants.box_color
+            input_image[min(int(t + h), H - 1), min(int(i), W - 1)] = color
 
         # color the right
         for i in range(int(t), int(t + h)):
-            input_image[int(i), int(l + w)] = constants.box_color
+            input_image[min(int(i), H - 1), min(int(l + w), W - 1)] = color
 
     return input_image
 
@@ -104,16 +109,15 @@ def get_letters(dataset,
 
     vocab = text_utils.reverse_vocab(vocab)
 
-    # predictions = model.predict(dataset)
+    predictions = model.predict(dataset)
     images = [x for x, y in dataset]
-    predictions = np.array([y.numpy() for x, y in dataset][0])
+    # predictions = np.array([y.numpy() for x, y in dataset][0])
 
     # go through the images
-    print(predictions.shape)
     M, V, H, O = predictions.shape
 
-    x_step = image_shape[1] / H
-    y_step = image_shape[0] / V
+    x_step = image_shape[1] // H
+    y_step = image_shape[0] // V
 
     names = []
 
@@ -127,11 +131,11 @@ def get_letters(dataset,
         # reset the found points
         found_boxes = []
 
-        probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
-        print(probabilities[:10])
+        # probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
+        # print(probabilities[:10])
 
-        for j in range(V):
-            for k in range(H):
+        for k in range(H):
+            for j in range(V):
 
                 if predictions[i, j, k, 0] > constants.image_detection_dropoff:
                     found_boxes.append((predictions[i, j, k, 0], (j, k), predictions[i, j, k]))
@@ -139,7 +143,7 @@ def get_letters(dataset,
         # sort the points by the probability
         found_boxes.sort(key=lambda x: x[0], reverse=True)
 
-        # go through all of the letter points
+        # get rid of all boxes with a high IoU (intersection over union)
         index = 0
         while index < len(found_boxes):
 
@@ -157,7 +161,7 @@ def get_letters(dataset,
             box_1 = (x1, y1, w1, h1)
 
             # go through all of the remaining points
-            for second_box in found_boxes[i + 1:]:
+            for j, second_box in enumerate(found_boxes[index + 1:]):
 
                 # unpack the second box
                 x_rel, y_rel, w_rel, h_rel = second_box[2][1:5]
@@ -221,13 +225,12 @@ def main():
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
                                          batch_size=1,
-                                         verbose=False)
+                                         verbose=False,
+                                         shuffle=False)
 
-    """get_letters(dataset.take(1),
+    get_letters(dataset.take(1),
                 vocab,
-                load())"""
-
-    get_letters(dataset.take(1), vocab, None)
+                load())
 
 
 if __name__ == "__main__":
