@@ -106,14 +106,15 @@ def get_letters(dataset,
 
     vocab = text_utils.reverse_vocab(vocab)
 
-    predictions = model.predict(dataset)
+    # predictions = model.predict(dataset)
     images = [x for x, y in dataset]
+    predictions = np.array([y.numpy() for x, y in dataset][0])
 
     # go through the images
     M, V, H, O = predictions.shape
 
-    x_step = image_shape[1] / H
-    y_step = image_shape[0] / V
+    x_step = image_shape[1] // H
+    y_step = image_shape[0] // V
 
     names = []
 
@@ -221,7 +222,8 @@ def main():
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
                                          batch_size=1,
-                                         verbose=False)
+                                         verbose=False,
+                                         shuffle=False)
 
     get_letters(dataset.take(1),
                 vocab,

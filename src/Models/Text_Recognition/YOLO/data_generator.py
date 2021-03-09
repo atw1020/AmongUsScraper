@@ -80,7 +80,6 @@ def gen_label(filename,
         # now set the appropriate parameters
 
         # set PC to 1
-        print(x, y)
         assert output[y, x, 0] == 0
 
         output[y, x, 0] = 1
@@ -200,7 +199,7 @@ def main():
                           vocab=vocab,
                           shuffle=False)
 
-    for x, y in dataset:
+    for x, y in dataset.take(1):
         save_img("test 3.jpg", x[0])
 
 
