@@ -26,6 +26,7 @@ def init_hyperparameters():
     hp = HyperParameters()
 
     hp.Fixed("Convolution Layers", 5)
+    hp.Fixed("duplicate convolutional layers", 3)
 
     hp.Fixed("Vertical Convolution", 4)
     hp.Fixed("Horizontal Convolution", 5)
@@ -53,6 +54,7 @@ def init_nn(vocab,
         hp = init_hyperparameters()
 
     num_layers = hp.Int("Convolution Layers", 5, 15)
+    duplicates = hp.Int("duplicate convolutional layers", 1, 5)
 
     vertical_convolution_size = hp.Int("Vertical Convolution", 5, 15)
     horizontal_convolution_size = hp.Int("Horizontal Convolution", 5, 15)
@@ -68,7 +70,7 @@ def init_nn(vocab,
     current = layers.BatchNormalization()(activation)
 
     for i in range(num_layers):
-        convolution = layers.Conv2D(filters=int(2 ** ((i + 5) / 2)),
+        convolution = layers.Conv2D(filters=int(3 ** ((i + 5) / 2)),
                                     strides=1,
                                     kernel_size=(vertical_convolution_size,
                                                  horizontal_convolution_size),
@@ -76,6 +78,16 @@ def init_nn(vocab,
         dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
         activation = layers.LeakyReLU()(dropout)
         current = layers.BatchNormalization()(activation)
+
+        for j in range(duplicates):
+            convolution = layers.Conv2D(filters=int(3 ** ((i + 5) / 2)),
+                                        strides=1,
+                                        kernel_size=(vertical_convolution_size,
+                                                     horizontal_convolution_size),
+                                        padding="same")(current)
+            dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+            activation = layers.LeakyReLU()(dropout)
+            current = layers.BatchNormalization()(activation)
 
     # complex calculations that determine the dimension of the dense YOLO layers
 

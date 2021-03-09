@@ -159,7 +159,7 @@ def generator(path,
         yield x, y
 
     # print a summary
-    print("letters overlapped ", overlapping_letters / total_letters, "% of the time", sep="")
+    # print("letters overlapped ", overlapping_letters / total_letters, "% of the time", sep="")
 
 
 def gen_dataset(path,
