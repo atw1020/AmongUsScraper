@@ -52,6 +52,9 @@ def add_boxes(letters,
     # convert tensor into numpy array
     input_image = input_image.numpy()
 
+    # get the image dimensions
+    H, W, C = input_image.shape
+
     for letter in letters:
 
         # unpack the first box
@@ -71,19 +74,19 @@ def add_boxes(letters,
 
         # color the top
         for i in range(int(l), int(l + w)):
-            input_image[int(t), int(i)] = color
+            input_image[min(int(t), H - 1), min(int(i), W - 1)] = color
 
         # color the left
         for i in range(int(t), int(t + h)):
-            input_image[int(i), int(l)] = color
+            input_image[min(int(i), H - 1), min(int(l), W - 1)] = color
 
         # color the bottom
         for i in range(int(l), int(l + w)):
-            input_image[int(t + h), int(i)] = color
+            input_image[min(int(t + h), H - 1), min(int(i), W - 1)] = color
 
         # color the right
         for i in range(int(t), int(t + h)):
-            input_image[int(i), int(l + w)] = color
+            input_image[min(int(i), H - 1), min(int(l + w), W - 1)] = color
 
     return input_image
 
