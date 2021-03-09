@@ -36,7 +36,7 @@ def train_network(dataset,
                  NanWeightsCallback()]
 
     model.fit(dataset,
-              epochs=50,
+              epochs=200,
               callbacks=callbacks)
 
     return model
@@ -129,7 +129,7 @@ def main():
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
-                                         batch_size=1)
+                                         batch_size=36)
 
     model = train_network(dataset,
                           vocab)

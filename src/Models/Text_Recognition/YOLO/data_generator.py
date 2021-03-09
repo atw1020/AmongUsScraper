@@ -141,6 +141,8 @@ def generator(path,
     if ".DS_Store" in files:
         files.remove(".DS_Store")
 
+    files = files[1:]
+
     if shuffle:
         random.shuffle(files)
 
