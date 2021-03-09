@@ -109,9 +109,9 @@ def get_letters(dataset,
 
     vocab = text_utils.reverse_vocab(vocab)
 
-    # predictions = model.predict(dataset)
+    predictions = model.predict(dataset)
     images = [x for x, y in dataset]
-    predictions = np.array([y.numpy() for x, y in dataset][0])
+    # predictions = np.array([y.numpy() for x, y in dataset][0])
 
     # go through the images
     M, V, H, O = predictions.shape
@@ -131,8 +131,8 @@ def get_letters(dataset,
         # reset the found points
         found_boxes = []
 
-        probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
-        print(probabilities[:10])
+        # probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
+        # print(probabilities[:10])
 
         for k in range(H):
             for j in range(V):
@@ -143,7 +143,7 @@ def get_letters(dataset,
         # sort the points by the probability
         found_boxes.sort(key=lambda x: x[0], reverse=True)
 
-        # go through all of the letter points
+        # get rid of all boxes with a high IoU (intersection over union)
         index = 0
         while index < len(found_boxes):
 
