@@ -131,8 +131,8 @@ def get_letters(dataset,
         probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
         print(probabilities[:10])
 
-        for j in range(V):
-            for k in range(H):
+        for k in range(H):
+            for j in range(V):
 
                 if predictions[i, j, k, 0] > constants.image_detection_dropoff:
                     found_boxes.append((predictions[i, j, k, 0], (j, k), predictions[i, j, k]))
@@ -158,7 +158,7 @@ def get_letters(dataset,
             box_1 = (x1, y1, w1, h1)
 
             # go through all of the remaining points
-            for second_box in found_boxes[i + 1:]:
+            for j, second_box in enumerate(found_boxes[index + 1:]):
 
                 # unpack the second box
                 x_rel, y_rel, w_rel, h_rel = second_box[2][1:5]

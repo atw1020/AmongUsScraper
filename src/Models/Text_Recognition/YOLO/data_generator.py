@@ -56,8 +56,6 @@ def gen_label(filename,
     # go through all the letters and set the appropriate values
     letters = filename.split("_")[:-1]
 
-    print("going through letters for", filename)
-
     for letter in letters:
 
         # split the letters into the items
@@ -93,6 +91,11 @@ def gen_label(filename,
         # set the width and height
         output[y, x, 3] = width / step_x
         output[y, x, 4] = height / step_y
+
+        print("=" * 50)
+        print(items[0])
+        print(y, x)
+        print(output[y, x, 1:5])
 
         # get the character ID
         character_id = vocab[items[0]]
