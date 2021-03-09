@@ -217,7 +217,13 @@ def main():
                           shuffle=False)
 
     for x, y in dataset:
-        save_img("test 3.jpg", x[0])
+        greyscale = y[:, :, :, 0][0].numpy().reshape(y.shape[1:3] + (1,))
+        print(y[:, :, :, 0][0].numpy())
+
+        save_img("greyscale.jpg", greyscale)
+        save_img("raw.jpg", x[0])
+
+        break
 
 
 if __name__ == "__main__":

@@ -47,8 +47,6 @@ def add_boxes(letters,
     :return: numpy image with boxes on it
     """
 
-    color = (21, 53, 232)
-
     # convert tensor into numpy array
     input_image = input_image.numpy()
 
@@ -71,19 +69,19 @@ def add_boxes(letters,
 
         # color the top
         for i in range(int(l), int(l + w)):
-            input_image[int(t), int(i)] = color
+            input_image[int(t), int(i)] = constants.box_color
 
         # color the left
         for i in range(int(t), int(t + h)):
-            input_image[int(i), int(l)] = color
+            input_image[int(i), int(l)] = constants.box_color
 
         # color the bottom
         for i in range(int(l), int(l + w)):
-            input_image[int(t + h), int(i)] = color
+            input_image[int(t + h), int(i)] = constants.box_color
 
         # color the right
         for i in range(int(t), int(t + h)):
-            input_image[int(i), int(l + w)] = color
+            input_image[int(i), int(l + w)] = constants.box_color
 
     return input_image
 
@@ -106,10 +104,12 @@ def get_letters(dataset,
 
     vocab = text_utils.reverse_vocab(vocab)
 
-    predictions = model.predict(dataset)
+    # predictions = model.predict(dataset)
     images = [x for x, y in dataset]
+    predictions = np.array([y.numpy() for x, y in dataset][0])
 
     # go through the images
+    print(predictions.shape)
     M, V, H, O = predictions.shape
 
     x_step = image_shape[1] / H
@@ -223,9 +223,11 @@ def main():
                                          batch_size=1,
                                          verbose=False)
 
-    get_letters(dataset.take(1),
+    """get_letters(dataset.take(1),
                 vocab,
-                load())
+                load())"""
+
+    get_letters(dataset.take(1), vocab, None)
 
 
 if __name__ == "__main__":
