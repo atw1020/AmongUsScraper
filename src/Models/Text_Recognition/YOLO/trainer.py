@@ -32,12 +32,14 @@ def train_network(dataset,
     model = initializer.init_nn(vocab)
     model.summary()
 
-    callbacks = [LossBreakdownCallback(dataset),
+    callbacks = [  # LossBreakdownCallback(dataset),
                  NanWeightsCallback()]
 
     model.fit(dataset,
-              epochs=1000,
+              epochs=100,
               callbacks=callbacks)
+
+    model.evaluate(dataset)
 
     return model
 
@@ -88,10 +90,10 @@ class LossBreakdownCallback(Callback):
 
             t1 = time.time()
 
-            print("pc loss:", total_pc_loss / i)
-            print("mse loss:", total_mse_loss / i)
+            tf.print("pc loss:", total_pc_loss / i)
+            tf.print("mse loss:", total_mse_loss / i)
 
-            print("calculation took", t1 - t0, "seconds")
+            tf.print("calculation took", t1 - t0, "seconds")
 
 
 class NanWeightsCallback(Callback):
@@ -131,7 +133,8 @@ def main():
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
-                                         batch_size=36)
+                                         shuffle=False,
+                                         batch_size=1)
 
     model = train_network(dataset.take(1),
                           vocab)

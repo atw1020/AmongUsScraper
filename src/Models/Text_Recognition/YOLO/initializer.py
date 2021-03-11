@@ -201,7 +201,7 @@ def init_nn(vocab,
     model = Model(inputs=input_layer,
                   outputs=output)
 
-    lr = 0.0003
+    lr = 0.3
 
     loss = YoloLoss(mse_lambda=mse_lambda,
                     positive_case_lambda=positive_case_lambda)

@@ -130,25 +130,30 @@ class YoloLoss(Loss):
         :return:
         """
 
-        # calculate the log error
-        log_error = - (self.positive_case_lambda * tf.multiply(y_true, tf.math.log(y_pred)) +
-                       self.negative_case_lambda * tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred))))
-
         # get the number of output channels
-        output_channels = y_true.shape[-1]
+        H, W, C = y_true.shape
 
-        # reshape y
-        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
+        # take the first term from y_true and y_pred
+        y_true_first_term = y_true[:, :, 0]
+        y_pred_first_term = y_pred[:, :, 0]
 
-        # reshape the squared errors
-        reshaped_squared_errors = tf.reshape(log_error,
-                                             shape=log_error.shape + (1,))
-        repeated_first_term = tf.repeat(reshaped_squared_errors[:, :, 0, :],
-                                        output_channels, axis=-1)
+        # calculate the log error
+        log_error = - (self.positive_case_lambda * tf.multiply(y_true_first_term, tf.math.log(y_pred_first_term)) +
+                       self.negative_case_lambda * tf.multiply((1 - y_true_first_term), tf.math.log(abs(1 - y_pred_first_term))))
 
-        first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
+        # generate a mask for the log terms
+        pc_mask = tf.ones((H, W, 1), dtype="float64")
 
-        return first_item_squared_error
+        # reshape the first term of y true
+        y_true_mask = tf.reshape(y_true_first_term, y_true_first_term.shape + (1,))
+        y_true_mask = tf.repeat(y_true_mask, 3, axis=-1)
+
+        mask = tf.concat([pc_mask, y_true_mask], axis=-1)
+
+        pc_loss = tf.multiply(mask, tf.reshape(log_error, shape=log_error.shape + (1,)))
+        print(pc_loss.numpy())
+
+        return pc_loss
 
     def mappable_mse_loss(self, squared_error, y_true):
         """
@@ -219,8 +224,7 @@ def main():
     loss = YoloLoss()
 
     result = loss.call(y_true, y_pred)
-    print(result)
-    print("loss was", result.numpy())
+    print("loss was\n", result.numpy())
     print(result.numpy().shape)
 
 

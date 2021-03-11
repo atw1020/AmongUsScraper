@@ -226,7 +226,7 @@ def main():
                                          vocab,
                                          batch_size=1,
                                          verbose=False,
-                                         shuffle=True)
+                                         shuffle=False)
 
     get_letters(dataset.take(1),
                 vocab,
