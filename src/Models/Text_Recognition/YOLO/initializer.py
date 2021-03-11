@@ -8,6 +8,7 @@ from kerastuner import HyperParameters
 
 from tensorflow.keras import layers
 from tensorflow.keras.models import Model
+from tensorflow.keras.losses import MeanSquaredError
 from tensorflow.keras.optimizers import Adam
 
 from src import constants
@@ -204,6 +205,7 @@ def init_nn(vocab,
 
     loss = YoloLoss(mse_lambda=mse_lambda,
                     positive_case_lambda=positive_case_lambda)
+    # loss = MeanSquaredError()
     optimizer = Adam(learning_rate=lr)
 
     print(lr)
