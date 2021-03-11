@@ -146,12 +146,12 @@ class YoloLoss(Loss):
 
         # reshape the first term of y true
         y_true_mask = tf.reshape(y_true_first_term, y_true_first_term.shape + (1,))
-        y_true_mask = tf.repeat(y_true_mask, 3, axis=-1)
+        y_true_mask = tf.repeat(1 - y_true_mask, 3, axis=-1)
 
         mask = tf.concat([pc_mask, y_true_mask], axis=-1)
 
         pc_loss = tf.multiply(mask, tf.reshape(log_error, shape=log_error.shape + (1,)))
-        print(pc_loss.numpy())
+        print(pc_loss)
 
         return pc_loss
 
