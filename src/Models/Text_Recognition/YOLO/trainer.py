@@ -64,32 +64,34 @@ class LossBreakdownCallback(Callback):
         :return:
         """
 
-        t0 = time.time()
+        if hasattr(self.model.loss, "loss_summary"):
 
-        total_pc_loss, total_mse_loss = 0, 0
+            t0 = time.time()
 
-        i = 0
+            total_pc_loss, total_mse_loss = 0, 0
 
-        for x, y_true in self.training_data:
+            i = 0
 
-            y_pred = self.model.predict(x)
+            for x, y_true in self.training_data:
 
-            pc_loss, mse_loss = self.model.loss.loss_summary(y_true, y_pred)
+                y_pred = self.model.predict(x)
 
-            total_pc_loss += pc_loss
-            total_mse_loss += mse_loss
+                pc_loss, mse_loss = self.model.loss.loss_summary(y_true, y_pred)
 
-            i += 1
+                total_pc_loss += pc_loss
+                total_mse_loss += mse_loss
 
-        total_pc_loss = tf.reduce_mean(total_pc_loss).numpy()
-        total_mse_loss = tf.reduce_mean(total_mse_loss).numpy()
+                i += 1
 
-        t1 = time.time()
+            total_pc_loss = tf.reduce_mean(total_pc_loss).numpy()
+            total_mse_loss = tf.reduce_mean(total_mse_loss).numpy()
 
-        print("pc loss:", total_pc_loss / i)
-        print("mse loss:", total_mse_loss / i)
+            t1 = time.time()
 
-        print("calculation took", t1 - t0, "seconds")
+            print("pc loss:", total_pc_loss / i)
+            print("mse loss:", total_mse_loss / i)
+
+            print("calculation took", t1 - t0, "seconds")
 
 
 class NanWeightsCallback(Callback):
@@ -131,7 +133,7 @@ def main():
                                          vocab=vocab,
                                          batch_size=36)
 
-    model = train_network(dataset,
+    model = train_network(dataset.take(1),
                           vocab)
 
     model.save(constants.letter_detection)
