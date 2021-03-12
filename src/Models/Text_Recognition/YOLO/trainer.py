@@ -32,11 +32,11 @@ def train_network(dataset,
     model = initializer.init_nn(vocab)
     model.summary()
 
-    callbacks = [  # LossBreakdownCallback(dataset),
+    callbacks = [LossBreakdownCallback(dataset),
                  NanWeightsCallback()]
 
     model.fit(dataset,
-              epochs=100,
+              epochs=1000,
               callbacks=callbacks)
 
     model.evaluate(dataset)
