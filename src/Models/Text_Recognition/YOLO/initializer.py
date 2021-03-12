@@ -203,9 +203,9 @@ def init_nn(vocab,
 
     lr = 0.001
 
-    """loss = YoloLoss(mse_lambda=mse_lambda,
-                    positive_case_lambda=positive_case_lambda)"""
-    loss = MeanSquaredError()
+    loss = YoloLoss(mse_lambda=mse_lambda,
+                    positive_case_lambda=positive_case_lambda)
+    # loss = MeanSquaredError()
     optimizer = Adam(learning_rate=lr)
 
     print(lr)
