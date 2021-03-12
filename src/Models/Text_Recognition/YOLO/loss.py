@@ -146,7 +146,7 @@ class YoloLoss(Loss):
                                         output_channels, axis=-1)
 
         first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
-        tf.print(first_item_squared_error, summarize=7)
+        # tf.print(first_item_squared_error, summarize=7)
 
         return first_item_squared_error
 
@@ -176,12 +176,13 @@ class YoloLoss(Loss):
         mask_2 = 1 - mask_1
 
         error = tf.multiply(mask_1, mse) + tf.math.multiply_no_nan(log_error, mask_2)
+        tf.print(error)
 
         # reshape y
         y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
 
         raw_squared_error = tf.multiply(error, y_true_first_term[:, :, 0, :])
-        tf.print(raw_squared_error, summarize=7)
+        # tf.print(raw_squared_error)
 
         return self.mse_lambda * raw_squared_error
 
