@@ -60,6 +60,10 @@ class YoloLoss(Loss):
         mse_loss = tf.map_fn(lambda x: self.mappable_mse_loss(x[0], x[1]),
                              stack)
 
+        """tf.print(y_true)
+        tf.print(pc_loss)
+        tf.print(mse_loss)"""
+
         squared_error = pc_loss + mse_loss
 
         losses = tf.reduce_mean(squared_error, axis=-1)
@@ -142,16 +146,16 @@ class YoloLoss(Loss):
                        self.negative_case_lambda * tf.multiply((1 - y_true_first_term), tf.math.log(abs(1 - y_pred_first_term))))
 
         # generate a mask for the log terms
-        pc_mask = tf.ones((H, W, 1), dtype="float64")
+        pc_mask = tf.ones((H, W, 1))
 
         # reshape the first term of y true
         y_true_mask = tf.reshape(y_true_first_term, y_true_first_term.shape + (1,))
-        y_true_mask = tf.repeat(1 - y_true_mask, 3, axis=-1)
+        y_true_mask = tf.repeat(1 - y_true_mask, C - 1, axis=-1)
 
         mask = tf.concat([pc_mask, y_true_mask], axis=-1)
 
         pc_loss = tf.multiply(mask, tf.reshape(log_error, shape=log_error.shape + (1,)))
-        print(pc_loss)
+        # print(pc_loss)
 
         return pc_loss
 
@@ -165,7 +169,7 @@ class YoloLoss(Loss):
         :return: mse loss of the funtion
         """
 
-        # reshape y
+        # get the y true first term
         y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
 
         raw_squared_error = tf.multiply(squared_error, y_true_first_term[:, :, 0, :])
@@ -219,7 +223,7 @@ def main():
                          [0.99, 0, 0, 0]]],
                        [[[0.99, 0, 0, 0],
                          [0.99, 0, 0, 0]]]],
-                      dtype="float64")
+                      dtype="float32")
 
     loss = YoloLoss()
 
