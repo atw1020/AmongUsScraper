@@ -15,6 +15,7 @@ from tensorflow.keras.callbacks import Callback
 from src import constants
 from src.Models.Text_Recognition import text_utils
 from src.Models.Text_Recognition.YOLO import data_generator, initializer
+from src.Models.Text_Recognition.YOLO import text_generator
 from src.Models.Text_Recognition.Recurrent_Neural_Network.trainer import TrueAccuracyCallback
 
 

@@ -131,8 +131,8 @@ def get_letters(dataset,
         # reset the found points
         found_boxes = []
 
-        # probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
-        # print(probabilities[:10])
+        probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
+        print(probabilities[:10])
 
         for k in range(H):
             for j in range(V):
