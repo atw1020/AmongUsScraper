@@ -155,7 +155,7 @@ class YoloLoss(Loss):
         mask = tf.concat([pc_mask, y_true_mask], axis=-1)
 
         pc_loss = tf.multiply(mask, tf.reshape(log_error, shape=log_error.shape + (1,)))
-        tf.print(pc_loss, summarize=7)
+        # tf.print(pc_loss, summarize=7)
 
         return pc_loss
 
@@ -173,7 +173,7 @@ class YoloLoss(Loss):
         y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
 
         raw_squared_error = tf.multiply(squared_error, y_true_first_term[:, :, 0, :])
-        tf.print(raw_squared_error, summarize=7)
+        # tf.print(raw_squared_error, summarize=7)
 
         return self.mse_lambda * raw_squared_error
 
