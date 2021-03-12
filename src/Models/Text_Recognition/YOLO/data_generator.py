@@ -15,6 +15,9 @@ from tensorflow.keras.preprocessing.image import load_img, save_img, img_to_arra
 from src import constants
 from src.Models.Text_Recognition import text_utils
 
+total_letters = 0
+overlapping_letters = 0
+
 
 def cords_from_char_int_pair(text):
     """
@@ -43,6 +46,9 @@ def gen_label(filename,
     :param grid_dimension: dimensions
     :return: image tensor
     """
+
+    global total_letters
+    global overlapping_letters
 
     output_channels = 5 + len(vocab)
 
@@ -78,7 +84,9 @@ def gen_label(filename,
         # now set the appropriate parameters
 
         # set PC to 1
-        assert output[y, x, 0] == 0
+        # assert output[y, x, 0] == 0
+        if output[y, x, 0] != 0:
+            overlapping_letters += 1
 
         output[y, x, 0] = 1
 
@@ -92,16 +100,13 @@ def gen_label(filename,
         output[y, x, 3] = width / step_x
         output[y, x, 4] = height / step_y
 
-        """print("=" * 50)
-        print(items[0])
-        print(y, x)
-        print(output[y, x, 1:5])"""
-
         # get the character ID
         character_id = vocab[items[0]]
 
         # set the output
         output[y, x, character_id + 5] = 1
+
+        total_letters += 1
 
     return output
 
@@ -125,10 +130,18 @@ def generator(path,
     :return:
     """
 
+    global overlapping_letters
+    global total_letters
+
+    overlapping_letters = 0
+    total_letters = 0
+
     files = os.listdir(path)
 
     if ".DS_Store" in files:
         files.remove(".DS_Store")
+
+    files = files[1:]
 
     if shuffle:
         random.shuffle(files)
@@ -146,6 +159,9 @@ def generator(path,
                       grid_dim)
 
         yield x, y
+
+    # print a summary
+    # print("letters overlapped ", overlapping_letters / total_letters, "% of the time", sep="")
 
 
 def gen_dataset(path,
@@ -202,8 +218,14 @@ def main():
                           vocab=vocab,
                           shuffle=False)
 
-    for x, y in dataset.take(1):
-        save_img("test 3.jpg", x[0])
+    for x, y in dataset:
+        greyscale = y[:, :, :, 0][0].numpy().reshape(y.shape[1:3] + (1,))
+        print(y[:, :, :, 0][0].numpy())
+
+        save_img("greyscale.jpg", greyscale)
+        save_img("raw.jpg", x[0])
+
+        break
 
 
 if __name__ == "__main__":
