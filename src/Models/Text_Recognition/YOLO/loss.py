@@ -48,7 +48,8 @@ class YoloLoss(Loss):
 
         loss = tf.math.multiply_no_nan(loss, mask)
 
-        return tf.reduce_mean(loss, axis=-1)
+        # fixme: replace with reduce mean when experimentation done
+        return tf.reduce_sum(loss, axis=-1)
 
 
 def main():

@@ -28,6 +28,7 @@ def init_hyperparameters():
 
     hp.Fixed("duplicate convolutional layers", 3)
     hp.Fixed("End Layers", 5)
+    hp.Fixed("Start Layers", 5)
 
     hp.Fixed("Vertical Convolution", 4)
     hp.Fixed("Horizontal Convolution", 5)
@@ -56,6 +57,7 @@ def init_nn(vocab,
 
     duplicates = hp.Int("duplicate convolutional layers", 1, 5)
     end_layers = hp.Int("End Layers", 1, 10)
+    num_layers = hp.Int("Start Layers", 1, 10)
 
     vertical_convolution_size = hp.Int("Vertical Convolution", 5, 15)
     horizontal_convolution_size = hp.Int("Horizontal Convolution", 5, 15)
@@ -70,7 +72,7 @@ def init_nn(vocab,
     activation = layers.LeakyReLU()(dropout)
     current = layers.BatchNormalization()(activation)
 
-    """for i in range(num_layers):
+    for i in range(num_layers):
         convolution = layers.Conv2D(filters=int(2 ** ((i + 10) / 5)),
                                     strides=1,
                                     kernel_size=(vertical_convolution_size,
@@ -88,9 +90,9 @@ def init_nn(vocab,
                                         padding="same")(current)
             dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
             activation = layers.LeakyReLU()(dropout)
-            current = layers.BatchNormalization()(activation)"""
+            current = layers.BatchNormalization()(activation)
 
-    convolution = layers.Conv2D(filters=8,
+    """convolution = layers.Conv2D(filters=8,
                                 strides=2,
                                 kernel_size=(vertical_convolution_size,
                                              horizontal_convolution_size),
@@ -139,7 +141,7 @@ def init_nn(vocab,
                                     padding="same")(current)
         dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
         activation = layers.LeakyReLU()(dropout)
-        current = layers.BatchNormalization()(activation)
+        current = layers.BatchNormalization()(activation)"""
 
     # complex calculations that determine the dimension of the dense YOLO layers
 

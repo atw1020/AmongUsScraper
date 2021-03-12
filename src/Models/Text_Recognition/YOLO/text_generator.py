@@ -8,6 +8,7 @@ import os
 
 import numpy as np
 
+import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import save_img
 
@@ -220,6 +221,8 @@ def main():
     :return:
     """
 
+    model = load()
+
     vocab = text_utils.get_model_vocab()
 
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
@@ -228,9 +231,9 @@ def main():
                                          verbose=False,
                                          shuffle=False)
 
-    get_letters(dataset.take(1),
+    """get_letters(dataset.take(1),
                 vocab,
-                load())
+                load())"""
 
 
 if __name__ == "__main__":
