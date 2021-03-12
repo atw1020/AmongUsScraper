@@ -47,7 +47,6 @@ class YoloLoss(Loss):
                   tf.math.multiply_no_nan(math.log(1 - y_pred), 1 - y_true))
 
         loss = tf.math.multiply_no_nan(loss, mask)
-        tf.print(loss)
 
         return tf.reduce_mean(loss, axis=-1)
 
