@@ -81,8 +81,8 @@ def gen_label(filename,
 
         # go through all of the grid boxes inside of the center
 
-        for x in range(top_cell_coord, left_cell_coord):
-            for y in range(bottom_cell_coord, right_cell_coord):
+        for y in range(top_cell_coord, bottom_cell_coord):
+            for x in range(left_cell_coord, right_cell_coord):
 
                 # now set the appropriate parameters
 
