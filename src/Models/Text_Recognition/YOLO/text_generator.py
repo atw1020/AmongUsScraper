@@ -111,7 +111,7 @@ def get_letters(dataset,
 
     predictions = model.predict(dataset)
     images = [x for x, y in dataset]
-    # predictions = np.array([y.numpy() for x, y in dataset][0])
+    y_true = np.array([y.numpy() for x, y in dataset][0])
 
     # go through the images
     M, V, H, O = predictions.shape
@@ -126,7 +126,10 @@ def get_letters(dataset,
 
         # save a greyscale image
         greyscale = predictions[i, :, :, 0].reshape((V, H, 1))
-        save_img("greyscale.jpg", greyscale)
+        save_img("greyscale predictions.jpg", greyscale)
+
+        greyscale = y_true[i, :, :, 0].reshape((V, H, 1))
+        save_img("greyscale true", greyscale)
 
         # reset the found points
         found_boxes = []
