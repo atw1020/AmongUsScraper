@@ -101,9 +101,13 @@ def gen_label(filename,
                 output[y, x, 1] = (local_center_x % step_x) / step_x
                 output[y, x, 2] = (local_center_y % step_y) / step_y
 
+                # get the local width and height
+                local_width  = width  - abs(center_x - local_center_x)
+                local_height = height - abs(center_y - local_center_y)
+
                 # set the width and height
-                output[y, x, 3] = width / step_x
-                output[y, x, 4] = height / step_y
+                output[y, x, 3] = local_width / step_x
+                output[y, x, 4] = local_height / step_y
 
                 # get the character ID
                 character_id = vocab[items[0]]
