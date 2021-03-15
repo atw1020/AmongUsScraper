@@ -146,8 +146,7 @@ def get_letters(dataset,
 
         # sort the points by the probability
         found_boxes.sort(key=lambda x: x[0], reverse=True)
-
-        print(len(found_boxes))
+        # found_boxes = found_boxes[16:18]
 
         # get rid of all boxes with a high IoU (intersection over union)
         index = 0
