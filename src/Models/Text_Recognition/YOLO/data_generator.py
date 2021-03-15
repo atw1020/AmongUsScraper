@@ -93,9 +93,13 @@ def gen_label(filename,
 
                 # note that all numbers are normalized by the step
 
-                # set the co-ordinates
-                output[y, x, 1] = (center_x % step_x) / step_x
-                output[y, x, 2] = (center_y % step_y) / step_y
+                # get the closest point to the center of the crop box inside of this cell
+                local_center_x = min(max(center_x, x * step_x), (x + 1) * step_x - 1)
+                local_center_y = min(max(center_y, y * step_y), (y + 1) * step_y - 1)
+
+                # set center co-ords
+                output[y, x, 1] = (local_center_x % step_x) / step_x
+                output[y, x, 2] = (local_center_y % step_y) / step_y
 
                 # set the width and height
                 output[y, x, 3] = width / step_x

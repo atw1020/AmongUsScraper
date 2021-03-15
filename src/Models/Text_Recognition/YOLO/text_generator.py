@@ -111,7 +111,8 @@ def get_letters(dataset,
 
     predictions = model.predict(dataset)
     images = [x for x, y in dataset]
-    y_true = np.array([y.numpy() for x, y in dataset][0])
+    predictions = np.array([y.numpy() for x, y in dataset][0])
+    y_true = predictions
 
     # go through the images
     M, V, H, O = predictions.shape
@@ -145,6 +146,7 @@ def get_letters(dataset,
 
         # sort the points by the probability
         found_boxes.sort(key=lambda x: x[0], reverse=True)
+        # found_boxes = found_boxes[:1]
 
         # get rid of all boxes with a high IoU (intersection over union)
         index = 0
