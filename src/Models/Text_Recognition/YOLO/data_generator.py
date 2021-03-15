@@ -71,6 +71,8 @@ def gen_label(filename,
         center_x = left + width // 2
         center_y = top + height // 2
 
+        # go through all of the grid boxes inside of the center
+
         # get the grid co-ordinates of the center
         x = center_x // step_x
         y = center_y // step_y
