@@ -5,6 +5,7 @@ Author: Arthur Wesley
 """
 
 import os
+import math
 import random
 
 import numpy as np
@@ -71,39 +72,40 @@ def gen_label(filename,
         center_x = left + width // 2
         center_y = top + height // 2
 
+        # compute the co ords of the edge boxes
+        top_cell_coord    = (top + step_y // 2) // step_y
+        left_cell_coord   = (left + step_x // 2) // step_x
+
+        bottom_cell_coord = (top + height) // step_y
+        right_cell_coord  = (left + width) // step_x
+
         # go through all of the grid boxes inside of the center
 
-        # get the grid co-ordinates of the center
-        x = center_x // step_x
-        y = center_y // step_y
+        for x in range(top_cell_coord, left_cell_coord):
+            for y in range(bottom_cell_coord, right_cell_coord):
 
-        # now set the appropriate parameters
+                # now set the appropriate parameters
 
-        # set PC to 1
-        assert output[y, x, 0] == 0
+                # set PC to 1
+                # assert output[y, x, 0] == 0
 
-        output[y, x, 0] = 1
+                output[y, x, 0] = 1
 
-        # note that all numbers are normalized by the step
+                # note that all numbers are normalized by the step
 
-        # set the co-ordinates
-        output[y, x, 1] = (center_x % step_x) / step_x
-        output[y, x, 2] = (center_y % step_y) / step_y
+                # set the co-ordinates
+                output[y, x, 1] = (center_x % step_x) / step_x
+                output[y, x, 2] = (center_y % step_y) / step_y
 
-        # set the width and height
-        output[y, x, 3] = width / step_x
-        output[y, x, 4] = height / step_y
+                # set the width and height
+                output[y, x, 3] = width / step_x
+                output[y, x, 4] = height / step_y
 
-        """print("=" * 50)
-        print(items[0])
-        print(y, x)
-        print(output[y, x, 1:5])"""
+                # get the character ID
+                character_id = vocab[items[0]]
 
-        # get the character ID
-        character_id = vocab[items[0]]
-
-        # set the output
-        output[y, x, character_id + 5] = 1
+                # set the output
+                output[y, x, character_id + 5] = 1
 
     return output
 
