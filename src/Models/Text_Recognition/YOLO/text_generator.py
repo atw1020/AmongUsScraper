@@ -129,7 +129,7 @@ def get_letters(dataset,
         save_img("greyscale predictions.jpg", greyscale)
 
         greyscale = y_true[i, :, :, 0].reshape((V, H, 1))
-        save_img("greyscale true", greyscale)
+        save_img("greyscale true.jpg", greyscale)
 
         # reset the found points
         found_boxes = []
