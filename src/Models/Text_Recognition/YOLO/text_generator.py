@@ -136,7 +136,7 @@ def get_letters(dataset,
         found_boxes = []
 
         probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
-        print(probabilities[:10])
+        print(probabilities)
 
         for k in range(H):
             for j in range(V):
@@ -147,6 +147,7 @@ def get_letters(dataset,
         # sort the points by the probability
         found_boxes.sort(key=lambda x: x[0], reverse=True)
         # found_boxes = found_boxes[16:18]
+        print(len(found_boxes))
 
         # get rid of all boxes with a high IoU (intersection over union)
         index = 0
