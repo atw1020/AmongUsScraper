@@ -73,11 +73,11 @@ def gen_label(filename,
         center_y = top + height // 2
 
         # compute the co ords of the edge boxes
-        top_cell_coord    = (top + step_y // 2) // step_y
-        left_cell_coord   = (left + step_x // 2) // step_x
+        top_cell_coord    = (top + step_y // 4) // step_y
+        left_cell_coord   = (left + step_x // 4) // step_x
 
-        bottom_cell_coord = (top + height) // step_y
-        right_cell_coord  = (left + width) // step_x
+        bottom_cell_coord = (top + height // 2) // step_y
+        right_cell_coord  = (left + width // 2) // step_x
 
         # go through all of the grid boxes inside of the center
 
