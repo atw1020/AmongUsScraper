@@ -32,7 +32,7 @@ def init_hyperparameters():
     hp.Fixed("Horizontal Convolution", 5)
 
     hp.Fixed("MSE Lambda", 70)
-    hp.Fixed("positive case Lambda", 70)
+    hp.Fixed("positive case Lambda", 1)
 
     return hp
 
@@ -119,7 +119,7 @@ def init_nn(vocab,
 
     loss = YoloLoss(mse_lambda=mse_lambda,
                     positive_case_lambda=positive_case_lambda)
-    optimizer = Adam(learning_rate=0.01)
+    optimizer = Adam(learning_rate=0.001)
 
     model.compile(optimizer=optimizer,
                   loss=loss)
