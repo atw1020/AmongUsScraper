@@ -91,7 +91,7 @@ YOLO parameters
 """
 
 
-yolo_output_grid_dim = (3, 50)
+yolo_output_grid_dim = (2, 30)
 image_detection_dropoff = 0.6
 IoU_threshold = 0.5
 anchor_boxes = 3

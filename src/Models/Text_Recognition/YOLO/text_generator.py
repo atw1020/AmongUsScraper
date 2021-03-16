@@ -108,11 +108,12 @@ def get_letters(dataset,
     """
 
     vocab = text_utils.reverse_vocab(vocab)
+    output_channels = 5 + len(vocab)
 
-    predictions = model.predict(dataset)
+    # predictions = model.predict(dataset)
     images = [x for x, y in dataset]
-    y_true = np.array([y.numpy() for x, y in dataset][0])
-    # y_true = predictions
+    predictions = np.array([y.numpy() for x, y in dataset][0])
+    y_true = predictions
 
     # go through the images
     M, V, H, O = predictions.shape
@@ -138,11 +139,17 @@ def get_letters(dataset,
         probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
         print(probabilities)
 
+        # go through all of the rows and columns of the predictions
+
         for k in range(H):
             for j in range(V):
 
-                if predictions[i, j, k, 0] > constants.image_detection_dropoff:
-                    found_boxes.append((predictions[i, j, k, 0], (j, k), predictions[i, j, k]))
+                for l in range(constants.anchor_boxes):
+
+                    if predictions[i, j, k, l * output_channels] > constants.image_detection_dropoff:
+                        found_boxes.append((predictions[i, j, k, l * output_channels],
+                                            (j, k),
+                                            predictions[i, j, k, l * output_channels: (l + 1) * output_channels]))
 
         # sort the points by the probability
         found_boxes.sort(key=lambda x: x[0], reverse=True)

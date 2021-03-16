@@ -200,7 +200,7 @@ def gen_dataset(path,
                           verbose),
         output_signature=(tf.TensorSpec(shape=image_dim + (3,),
                           dtype=tf.uint8),
-                          tf.TensorSpec(shape=grid_dim + (output_channels,),
+                          tf.TensorSpec(shape=grid_dim + (output_channels * constants.anchor_boxes,),
                           dtype=tf.float64)))
 
     return dataset.batch(batch_size)
