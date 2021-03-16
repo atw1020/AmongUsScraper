@@ -192,7 +192,7 @@ def get_letters(dataset,
                 IoU = box_geometry.IoU(box_1, box_2)
 
                 if IoU > constants.IoU_threshold:
-                    found_boxes.remove(second_box)
+                    del second_box[j]
 
             index += 1
 

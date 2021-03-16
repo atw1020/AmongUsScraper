@@ -94,8 +94,8 @@ def gen_label(filename,
         # note that all numbers are normalized by the step
 
         # set center co-ords
-        output[y, x, anchor_base + 1] = (x % step_x) / step_x
-        output[y, x, anchor_base + 2] = (y % step_y) / step_y
+        output[y, x, anchor_base + 1] = (center_x % step_x) / step_x
+        output[y, x, anchor_base + 2] = (center_y % step_y) / step_y
 
         # set the width and height
         output[y, x, anchor_base + 3] = width / step_x
