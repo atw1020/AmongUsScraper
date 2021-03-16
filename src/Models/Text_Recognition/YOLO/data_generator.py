@@ -51,7 +51,7 @@ def gen_label(filename,
     step_x = image_dim[1] // grid_dimension[1]
 
     # initialize the output to be all zeros
-    output = np.zeros(grid_dimension + (output_channels,),
+    output = np.zeros(grid_dimension + (output_channels * constants.anchor_boxes,),
                       dtype="float64")
 
     # go through all the letters and set the appropriate values
@@ -81,15 +81,23 @@ def gen_label(filename,
 
         # go through all of the grid boxes inside of the center
 
-        for y in range(top_cell_coord, bottom_cell_coord + 1):
-            for x in range(left_cell_coord, right_cell_coord + 1):
+        for x in range(left_cell_coord, right_cell_coord + 1):
+            for y in range(top_cell_coord, bottom_cell_coord + 1):
 
                 # now set the appropriate parameters
 
-                # set PC to 1
-                # assert output[y, x, 0] == 0
+                # find the anchor box for this letter
 
-                output[y, x, 0] = 1
+                anchor_base = 0
+
+                while output[y, x, anchor_base] == 1:
+                    if anchor_base < constants.anchor_boxes:
+                        anchor_base += output_channels
+                    else:
+                        raise Exception("Not Enough Anchor Boxes")
+
+                # set PC
+                output[y, x, anchor_base] = 1
 
                 # note that all numbers are normalized by the step
 
@@ -98,22 +106,22 @@ def gen_label(filename,
                 local_center_y = min(max(center_y, y * step_y), (y + 1) * step_y - 1)
 
                 # set center co-ords
-                output[y, x, 1] = (local_center_x % step_x) / step_x
-                output[y, x, 2] = (local_center_y % step_y) / step_y
+                output[y, x, anchor_base + 1] = (local_center_x % step_x) / step_x
+                output[y, x, anchor_base + 2] = (local_center_y % step_y) / step_y
 
                 # get the local width and height
                 local_width  = width  - abs(center_x - local_center_x)
                 local_height = height - abs(center_y - local_center_y)
 
                 # set the width and height
-                output[y, x, 3] = local_width / step_x
-                output[y, x, 4] = local_height / step_y
+                output[y, x, anchor_base + 3] = local_width / step_x
+                output[y, x, anchor_base + 4] = local_height / step_y
 
                 # get the character ID
                 character_id = vocab[items[0]]
 
                 # set the output
-                output[y, x, character_id + 5] = 1
+                output[y, x, anchor_base + character_id + 5] = 1
 
     return output
 
