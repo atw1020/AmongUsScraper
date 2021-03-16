@@ -5,6 +5,7 @@ Author: Arthur Wesley
 """
 
 import os
+import math
 import random
 
 import numpy as np
@@ -71,37 +72,48 @@ def gen_label(filename,
         center_x = left + width // 2
         center_y = top + height // 2
 
-        # get the grid co-ordinates of the center
-        x = center_x // step_x
-        y = center_y // step_y
+        # compute the co ords of the edge boxes
+        top_cell_coord    = (top + step_y // 4) // step_y
+        left_cell_coord   = (left + step_x // 4) // step_x
 
-        # now set the appropriate parameters
+        bottom_cell_coord = (top + height // 2) // step_y
+        right_cell_coord  = (left + width // 2) // step_x
 
-        # set PC to 1
-        assert output[y, x, 0] == 0
+        # go through all of the grid boxes inside of the center
 
-        output[y, x, 0] = 1
+        for y in range(top_cell_coord, bottom_cell_coord + 1):
+            for x in range(left_cell_coord, right_cell_coord + 1):
 
-        # note that all numbers are normalized by the step
+                # now set the appropriate parameters
 
-        # set the co-ordinates
-        output[y, x, 1] = (center_x % step_x) / step_x
-        output[y, x, 2] = (center_y % step_y) / step_y
+                # set PC to 1
+                # assert output[y, x, 0] == 0
 
-        # set the width and height
-        output[y, x, 3] = width / step_x
-        output[y, x, 4] = height / step_y
+                output[y, x, 0] = 1
 
-        """print("=" * 50)
-        print(items[0])
-        print(y, x)
-        print(output[y, x, 1:5])"""
+                # note that all numbers are normalized by the step
 
-        # get the character ID
-        character_id = vocab[items[0]]
+                # get the closest point to the center of the crop box inside of this cell
+                local_center_x = min(max(center_x, x * step_x), (x + 1) * step_x - 1)
+                local_center_y = min(max(center_y, y * step_y), (y + 1) * step_y - 1)
 
-        # set the output
-        output[y, x, character_id + 5] = 1
+                # set center co-ords
+                output[y, x, 1] = (local_center_x % step_x) / step_x
+                output[y, x, 2] = (local_center_y % step_y) / step_y
+
+                # get the local width and height
+                local_width  = width  - abs(center_x - local_center_x)
+                local_height = height - abs(center_y - local_center_y)
+
+                # set the width and height
+                output[y, x, 3] = local_width / step_x
+                output[y, x, 4] = local_height / step_y
+
+                # get the character ID
+                character_id = vocab[items[0]]
+
+                # set the output
+                output[y, x, character_id + 5] = 1
 
     return output
 

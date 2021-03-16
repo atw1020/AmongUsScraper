@@ -112,6 +112,7 @@ def get_letters(dataset,
     predictions = model.predict(dataset)
     images = [x for x, y in dataset]
     y_true = np.array([y.numpy() for x, y in dataset][0])
+    # y_true = predictions
 
     # go through the images
     M, V, H, O = predictions.shape
@@ -135,7 +136,7 @@ def get_letters(dataset,
         found_boxes = []
 
         probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
-        print(probabilities[:10])
+        print(probabilities)
 
         for k in range(H):
             for j in range(V):
@@ -145,6 +146,8 @@ def get_letters(dataset,
 
         # sort the points by the probability
         found_boxes.sort(key=lambda x: x[0], reverse=True)
+        # found_boxes = found_boxes[16:18]
+        print(len(found_boxes))
 
         # get rid of all boxes with a high IoU (intersection over union)
         index = 0
@@ -152,7 +155,7 @@ def get_letters(dataset,
 
             # unpack the first box
             x_rel, y_rel, w_rel, h_rel = found_boxes[index][2][1:5]
-            x, y = found_boxes[index][1]
+            y, x = found_boxes[index][1]
 
             # get the absolute co-ordinates and absolute width and height
             x1 = (x + x_rel) * x_step
@@ -168,7 +171,7 @@ def get_letters(dataset,
 
                 # unpack the second box
                 x_rel, y_rel, w_rel, h_rel = second_box[2][1:5]
-                x, y = second_box[1]
+                y, x = second_box[1]
 
                 # compute the absolute co-ords
                 x2 = (x + x_rel) * x_step
@@ -185,6 +188,8 @@ def get_letters(dataset,
                     found_boxes.remove(second_box)
 
             index += 1
+
+        print(len(found_boxes))
 
         letters = []
 
@@ -228,7 +233,7 @@ def main():
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
                                          batch_size=1,
-                                         verbose=False,
+                                         verbose=True,
                                          shuffle=False)
 
     get_letters(dataset.take(1),

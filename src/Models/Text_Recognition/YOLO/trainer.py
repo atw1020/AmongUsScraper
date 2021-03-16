@@ -33,11 +33,11 @@ def train_network(dataset,
     model = initializer.init_nn(vocab)
     model.summary()
 
-    callbacks = [LossBreakdownCallback(dataset),
+    callbacks = [# LossBreakdownCallback(dataset),
                  NanWeightsCallback()]
 
     model.fit(dataset,
-              epochs=200,
+              epochs=1000,
               callbacks=callbacks)
 
     return model
@@ -130,7 +130,8 @@ def main():
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
-                                         batch_size=1)
+                                         batch_size=36,
+                                         shuffle=False)
 
     model = train_network(dataset.take(1),
                           vocab)

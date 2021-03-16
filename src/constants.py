@@ -80,7 +80,7 @@ name_length = 10
 # classifier_dropout rate
 classifier_dropout = 0.2  # 0.25
 crewmate_identifier_dropout = 0.4
-text_rec_dropout = 0.3
+text_rec_dropout = 0.1
 
 learning_curve_extension = " test data.txt"
 
@@ -91,8 +91,8 @@ YOLO parameters
 """
 
 
-yolo_output_grid_dim = (6, 50)
-image_detection_dropoff = 0.5
+yolo_output_grid_dim = (3, 50)
+image_detection_dropoff = 0.6
 IoU_threshold = 0.5
 
 """
