@@ -42,20 +42,16 @@ class YoloLoss(Loss):
         y_pred = tf.convert_to_tensor(y_pred)
         y_true = tf.cast(y_true, y_pred.dtype)
 
-        # compute mean squared error
-        squared_error = math.square(y_pred - y_true)
-
         # stack the squared error and true y to map them
-        stack = tf.stack((squared_error, y_true), axis=1)
-        stack_2 = tf.stack((y_true, y_pred), axis=1)
+        stack = tf.stack((y_true, y_pred), axis=1)
 
         # Update the Loss
         pc_loss = tf.map_fn(lambda x: self.mappable_log_pc_loss(x[0], x[1]),
-                             stack_2)
+                             stack)
         mse_loss = tf.map_fn(lambda x: self.mappable_mse_loss(x[0], x[1]),
                              stack)
 
-        pc_loss  = tf.reduce_mean(pc_loss,  axis=-1)
+        # take the mean of the mse loss
         mse_loss = tf.reduce_mean(mse_loss, axis=-1)
 
         return pc_loss + mse_loss
@@ -96,23 +92,29 @@ class YoloLoss(Loss):
 
         :param y_true: true y
         :param y_pred: predicted y
-        :return: mse loss of the funtion
+        :return: mse loss of the function
         """
 
-        squared_error = math.square(y_true - y_pred)
-        log_error = self.log_error(y_true, y_pred)
-
-        # unpack the shape
         H, W, C = y_true.shape
 
-        log_mask = tf.concat(tf.ones((H, W, 3)),
-                             tf.zeros((H, W, 2)),
-                             tf.ones((H, W, C - 5)))
+        # compute the log loss
+        log_error = self.log_error(y_true, y_pred)
+        squared_error = math.square(y_pred - y_true)
 
-        error = tf.math.multiply_no_nan(log_error, log_mask) + tf.math.multiply(squared_error, 1 - log_mask)
-        print(error.shape)
+        # mask out the log error and mse
+        log_mask = tf.concat([tf.zeros((H, W, 3)),
+                              tf.ones((H, W, 2)),
+                              tf.zeros((H, W, C - 5))], axis=-1)
 
-        return self.mse_lambda * error
+        error = tf.multiply(log_mask, squared_error) + tf.math.multiply_no_nan(log_error, 1 - log_mask)
+
+        # reshape y
+        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
+
+        raw_squared_error = tf.multiply(error, y_true_first_term[:, :, 0, :])
+        # tf.print(raw_squared_error)
+
+        return self.mse_lambda * raw_squared_error
 
     def loss_summary(self, y_true, y_pred):
         """
