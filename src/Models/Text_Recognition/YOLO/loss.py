@@ -50,74 +50,28 @@ class YoloLoss(Loss):
         stack_2 = tf.stack((y_true, y_pred), axis=1)
 
         # Update the Loss
-        """squared_error = tf.map_fn(lambda x: self.mappable_loss_update(x[0], x[1]),
-                                  stack)"""
-
-        """pc_loss = tf.map_fn(lambda x: self.mappable_pc_loss(x[0], x[1]),
-                            stack)"""
         pc_loss = tf.map_fn(lambda x: self.mappable_log_pc_loss(x[0], x[1]),
                              stack_2)
         mse_loss = tf.map_fn(lambda x: self.mappable_mse_loss(x[0], x[1]),
                              stack)
 
-        squared_error = pc_loss + mse_loss
+        pc_loss  = tf.reduce_mean(pc_loss,  axis=-1)
+        mse_loss = tf.reduce_mean(mse_loss, axis=-1)
 
-        losses = tf.reduce_mean(squared_error, axis=-1)
+        return pc_loss + mse_loss
 
-        return losses
-
-    def mappable_loss_update(self, squared_error, y_true):
+    def log_error(self, y_true, y_pred):
         """
 
-        a function that computes the correct squared errors that can be mapped
+        calculates the logrithmic error of y_true and y_pred
 
-        :squared_error
-        :return:
+        :param y_true: actual y
+        :param y_pred: predicted y
+        :return: log error
         """
 
-        # get the number of output channels
-        output_channels = y_true.shape[-1]
-
-        # reshape y
-        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
-
-        # reshape the squared errors
-        reshaped_squared_errors = tf.reshape(squared_error,
-                                             shape=squared_error.shape + (1,))
-        repeated_first_term = tf.repeat(reshaped_squared_errors[:, :, 0, :],
-                                        output_channels, axis=-1)
-
-        raw_squared_error = tf.multiply(squared_error, y_true_first_term[:, :, 0, :])
-        first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
-
-        return raw_squared_error + first_item_squared_error
-
-    def mappable_pc_loss(self, squared_error, y_true):
-        """
-
-        a mappable tensorflow function that calculates the loss caused by pc (probability of seeing
-        an object)
-
-        :param squared_error: squared errors
-        :param y_true: true y
-        :return: pc loss
-        """
-
-        # get the number of output channels
-        output_channels = y_true.shape[-1]
-
-        # reshape y
-        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
-
-        # reshape the squared errors
-        reshaped_squared_errors = tf.reshape(squared_error,
-                                             shape=squared_error.shape + (1,))
-        repeated_first_term = tf.repeat(reshaped_squared_errors[:, :, 0, :],
-                                        output_channels, axis=-1)
-
-        first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
-
-        return self.pc_lambda * first_item_squared_error
+        return - (self.positive_case_lambda * tf.multiply(y_true, tf.math.log(y_pred)) +
+                  self.negative_case_lambda * tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred))))
 
     def mappable_log_pc_loss(self, y_true, y_pred):
         """
@@ -131,41 +85,34 @@ class YoloLoss(Loss):
         """
 
         # calculate the log error
-        log_error = - (self.positive_case_lambda * tf.multiply(y_true, tf.math.log(y_pred)) +
-                       self.negative_case_lambda * tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred))))
+        log_error = self.log_error(y_true, y_pred)
 
-        # get the number of output channels
-        output_channels = y_true.shape[-1]
+        return log_error[:, :, 0]
 
-        # reshape y
-        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
-
-        # reshape the squared errors
-        reshaped_squared_errors = tf.reshape(log_error,
-                                             shape=log_error.shape + (1,))
-        repeated_first_term = tf.repeat(reshaped_squared_errors[:, :, 0, :],
-                                        output_channels, axis=-1)
-
-        first_item_squared_error = tf.multiply(repeated_first_term, (1 - y_true_first_term[:, :, 0, :]))
-
-        return first_item_squared_error
-
-    def mappable_mse_loss(self, squared_error, y_true):
+    def mappable_mse_loss(self, y_true, y_pred):
         """
 
         a mappable tensorflow function that calculates the loss caused by mse (non PC errors
 
-        :param squared_error: squared errors
         :param y_true: true y
+        :param y_pred: predicted y
         :return: mse loss of the funtion
         """
 
-        # reshape y
-        y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
+        squared_error = math.square(y_true - y_pred)
+        log_error = self.log_error(y_true, y_pred)
 
-        raw_squared_error = tf.multiply(squared_error, y_true_first_term[:, :, 0, :])
+        # unpack the shape
+        H, W, C = y_true.shape
 
-        return self.mse_lambda * raw_squared_error
+        log_mask = tf.concat(tf.ones((H, W, 3)),
+                             tf.zeros((H, W, 2)),
+                             tf.ones((H, W, C - 5)))
+
+        error = tf.math.multiply_no_nan(log_error, log_mask) + tf.math.multiply(squared_error, 1 - log_mask)
+        print(error.shape)
+
+        return self.mse_lambda * error
 
     def loss_summary(self, y_true, y_pred):
         """
