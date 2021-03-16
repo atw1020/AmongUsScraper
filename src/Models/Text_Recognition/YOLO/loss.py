@@ -109,13 +109,15 @@ class YoloLoss(Loss):
         squared_error = math.square(y_pred - y_true)
 
         # mask out the log error and mse
-        log_mask = tf.repeat(tf.concat([tf.zeros((H, W, 3)),
-                                        tf.ones((H, W, 2)),
-                                        tf.zeros((H, W, output_channels - 5))], axis=-1),
+        log_mask = tf.repeat(tf.concat([tf.ones((H, W, 3)),
+                                        tf.zeros((H, W, 2)),
+                                        tf.ones((H, W, output_channels - 5))], axis=-1),
                              repeats=self.anchor_boxes,
                              axis=-1)
 
-        error = tf.multiply(log_mask, squared_error) + tf.math.multiply_no_nan(log_error, 1 - log_mask)
+        print(log_error)
+
+        error = tf.multiply(squared_error, 1 - log_mask) + tf.math.multiply_no_nan(log_error, log_mask)
 
         # reshape y
         y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
@@ -164,17 +166,16 @@ def main():
     :return:
     """
 
-    y_true = tf.Variable([[[[0, 2, 3, 4],
-                         [1, 2, 3, 4]]],
-                       [[[0, 2, 3, 4],
-                         [1, 2, 3, 4]]]])
-    y_pred = tf.Variable([[[[0.99, 0, 0, 0],
-                         [0.99, 0, 0, 0]]],
-                       [[[0.99, 0, 0, 0],
-                         [0.99, 0, 0, 0]]]],
-                      dtype="float64")
+    y_true = tf.Variable([[[[0, 1, 0.333, 4, 0, 1, 0],
+                            [1, 0.666, 0, 4, 1, 0, 0]]],
+                          [[[0, 1, 0.333, 4, 0, 1, 0],
+                            [1, 0.666, 0, 4, 1, 0, 0]]]])
+    y_pred = tf.Variable([[[[0.99, 0.5, 0.5, 0, 0.1, 0.9, 0.01],
+                            [0.99, 0.5, 0.5, 0, 0.9, 0.2, 0.01]]],
+                          [[[0.99, 0.5, 0.5, 0, 0.1, 0.9, 0.01],
+                            [0.99, 0.5, 0.5, 0, 0.9, 0.2, 0.01]]]])
 
-    loss = YoloLoss()
+    loss = YoloLoss(anchor_boxes=1)
 
     result = loss.call(y_true, y_pred)
     print(result)
