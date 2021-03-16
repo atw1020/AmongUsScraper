@@ -94,7 +94,7 @@ def gen_label(filename,
                     if anchor_base < constants.anchor_boxes:
                         anchor_base += output_channels
                     else:
-                        raise Exception("Not Enough Anchor Boxes")
+                        raise Exception("Not Enough Anchor Boxes for image " + filename)
 
                 # set PC
                 output[y, x, anchor_base] = 1

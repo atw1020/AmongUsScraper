@@ -105,7 +105,7 @@ def init_nn(vocab,
         activation = layers.LeakyReLU()(dropout)
         current = layers.BatchNormalization()(activation)
 
-    pseudo_dense = layers.Conv2D(filters=output_channels,
+    pseudo_dense = layers.Conv2D(filters=output_channels * constants.anchor_boxes,
                                  strides=1,
                                  kernel_size=1,
                                  padding="valid")(current)

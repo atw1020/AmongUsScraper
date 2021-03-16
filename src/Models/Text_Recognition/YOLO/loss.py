@@ -8,6 +8,8 @@ import tensorflow as tf
 from tensorflow import math
 from tensorflow.keras.losses import Loss
 
+from src import constants
+
 
 class YoloLoss(Loss):
 
@@ -15,6 +17,7 @@ class YoloLoss(Loss):
                  positive_case_lambda=1,
                  negative_case_lambda=1,
                  mse_lambda=1,
+                 anchor_boxes=constants.anchor_boxes,
                  **kwargs):
         """
 
@@ -27,6 +30,8 @@ class YoloLoss(Loss):
         self.positive_case_lambda = positive_case_lambda
         self.negative_case_lambda = negative_case_lambda
         self.mse_lambda = mse_lambda
+
+        self.anchor_boxes = anchor_boxes
 
     def call(self, y_true, y_pred):
         """
@@ -97,14 +102,18 @@ class YoloLoss(Loss):
 
         H, W, C = y_true.shape
 
+        output_channels = C // self.anchor_boxes
+
         # compute the log loss
         log_error = self.log_error(y_true, y_pred)
         squared_error = math.square(y_pred - y_true)
 
         # mask out the log error and mse
-        log_mask = tf.concat([tf.zeros((H, W, 3)),
-                              tf.ones((H, W, 2)),
-                              tf.zeros((H, W, C - 5))], axis=-1)
+        log_mask = tf.repeat(tf.concat([tf.zeros((H, W, 3)),
+                                        tf.ones((H, W, 2)),
+                                        tf.zeros((H, W, output_channels - 5))], axis=-1),
+                             repeats=self.anchor_boxes,
+                             axis=-1)
 
         error = tf.multiply(log_mask, squared_error) + tf.math.multiply_no_nan(log_error, 1 - log_mask)
 
