@@ -109,15 +109,15 @@ class YoloLoss(Loss):
         squared_error = math.square(y_pred - y_true)
 
         # mask out the log error and mse
-        log_mask = tf.repeat(tf.concat([tf.ones((H, W, 3)),
+        log_mask = tf.concat([tf.ones((H, W, 3)),
                                         tf.zeros((H, W, 2)),
-                                        tf.ones((H, W, output_channels - 5))], axis=-1),
-                             repeats=self.anchor_boxes,
+                                        tf.ones((H, W, output_channels - 5))], axis=-1)
+
+        log_mask = tf.concat([log_mask for i in range(self.anchor_boxes)],
                              axis=-1)
 
-        print(log_error)
-
-        error = tf.multiply(squared_error, 1 - log_mask) + tf.math.multiply_no_nan(log_error, log_mask)
+        error = tf.math.multiply_no_nan(squared_error, 1 - log_mask) + \
+                tf.math.multiply_no_nan(log_error, log_mask)
 
         # reshape y
         y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
@@ -139,16 +139,12 @@ class YoloLoss(Loss):
         y_pred = tf.convert_to_tensor(y_pred)
         y_true = tf.cast(y_true, y_pred.dtype)
 
-        # compute mean squared error
-        squared_error = math.square(y_pred - y_true)
-
         # stack the squared error and true y to map them
-        stack = tf.stack((squared_error, y_true), axis=1)
-        stack_2 = tf.stack((y_true, y_pred), axis=1)
+        stack = tf.stack((y_true, y_pred), axis=1)
 
         # Update the Loss
         pc_loss = tf.map_fn(lambda x: self.mappable_log_pc_loss(x[0], x[1]),
-                            stack_2)
+                            stack)
         mse_loss = tf.map_fn(lambda x: self.mappable_mse_loss(x[0], x[1]),
                              stack)
 
