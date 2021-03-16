@@ -176,7 +176,6 @@ class YoloLoss(Loss):
         mask_2 = 1 - mask_1
 
         error = tf.multiply(mask_1, mse) + tf.math.multiply_no_nan(log_error, mask_2)
-        tf.print(error)
 
         # reshape y
         y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))
