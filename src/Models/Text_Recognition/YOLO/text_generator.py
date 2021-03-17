@@ -110,10 +110,10 @@ def get_letters(dataset,
     vocab = text_utils.reverse_vocab(vocab)
     output_channels = 5 + len(vocab)
 
-    # predictions = model.predict(dataset)
+    predictions = model.predict(dataset)
     images = [x for x, y in dataset]
-    predictions = np.array([y.numpy() for x, y in dataset][0])
-    y_true = predictions
+    y_true = np.array([y.numpy() for x, y in dataset][0])
+    # y_true = predictions
 
     # go through the images
     M, V, H, O = predictions.shape
@@ -127,17 +127,29 @@ def get_letters(dataset,
     for i in range(M):
 
         # save a greyscale image
-        greyscale = predictions[i, :, :, 0].reshape((V, H, 1))
-        save_img("greyscale predictions.jpg", greyscale)
+        greyscale = y_true[i, :, :, output_channels].reshape((V, H, 1))
+        print("greyscale")
+        print(greyscale[:, :, 0])
 
-        greyscale = y_true[i, :, :, 0].reshape((V, H, 1))
-        save_img("greyscale true.jpg", greyscale)
+        for j in range(constants.anchor_boxes):
+
+            # save a greyscale image
+            greyscale = predictions[i, :, :, j * output_channels].reshape((V, H, 1))
+
+            # set the upper left corner as a reference
+            greyscale[0, 0] = 1
+
+            # save the image
+            save_img("greyscale predictions" + str(j) + ".jpg", greyscale)
+
+            greyscale = y_true[i, :, :, j * output_channels].reshape((V, H, 1))
+            save_img("greyscale true" + str(j) + ".jpg", greyscale)
 
         # reset the found points
         found_boxes = []
 
-        probabilities = sorted(list(predictions[i, :, :, 0].flatten()), reverse=True)
-        print(probabilities)
+        probabilities = sorted(list(predictions[i, :, :, ::output_channels].flatten()), reverse=True)
+        print(probabilities[:10])
 
         # go through all of the rows and columns of the predictions
 
@@ -192,7 +204,7 @@ def get_letters(dataset,
                 IoU = box_geometry.IoU(box_1, box_2)
 
                 if IoU > constants.IoU_threshold:
-                    del second_box[j]
+                    del found_boxes[j]
 
             index += 1
 
@@ -241,7 +253,7 @@ def main():
                                          vocab,
                                          batch_size=1,
                                          verbose=True,
-                                         shuffle=False)
+                                         shuffle=True)
 
     get_letters(dataset.take(1),
                 vocab,
