@@ -11,6 +11,7 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow.keras.callbacks import Callback
+from tensorflow.keras.models import load_model
 
 from src import constants
 from src.Models.Text_Recognition import text_utils
@@ -20,17 +21,22 @@ from src.Models.Text_Recognition.Recurrent_Neural_Network.trainer import TrueAcc
 
 
 def train_network(dataset,
-                  vocab):
+                  vocab,
+                  reload=False):
     """
 
 
 
     :param dataset: dataset to train on
     :param vocab: vocabulary the network uses
+    :param reload: whether or not to use a previously trained model (as opposed to a new model)
     :return: trained model
     """
 
-    model = initializer.init_nn(vocab)
+    if reload:
+        model = load_model(constants.letter_detection)
+    else:
+        model = initializer.init_nn(vocab)
     model.summary()
 
     callbacks = [# LossBreakdownCallback(dataset),
