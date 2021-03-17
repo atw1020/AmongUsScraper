@@ -129,7 +129,7 @@ def generator(path,
     :return:
     """
 
-    files = ["B-T9-L63-W13-H18_r-T13-L78-W6-H14_i-T9-L84-W5-H17_z-T12-L87-W12-H14_z-T13-L96-W12-H14_y-T12-L108-W9-H18_n-T13-L117-W12-H14_e-T12-L128-W12-H14_0-895870058-1060-0.jpg"]  # os.listdir(path)
+    files = os.listdir(path)
 
     if ".DS_Store" in files:
         files.remove(".DS_Store")
