@@ -25,11 +25,14 @@ def init_hyperparameters():
 
     hp = HyperParameters()
 
-    hp.Fixed("Convolution Layers", 5)
+    hp.Fixed("duplicate convolutional layers", 3)
     hp.Fixed("End Layers", 5)
 
     hp.Fixed("Vertical Convolution", 4)
     hp.Fixed("Horizontal Convolution", 5)
+
+    hp.Fixed("MSE Lambda", 70)
+    hp.Fixed("positive case Lambda", 70)
 
     return hp
 
@@ -50,7 +53,7 @@ def init_nn(vocab,
     if hp is None:
         hp = init_hyperparameters()
 
-    num_layers = hp.Int("Convolution Layers", 5, 15)
+    duplicates = hp.Int("Convolution Layers", 5, 15)
     end_layers = hp.Int("End Layers", 1, 10)
 
     vertical_convolution_size = hp.Int("Vertical Convolution", 5, 15)
@@ -63,8 +66,8 @@ def init_nn(vocab,
     activation = layers.LeakyReLU()(dropout)
     current = layers.BatchNormalization()(activation)
 
-    for i in range(num_layers):
-        convolution = layers.Conv2D(filters=int(2 ** ((i + 8) / 3)),
+    """for i in range(num_layers):
+        convolution = layers.Conv2D(filters=int(2 ** ((i + 10) / 5)),
                                     strides=1,
                                     kernel_size=(vertical_convolution_size,
                                                  horizontal_convolution_size),
@@ -73,25 +76,108 @@ def init_nn(vocab,
         activation = layers.LeakyReLU()(dropout)
         current = layers.BatchNormalization()(activation)
 
-        if i % 5 == 4:
-            current = layers.MaxPooling2D(pool_size=2,
-                                          strides=2)(current)
+        for j in range(duplicates):
+            convolution = layers.Conv2D(filters=int(2 ** ((i + 10) / 5)),
+                                        strides=1,
+                                        kernel_size=(vertical_convolution_size,
+                                                     horizontal_convolution_size),
+                                        padding="same")(current)
+            dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+            activation = layers.LeakyReLU()(dropout)
+            current = layers.BatchNormalization()(activation)"""
 
+    convolution = layers.Conv2D(filters=8,
+                                strides=2,
+                                kernel_size=(vertical_convolution_size,
+                                             horizontal_convolution_size),
+                                padding="same")(current)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    activation = layers.LeakyReLU()(dropout)
+    current = layers.BatchNormalization()(activation)
+
+    for i in range(duplicates):
+
+        convolution = layers.Conv2D(filters=8,
+                                    strides=1,
+                                    kernel_size=(vertical_convolution_size,
+                                                 horizontal_convolution_size),
+                                    padding="same")(current)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+        activation = layers.LeakyReLU()(dropout)
+        current = layers.BatchNormalization()(activation)
+
+    convolution = layers.Conv2D(filters=32,
+                                strides=2,
+                                kernel_size=(vertical_convolution_size,
+                                             horizontal_convolution_size),
+                                padding="same")(current)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    activation = layers.LeakyReLU()(dropout)
+    current = layers.BatchNormalization()(activation)
+
+    for i in range(duplicates):
+
+        convolution = layers.Conv2D(filters=32,
+                                    strides=1,
+                                    kernel_size=(vertical_convolution_size,
+                                                 horizontal_convolution_size),
+                                    padding="same")(current)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+        activation = layers.LeakyReLU()(dropout)
+        current = layers.BatchNormalization()(activation)
+
+    for i in range(duplicates + 1):
+
+        convolution = layers.Conv2D(filters=64,
+                                    strides=1,
+                                    kernel_size=(vertical_convolution_size,
+                                                 horizontal_convolution_size),
+                                    padding="same")(current)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+        activation = layers.LeakyReLU()(dropout)
+        current = layers.BatchNormalization()(activation)
+
+    # complex calculations that determine the dimension of the dense YOLO layers
+
+    # get the dimensions of the last layer
     dimensions = current.type_spec.shape
     print(dimensions)
 
-    # transition to Dense-like outputs 
-    pseudo_dense = layers.Conv2D(filters=80,
-                                 strides=1,
-                                 kernel_size=(dimensions[1] + 1 - constants.yolo_output_grid_dim[0],
-                                              dimensions[2] + 1 - constants.yolo_output_grid_dim[1]),
+    # update the ideal image dimensions based on how much the image has been downscaled
+    ideal_height = constants.ideal_letter_dimensions[0] * dimensions[1] / image_dimensions[0]
+    ideal_width  = constants.ideal_letter_dimensions[1] * dimensions[2] / image_dimensions[1]
+
+    # calculate the best whole number stride based on the idea dimensions
+    stride_x = max(int((dimensions[2] - ideal_width) /
+                       (constants.yolo_output_grid_dim[1] - 1) + 0.5), 1)
+
+    stride_y = max(int((dimensions[1] - ideal_height) /
+                       (constants.yolo_output_grid_dim[0] - 1) + 0.5), 1)
+
+    # using the exact strides, compute the actual dimensions that need to be used
+    kernel_x = dimensions[2] - (constants.yolo_output_grid_dim[1] - 1) * stride_x
+    kernel_y = dimensions[1] - (constants.yolo_output_grid_dim[0] - 1) * stride_y
+
+    # transition to Dense-like outputs
+    pseudo_dense = layers.Conv2D(filters=1024,
+                                 kernel_size=(kernel_y, kernel_x),
+                                 strides=(stride_y, stride_x),
                                  padding="valid")(current)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
     activation = layers.LeakyReLU()(dropout)
     current = layers.BatchNormalization()(activation)
 
     for i in range(end_layers):
-        pseudo_dense = layers.Conv2D(filters=50,
+        pseudo_dense = layers.Conv2D(filters=512,
+                                     strides=1,
+                                     kernel_size=1,
+                                     padding="valid")(current)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
+        activation = layers.LeakyReLU()(dropout)
+        current = layers.BatchNormalization()(activation)
+
+    for i in range(end_layers):
+        pseudo_dense = layers.Conv2D(filters=256,
                                      strides=1,
                                      kernel_size=1,
                                      padding="valid")(current)
@@ -111,8 +197,11 @@ def init_nn(vocab,
     model = Model(inputs=input_layer,
                   outputs=output)
 
+    lr = 0.001
+    print(lr)
+    optimizer = Adam(learning_rate=lr)
+
     loss = YoloLoss(mse_lambda=100)
-    optimizer = Adam(learning_rate=0.001)
 
     model.compile(optimizer=optimizer,
                   loss=loss)

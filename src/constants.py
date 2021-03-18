@@ -93,8 +93,10 @@ YOLO parameters
 
 yolo_output_grid_dim = (2, 30)
 image_detection_dropoff = 0.6
+ideal_letter_dimensions = (18, 13)
 IoU_threshold = 0.5
 anchor_boxes = 5
+box_color = (21, 53, 232)
 
 """
 
