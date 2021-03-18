@@ -11,13 +11,10 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow.keras.callbacks import Callback
-from tensorflow.keras.models import load_model
 
 from src import constants
 from src.Models.Text_Recognition import text_utils
-from src.Models.Text_Recognition.YOLO import data_generator, initializer
-from src.Models.Text_Recognition.YOLO import text_generator
-from src.Models.Text_Recognition.Recurrent_Neural_Network.trainer import TrueAccuracyCallback
+from src.Models.Text_Recognition.YOLO import data_generator, initializer, text_generator
 
 
 def train_network(dataset,
@@ -34,16 +31,19 @@ def train_network(dataset,
     """
 
     if reload:
-        model = load_model(constants.letter_detection)
+        model = text_generator.load()
     else:
         model = initializer.init_nn(vocab)
+
+    print("MSE lambda is", model.loss.mse_lambda)
+
     model.summary()
 
     callbacks = [LossBreakdownCallback(dataset),
                  NanWeightsCallback()]
 
     model.fit(dataset,
-              epochs=1000,
+              epochs=3000,
               callbacks=callbacks)
 
     return model
@@ -136,11 +136,12 @@ def main():
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
-                                         batch_size=36,
+                                         batch_size=12,
                                          shuffle=False)
 
     model = train_network(dataset.take(1),
-                          vocab)
+                          vocab,
+                          reload=False)
 
     model.save(constants.letter_detection)
 

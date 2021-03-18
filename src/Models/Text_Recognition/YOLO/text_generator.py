@@ -128,8 +128,6 @@ def get_letters(dataset,
 
         # save a greyscale image
         greyscale = y_true[i, :, :, output_channels].reshape((V, H, 1))
-        print("greyscale")
-        print(greyscale[:, :, 0])
 
         for j in range(constants.anchor_boxes):
 
@@ -253,7 +251,7 @@ def main():
                                          vocab,
                                          batch_size=1,
                                          verbose=True,
-                                         shuffle=True)
+                                         shuffle=False)
 
     get_letters(dataset.take(1),
                 vocab,
