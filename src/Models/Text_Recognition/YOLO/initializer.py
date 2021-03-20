@@ -9,6 +9,7 @@ from kerastuner import HyperParameters
 from tensorflow.keras import layers
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.losses import MeanSquaredError
 
 from src import constants
 from src.Models.Text_Recognition.YOLO.loss import YoloLoss
@@ -165,7 +166,8 @@ def init_nn(vocab,
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
     current = layers.BatchNormalization()(dropout)
 
-    output = YoloOutput(output_channels=output_channels)(current)
+    # output = YoloOutput(output_channels=output_channels)(current)
+    output = current
 
     model = Model(inputs=input_layer,
                   outputs=output)
@@ -174,7 +176,8 @@ def init_nn(vocab,
     print(lr)
     optimizer = Adam(learning_rate=lr)
 
-    loss = YoloLoss(mse_lambda=100)
+    # loss = YoloLoss(mse_lambda=100)
+    loss = MeanSquaredError()
 
     model.compile(optimizer=optimizer,
                   loss=loss)
