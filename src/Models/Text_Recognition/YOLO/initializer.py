@@ -25,8 +25,8 @@ def init_hyperparameters():
 
     hp = HyperParameters()
 
-    hp.Fixed("duplicate convolutional layers", 3)
-    hp.Fixed("End Layers", 5)
+    hp.Fixed("duplicate convolutional layers", 8)
+    hp.Fixed("End Layers", 20)
 
     hp.Fixed("Vertical Convolution", 4)
     hp.Fixed("Horizontal Convolution", 5)
@@ -86,7 +86,7 @@ def init_nn(vocab,
             activation = layers.LeakyReLU()(dropout)
             current = layers.BatchNormalization()(activation)"""
 
-    convolution = layers.Conv2D(filters=8,
+    convolution = layers.Conv2D(filters=64,
                                 strides=2,
                                 kernel_size=(vertical_convolution_size,
                                              horizontal_convolution_size),
@@ -96,39 +96,48 @@ def init_nn(vocab,
     current = layers.BatchNormalization()(activation)
 
     for i in range(duplicates):
-
-        convolution = layers.Conv2D(filters=8,
-                                    strides=1,
-                                    kernel_size=(vertical_convolution_size,
-                                                 horizontal_convolution_size),
-                                    padding="same")(current)
-        dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
-        activation = layers.LeakyReLU()(dropout)
-        current = layers.BatchNormalization()(activation)
-
-    convolution = layers.Conv2D(filters=32,
-                                strides=2,
-                                kernel_size=(vertical_convolution_size,
-                                             horizontal_convolution_size),
-                                padding="same")(current)
-    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
-    activation = layers.LeakyReLU()(dropout)
-    current = layers.BatchNormalization()(activation)
-
-    for i in range(duplicates):
-
-        convolution = layers.Conv2D(filters=32,
-                                    strides=1,
-                                    kernel_size=(vertical_convolution_size,
-                                                 horizontal_convolution_size),
-                                    padding="same")(current)
-        dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
-        activation = layers.LeakyReLU()(dropout)
-        current = layers.BatchNormalization()(activation)
-
-    for i in range(duplicates + 1):
 
         convolution = layers.Conv2D(filters=64,
+                                    strides=1,
+                                    kernel_size=(vertical_convolution_size,
+                                                 horizontal_convolution_size),
+                                    padding="same")(current)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+        activation = layers.LeakyReLU()(dropout)
+        current = layers.BatchNormalization()(activation)
+
+    convolution = layers.Conv2D(filters=128,
+                                strides=2,
+                                kernel_size=(vertical_convolution_size,
+                                             horizontal_convolution_size),
+                                padding="same")(current)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    activation = layers.LeakyReLU()(dropout)
+    current = layers.BatchNormalization()(activation)
+
+    for i in range(duplicates):
+
+        convolution = layers.Conv2D(filters=128,
+                                    strides=1,
+                                    kernel_size=(vertical_convolution_size,
+                                                 horizontal_convolution_size),
+                                    padding="same")(current)
+        dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+        activation = layers.LeakyReLU()(dropout)
+        current = layers.BatchNormalization()(activation)
+
+    convolution = layers.Conv2D(filters=256,
+                                strides=2,
+                                kernel_size=(vertical_convolution_size,
+                                             horizontal_convolution_size),
+                                padding="same")(current)
+    dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
+    activation = layers.LeakyReLU()(dropout)
+    current = layers.BatchNormalization()(activation)
+
+    for i in range(duplicates):
+
+        convolution = layers.Conv2D(filters=256,
                                     strides=1,
                                     kernel_size=(vertical_convolution_size,
                                                  horizontal_convolution_size),
@@ -168,16 +177,7 @@ def init_nn(vocab,
     current = layers.BatchNormalization()(activation)
 
     for i in range(end_layers):
-        pseudo_dense = layers.Conv2D(filters=512,
-                                     strides=1,
-                                     kernel_size=1,
-                                     padding="valid")(current)
-        dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
-        activation = layers.LeakyReLU()(dropout)
-        current = layers.BatchNormalization()(activation)
-
-    for i in range(end_layers):
-        pseudo_dense = layers.Conv2D(filters=256,
+        pseudo_dense = layers.Conv2D(filters=1024,
                                      strides=1,
                                      kernel_size=1,
                                      padding="valid")(current)
@@ -197,7 +197,7 @@ def init_nn(vocab,
     model = Model(inputs=input_layer,
                   outputs=output)
 
-    lr = 0.001
+    lr = 0.0003
     print(lr)
     optimizer = Adam(learning_rate=lr)
 
