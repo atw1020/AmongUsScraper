@@ -136,12 +136,12 @@ def main():
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
-                                         batch_size=1,
+                                         batch_size=12,
                                          shuffle=False)
 
     model = train_network(dataset.take(1),
                           vocab,
-                          reload=False)
+                          reload=True)
 
     model.save(constants.letter_detection)
 
