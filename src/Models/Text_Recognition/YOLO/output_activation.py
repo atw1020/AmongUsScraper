@@ -34,6 +34,19 @@ class YoloOutput(Layer):
 
         self.output_channels = output_channels
 
+    def get_config(self):
+        """
+
+        get the configuration of the layer
+
+        :return: configuration of the layer
+        """
+
+        config = super().get_config().copy()
+        config.update(self.__dict__)
+
+        return config
+
     def call(self, inputs, **kwargs):
         """
 

@@ -166,8 +166,8 @@ def init_nn(vocab,
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
     current = layers.BatchNormalization()(dropout)
 
-    # output = YoloOutput(output_channels=output_channels)(current)
-    output = current
+    output = YoloOutput(output_channels=output_channels)(current)
+    # output = current
 
     model = Model(inputs=input_layer,
                   outputs=output)
@@ -176,8 +176,8 @@ def init_nn(vocab,
     print(lr)
     optimizer = Adam(learning_rate=lr)
 
-    # loss = YoloLoss(mse_lambda=100)
-    loss = MeanSquaredError()
+    loss = YoloLoss(mse_lambda=100)
+    # loss = MeanSquaredError()
 
     model.compile(optimizer=optimizer,
                   loss=loss)
