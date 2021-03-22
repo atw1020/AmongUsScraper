@@ -42,7 +42,12 @@ class YoloLoss(Loss):
         """
 
         config = super().get_config().copy()
-        config.update(self.__dict__)
+        config.update({
+            "positive_case_lambda": self.positive_case_lambda,
+            "negative_case_lambda": self.negative_case_lambda,
+            "mse_lambda": self.mse_lambda,
+            "anchor_boxes": self.anchor_boxes
+        })
 
         return config
 

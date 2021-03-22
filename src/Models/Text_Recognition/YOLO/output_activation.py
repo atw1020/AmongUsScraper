@@ -43,7 +43,9 @@ class YoloOutput(Layer):
         """
 
         config = super().get_config().copy()
-        config.update(self.__dict__)
+        config.update({
+            "output_channels": self.output_channels
+        })
 
         return config
 

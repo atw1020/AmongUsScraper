@@ -14,7 +14,30 @@ from src import constants
 from src.Data_Collection import web_scrapper
 
 
-def get_timestamp(file_name, label_length):
+def find_video_id_index(file_name):
+    """
+
+    finds the index index that the video ID
+
+    :param file_name: name of the file
+    :return:
+    """
+
+    # split the items on the dashes
+    items = file_name.split("-")
+
+    # slice off items that can't possibly be the video ID
+    first_slice_index = len(items) - 3
+    items = items[first_slice_index:]
+
+    if len(items[0]) == 9 and items[0].isnumeric():
+        return first_slice_index
+    else:
+        return first_slice_index + 1
+
+
+def get_timestamp(file_name,
+                  label_length=None):
     """
 
     gets the timestamp of a frame from the name of the screenshot file
@@ -103,10 +126,15 @@ def main():
     :return:
     """
 
-    update_resolution("Data/Meeting Identifier/Training Data",
+    name = "5-T9-L63-W12-H18_u-T13-L75-W12-H14_p-T13-L86-W12-H18_2-891553855-560-0.jpg"
+
+    index = find_video_id_index(name)
+    print(name.split("-")[index])
+
+    """update_resolution("Data/Meeting Identifier/Training Data",
                       "Data/Meeting Identifier/High Res Training Data",
                       3,
-                      constants.res_480p)
+                      constants.res_720p)"""
 
 
 if __name__ == "__main__":

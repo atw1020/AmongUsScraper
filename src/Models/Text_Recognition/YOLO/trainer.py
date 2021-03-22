@@ -44,7 +44,7 @@ def train_network(dataset,
                  NanWeightsCallback()]
 
     model.fit(dataset,
-              epochs=2000,
+              epochs=10000,
               callbacks=callbacks)
 
     return model
@@ -124,6 +124,9 @@ class NanWeightsCallback(Callback):
                 print("=" * 50, file=sys.stderr)
                 print("layer", i, "has a NaN weight", file=sys.stderr)
                 print("=" * 50, file=sys.stderr)
+
+                # stop training
+                self.model.stop_training = True
 
 
 def main():
