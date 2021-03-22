@@ -7,8 +7,9 @@ Author: Arthur Wesley
 import os
 
 from twitchdl import twitch
+from twitchdl.exceptions import ConsoleError
 
-from tensorflow.keras.preprocessing.image import save_img
+import cv2
 
 from src import constants
 from src.Data_Collection import web_scrapper
@@ -47,6 +48,9 @@ def get_timestamp(file_name,
     :return: tuple: video id, vod id, frame id
     """
 
+    if label_length is None:
+        label_length = find_video_id_index(file_name)
+
     file_name = file_name.split("-")
     ids = file_name[label_length:]
 
@@ -66,7 +70,6 @@ def get_timestamp(file_name,
 
 def update_resolution(input_dir,
                       output_dir,
-                      label_length,
                       new_resolution):
     """
 
@@ -83,7 +86,7 @@ def update_resolution(input_dir,
     files = os.listdir(input_dir)
 
     # sort the files by video_id ID
-    files.sort(key=lambda f: get_timestamp(f, label_length)[0])
+    files.sort(key=lambda f: get_timestamp(f)[0])
 
     previous_video = ""
     vods = None
@@ -92,10 +95,10 @@ def update_resolution(input_dir,
     for file in files:
 
         # collect the data from the file
-        video_id, vod, frame = get_timestamp(file, label_length)
+        video_id, vod, frame = get_timestamp(file)
 
         try:
-            if video_id != previous_video:
+            if video_id != previous_video or vods is None:
 
                 previous_video = video_id
 
@@ -109,13 +112,15 @@ def update_resolution(input_dir,
                                                 constants.quality(new_resolution))
         except TypeError:
             continue
+        except ConsoleError:
+            continue
 
         image = web_scrapper.get_still_frame(url + vods[vod],
                                              index=frame)
 
         # save the image
-        save_img(os.path.join(output_dir, "-".join(["Meeting", video_id, str(vod), str(frame)]) + ".jpg"),
-                 image)
+        cv2.imwrite(os.path.join(output_dir, "-".join(["Meeting", video_id, str(vod), str(frame)]) + ".jpg"),
+                    image)
 
 
 def main():
@@ -131,10 +136,9 @@ def main():
     index = find_video_id_index(name)
     print(name.split("-")[index])
 
-    """update_resolution("Data/Meeting Identifier/Training Data",
-                      "Data/Meeting Identifier/High Res Training Data",
-                      3,
-                      constants.res_720p)"""
+    update_resolution("Data/YOLO/Training Data",
+                      "Data/YOLO/High Res Training Data",
+                      constants.res_720p)
 
 
 if __name__ == "__main__":

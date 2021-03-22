@@ -17,7 +17,7 @@ from twitchdl import download
 
 from src import constants
 
-from twitchdl.commands.download import _parse_playlists, _get_playlist_by_name, _get_vod_paths
+from twitchdl.commands import _parse_playlists, _get_playlist_by_name, _get_vod_paths
 
 
 def get_base_url(video_id,
