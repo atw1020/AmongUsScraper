@@ -147,7 +147,7 @@ def main():
 
     model = train_network(dataset.take(1),
                           vocab,
-                          reload=False)
+                          reload=True)
 
     model.save(constants.letter_detection)
 

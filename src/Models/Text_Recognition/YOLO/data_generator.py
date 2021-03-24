@@ -89,7 +89,7 @@ def gen_label(filename,
         anchor_base = 0
 
         while output[y, x, anchor_base] == 1:
-            if anchor_base < constants.anchor_boxes:
+            if anchor_base < constants.anchor_boxes * output_channels:
                 anchor_base += output_channels
             else:
                 raise Exception("Not Enough Anchor Boxes for image " + filename)

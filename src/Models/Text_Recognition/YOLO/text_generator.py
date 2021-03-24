@@ -135,10 +135,12 @@ def get_letters(dataset,
             greyscale = predictions[i, :, :, j * output_channels].reshape((V, H, 1))
 
             # set the upper left corner as a reference
-            # greyscale[0, 0] = 1
+            greyscale[0, 0] = 1
 
             # save the image
             save_img("greyscale predictions" + str(j) + ".jpg", greyscale)
+
+            greyscale[0, 0] = 0
 
             greyscale = y_true[i, :, :, j * output_channels].reshape((V, H, 1))
             save_img("greyscale true" + str(j) + ".jpg", greyscale)
