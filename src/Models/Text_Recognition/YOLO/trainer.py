@@ -32,14 +32,12 @@ def train_network(dataset,
     model = initializer.init_nn(vocab)
     model.summary()
 
-    callbacks = [  # LossBreakdownCallback(dataset),
+    callbacks = [LossBreakdownCallback(dataset),
                  NanWeightsCallback()]
 
     model.fit(dataset,
-              epochs=100,
+              epochs=10,
               callbacks=callbacks)
-
-    model.evaluate(dataset)
 
     return model
 
@@ -66,34 +64,32 @@ class LossBreakdownCallback(Callback):
         :return:
         """
 
-        if hasattr(self.model.loss, "loss_summary"):
+        t0 = time.time()
 
-            t0 = time.time()
+        total_pc_loss, total_mse_loss = 0, 0
 
-            total_pc_loss, total_mse_loss = 0, 0
+        i = 0
 
-            i = 0
+        for x, y_true in self.training_data:
 
-            for x, y_true in self.training_data:
+            y_pred = self.model.predict(x)
 
-                y_pred = self.model.predict(x)
+            pc_loss, mse_loss = self.model.loss.loss_summary(y_true, y_pred)
 
-                pc_loss, mse_loss = self.model.loss.loss_summary(y_true, y_pred)
+            total_pc_loss += pc_loss
+            total_mse_loss += mse_loss
 
-                total_pc_loss += pc_loss
-                total_mse_loss += mse_loss
+            i += 1
 
-                i += 1
+        total_pc_loss = tf.reduce_mean(total_pc_loss).numpy()
+        total_mse_loss = tf.reduce_mean(total_mse_loss).numpy()
 
-            total_pc_loss = tf.reduce_mean(total_pc_loss).numpy()
-            total_mse_loss = tf.reduce_mean(total_mse_loss).numpy()
+        t1 = time.time()
 
-            t1 = time.time()
+        print("pc loss:", total_pc_loss / i)
+        print("mse loss:", total_mse_loss / i)
 
-            tf.print("pc loss:", total_pc_loss / i)
-            tf.print("mse loss:", total_mse_loss / i)
-
-            tf.print("calculation took", t1 - t0, "seconds")
+        print("calculation took", t1 - t0, "seconds")
 
 
 class NanWeightsCallback(Callback):
@@ -133,7 +129,6 @@ def main():
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
-                                         shuffle=False,
                                          batch_size=1)
 
     model = train_network(dataset.take(1),
