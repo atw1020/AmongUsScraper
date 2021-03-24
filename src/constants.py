@@ -60,6 +60,7 @@ winner_identifier_dimensions = (winner_identifier_cropping[3] - winner_identifie
 crewmate_dimensions = (75, 55)
 meeting_dimensions = (45, 220)
 meeting_dimensions_420p = (60, 290)
+meeting_dimensions_720p = (90, 435)
 
 """
 

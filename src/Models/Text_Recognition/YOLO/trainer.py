@@ -33,7 +33,8 @@ def train_network(dataset,
     if reload:
         model = text_generator.load()
     else:
-        model = initializer.init_nn(vocab)
+        model = initializer.init_nn(vocab,
+                                    image_dimensions=constants.meeting_dimensions_720p)
 
     if hasattr(model, "mse_lambda"):
         print("MSE lambda is", model.loss.mse_lambda)
@@ -137,17 +138,18 @@ def main():
     :return:
     """
 
-    training_path = "Data/YOLO/Training Data"
+    training_path = "Data/YOLO/High Res Training Data"
     vocab = text_utils.get_model_vocab()
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
                                          batch_size=12,
-                                         shuffle=False)
+                                         shuffle=False,
+                                         image_dim=constants.meeting_dimensions_720p)
 
     model = train_network(dataset.take(1),
                           vocab,
-                          reload=True)
+                          reload=False)
 
     model.save(constants.letter_detection)
 
