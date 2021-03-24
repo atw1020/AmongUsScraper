@@ -68,6 +68,7 @@ def init_nn(vocab,
     current = layers.BatchNormalization()(activation)
 
     # num_layers = 3
+    duplicates = 3
 
     convolution = layers.Conv2D(filters=16,
                                 strides=2,
@@ -104,14 +105,13 @@ def init_nn(vocab,
                                         padding="valid")(current)
             dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
             activation = layers.LeakyReLU()(dropout)
-            current = layers.BatchNormalization()(activation)
+            current = layers.BatchNormalization()(activation)"""
 
     for i in range(duplicates):
 
         convolution = layers.Conv2D(filters=128,
                                     strides=1,
-                                    kernel_size=(vertical_convolution_size,
-                                                 horizontal_convolution_size),
+                                    kernel_size=1,
                                     padding="same")(current)
         dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
         activation = layers.LeakyReLU()(dropout)
@@ -121,7 +121,7 @@ def init_nn(vocab,
                                 strides=2,
                                 kernel_size=(vertical_convolution_size,
                                              horizontal_convolution_size),
-                                padding="same")(current)
+                                padding="valid")(current)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     activation = layers.LeakyReLU()(dropout)
     current = layers.BatchNormalization()(activation)
@@ -130,12 +130,11 @@ def init_nn(vocab,
 
         convolution = layers.Conv2D(filters=256,
                                     strides=1,
-                                    kernel_size=(vertical_convolution_size,
-                                                 horizontal_convolution_size),
+                                    kernel_size=1,
                                     padding="same")(current)
         dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
         activation = layers.LeakyReLU()(dropout)
-        current = layers.BatchNormalization()(activation)"""
+        current = layers.BatchNormalization()(activation)
 
     # complex calculations that determine the dimension of the dense YOLO layers
 
@@ -149,10 +148,10 @@ def init_nn(vocab,
 
     # calculate the best whole number stride based on the idea dimensions
     stride_x = max(int((dimensions[2] - ideal_width) /
-                       (constants.yolo_output_grid_dim[1] - 1) + 0.5), 1)
+                       (constants.yolo_output_grid_dim[1] - 1)), 1)
 
     stride_y = max(int((dimensions[1] - ideal_height) /
-                       (constants.yolo_output_grid_dim[0] - 1) + 0.5), 1)
+                       (constants.yolo_output_grid_dim[0] - 1)), 1)
 
     # using the exact strides, compute the actual dimensions that need to be used
     kernel_x = dimensions[2] - (constants.yolo_output_grid_dim[1] - 1) * stride_x
