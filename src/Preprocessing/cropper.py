@@ -6,9 +6,8 @@ Author: Arthur Wesley
 
 import os
 
+import numpy as np
 from PIL import Image
-
-import pytesseract
 
 from src import constants
 
@@ -122,6 +121,36 @@ def crop_meeting_480p(image):
     return crops
 
 
+def crop_meeting_720p(image):
+    """
+
+    crop the members out of the given meeting image (480p version)
+
+    :param image: image to crop crewmates from
+    :return: cropped images
+    """
+
+    boxes = [
+        (175, 135, 610,  225),
+        (610, 135, 1045, 225),
+        (175, 225, 610,  315),
+        (610, 225, 1045, 315),
+        (175, 315, 610,  405),
+        (610, 315, 1045, 405),
+        (175, 405, 610,  495),
+        (610, 405, 1045, 495),
+        (175, 495, 610,  585),
+        (610, 495, 1045, 585)
+    ]
+
+    crops = []
+
+    for i in range(len(boxes)):
+        crops.append(image.crop(boxes[i]))
+
+    return crops
+
+
 def crop_all_crewmates(directory, output_directory):
     """
 
@@ -190,16 +219,22 @@ def crop_all_meetings(directory):
 
     for file in files:
 
+        print(file)
+
         if file == ".DS_Store":
             continue
 
         path = os.path.join(directory, file)
 
         image = Image.open(path)
-        crops = crop_meeting_480p(image)
+        crops = crop_meeting_720p(image)
 
         for i, crop in enumerate(crops):
             # save the file two directories up
+
+            im = np.asarray(crop)
+            print(im.shape)
+
             crop.save(os.path.join(directory,
                                    str(i) + "-" + file))
 
@@ -227,7 +262,7 @@ def main():
                                     """
 
     crop_all_meetings(os.path.join("Data",
-                                   "High Res Test Data Images"))
+                                   "Temp Images"))
 
 
 if __name__ == "__main__":

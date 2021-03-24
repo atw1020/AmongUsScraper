@@ -59,6 +59,9 @@ def update_resolution(input_dir,
 
     files = os.listdir(input_dir)
 
+    if ".DS_Store" in files:
+        files.remove(".DS_Store")
+
     # sort the files by video_id ID
     files.sort(key=lambda f: get_timestamp(f, label_length)[0])
 
@@ -86,6 +89,8 @@ def update_resolution(input_dir,
                                                 constants.quality(new_resolution))
         except TypeError:
             continue
+        except Exception:
+            print(video_id)
 
         image = web_scrapper.get_still_frame(url + vods[vod],
                                              index=frame)
@@ -103,10 +108,10 @@ def main():
     :return:
     """
 
-    update_resolution("Data/Meeting Identifier/Training Data",
-                      "Data/Meeting Identifier/High Res Training Data",
-                      3,
-                      constants.res_480p)
+    update_resolution("Data/Temp Images",
+                      "Data/Temp Images",
+                      1,
+                      constants.res_720p)
 
 
 if __name__ == "__main__":

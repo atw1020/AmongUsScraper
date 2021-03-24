@@ -39,7 +39,12 @@ def quality(dim):
     :return: quality string (for twitchdl)
     """
 
-    return str(dim[0]) + "p"
+    if dim[0] >= 720:
+        frames = "60"
+    else:
+        frames = ""
+
+    return str(dim[0]) + "p" + frames
 
 
 # dimensions of our images

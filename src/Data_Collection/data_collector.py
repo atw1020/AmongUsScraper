@@ -9,6 +9,7 @@ data collection program
 import os
 import time as t
 import random
+import sys
 
 import numpy as np
 from scipy import stats
@@ -34,6 +35,7 @@ class DataCollector:
                  step=2,
                  end_transition_step=constants.end_transition_step,
                  verbose=True,
+                 dimensions=constants.dimensions,
                  batch_size=32):
         """
 
@@ -48,6 +50,7 @@ class DataCollector:
         self.video_id = video_id
         self.verbose = verbose
         self.batch_size = batch_size
+        self.dimensions = dimensions
 
         # set the steps
         self.step = step
@@ -60,8 +63,11 @@ class DataCollector:
         # get video information & vods
         self.access_token = twitch.get_access_token(video_id)
 
-        self.url = web_scrapper.get_base_url(self.video_id, self.access_token)
-        self.full_vods = web_scrapper.get_vods(self.video_id, self.access_token)
+        self.url = web_scrapper.get_base_url(self.video_id,
+                                             self.access_token,
+                                             quality=constants.quality(self.dimensions))
+        self.full_vods = web_scrapper.get_vods(self.video_id,
+                                               self.access_token)
 
         # take every [step] vods
         self.vods = self.full_vods[::self.step]
@@ -96,8 +102,12 @@ class DataCollector:
         """
 
         # get the image and assign it
-        return web_scrapper.get_still_frame(self.url + vod[0],
-                                             vod[1])
+        for i in range(5):
+            try:
+                return web_scrapper.get_still_frame(self.url + vod[0],
+                                                     vod[1])
+            except IndexError:
+                print("failed to find the image... try " + str(i + 1) + "/5", file=sys.stderr)
 
     def get_game_class_batch(self):
         """
@@ -118,7 +128,7 @@ class DataCollector:
 
             start_index = self.batch_size * index
             end_index = start_index + len(batch)
-            
+
             print(start_index)
 
             # get the tensor
@@ -141,7 +151,7 @@ class DataCollector:
         :return:
         """
 
-        vods_tensor = np.empty((len(batch),) + constants.dimensions + (3,))
+        vods_tensor = np.empty((len(batch),) + self.dimensions + (3,))
 
         for i, vod in enumerate(batch):
             vods_tensor[i] = self.get_image(vod)
@@ -412,8 +422,9 @@ def main():
         print()
     """
 
-    games = ["902168866", "900054083", "903653110", "899380674", "901954000",
-             "901979563"]
+    games = ["957801304", "955126485"]
+
+    #
 
     for game in games:
 
