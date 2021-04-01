@@ -193,7 +193,7 @@ def init_nn(vocab,
     model = Model(inputs=input_layer,
                   outputs=output)
 
-    lr = 0.001
+    lr = 0.0003
     print(lr)
     optimizer = Adam(learning_rate=lr)
 

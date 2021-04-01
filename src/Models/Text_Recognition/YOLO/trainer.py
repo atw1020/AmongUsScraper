@@ -45,7 +45,7 @@ def train_network(dataset,
                  NanWeightsCallback()]
 
     model.fit(dataset,
-              epochs=10000,
+              epochs=1000,
               callbacks=callbacks)
 
     return model
