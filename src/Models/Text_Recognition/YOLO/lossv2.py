@@ -2,6 +2,9 @@
 
 Author: Arthur Wesley
 
+loss function based on data from:
+    https://fairyonice.github.io/Part_4_Object_Detection_with_Yolo_using_VOC_2012_data_loss.html
+
 """
 
 import tensorflow as tf
@@ -9,7 +12,9 @@ from tensorflow import math
 from tensorflow.keras.losses import Loss
 
 from src import constants
+from src.Models.Text_Recognition import text_utils
 from src.Models.Text_Recognition.YOLO import box_geometry
+from src.Models.Text_Recognition.YOLO import data_generator
 
 
 class YoloLoss(Loss):
@@ -76,7 +81,8 @@ class YoloLoss(Loss):
         term_2 = math.square(math.sqrt(y_true[:, :, :, :, 3:5]) - math.sqrt(y_pred[:, :, :, :, 3:5]))
 
         return self.lambda_co_ord / self.n_objects(y_true) * \
-               math.reduce_sum(term_1 + term_2 + self.l_object(y_true), -1)
+               math.reduce_sum(math.reduce_sum(term_1 + term_2, -1) * self.l_object(y_true),
+                               axis=(-1, -2, -3))
 
     def loss_2(self, y_true, y_pred):
         """
@@ -103,14 +109,15 @@ class YoloLoss(Loss):
     def n_objects(self, y_true):
         """
 
+        compute the number of objects in the image
 
-
-        :param y_true:
+        :param y_true: the true nubmer of objects in the image
         :return:
         """
 
         if self.n_obj is None:
-            return
+            temp = tf.reduce_sum(self.l_object(y_true), axis=(-1, -2, -3))
+            return temp
 
         return self.n_obj
 
@@ -149,3 +156,36 @@ class YoloLoss(Loss):
             self.l_no_obj = 0
 
         return self.l_noobj
+
+
+def main():
+    """
+
+    main testing method
+
+    :return:
+    """
+
+    path  = "Data/YOLO/Training Data"
+    vocab = text_utils.get_model_vocab()
+
+    dataset = data_generator.gen_dataset(path,
+                                         batch_size=12,
+                                         vocab=vocab,
+                                         shuffle=False)
+
+    loss = YoloLoss()
+
+    for x, y in dataset.take(1):
+
+        print(y.shape)
+
+        y_true = y
+        y_pred = tf.random.uniform(y.shape,
+                                   dtype=tf.float64)
+
+        print(loss(y_true, y_pred))
+
+
+if __name__ == "__main__":
+    main()

@@ -57,7 +57,7 @@ def gen_label(filename,
     step_x = image_dim[1] // grid_dimension[1]
 
     # initialize the output to be all zeros
-    output = np.zeros(grid_dimension + (output_channels * constants.anchor_boxes,),
+    output = np.zeros(grid_dimension + (constants.anchor_boxes, output_channels),
                       dtype="float64")
 
     # go through all the letters and set the appropriate values
@@ -85,33 +85,32 @@ def gen_label(filename,
         y = center_y // step_y
 
         # find the anchor box for this letter
+        anchor_box = 0
 
-        anchor_base = 0
-
-        while output[y, x, anchor_base] == 1:
-            if anchor_base < constants.anchor_boxes * output_channels:
-                anchor_base += output_channels
+        while output[y, x, anchor_box, 0] == 1:
+            if anchor_box < constants.anchor_boxes:
+                anchor_box += 1
             else:
                 raise Exception("Not Enough Anchor Boxes for image " + filename)
 
         # set PC
-        output[y, x, anchor_base] = 1
+        output[y, x, anchor_box, 0] = 1
 
         # note that all numbers are normalized by the step
 
         # set center co-ords
-        output[y, x, anchor_base + 1] = (center_x % step_x) / step_x
-        output[y, x, anchor_base + 2] = (center_y % step_y) / step_y
+        output[y, x, anchor_box, 1] = (center_x % step_x) / step_x
+        output[y, x, anchor_box, 2] = (center_y % step_y) / step_y
 
         # set the width and height
-        output[y, x, anchor_base + 3] = width / step_x
-        output[y, x, anchor_base + 4] = height / step_y
+        output[y, x, anchor_box, 3] = width / step_x
+        output[y, x, anchor_box, 4] = height / step_y
 
         # get the character ID
         character_id = vocab[items[0]]
 
         # set the output
-        output[y, x, anchor_base + character_id + 5] = 1
+        output[y, x, anchor_box, character_id + 5] = 1
 
         total_letters += 1
 
@@ -201,7 +200,7 @@ def gen_dataset(path,
                           verbose),
         output_signature=(tf.TensorSpec(shape=image_dim + (3,),
                           dtype=tf.uint8),
-                          tf.TensorSpec(shape=grid_dim + (output_channels * constants.anchor_boxes,),
+                          tf.TensorSpec(shape=grid_dim + (constants.anchor_boxes, output_channels),
                           dtype=tf.float64)))
 
     return dataset.batch(batch_size)
@@ -225,6 +224,7 @@ def main():
 
     for x, y in dataset.take(1):
         save_img("test 3.jpg", x[0])
+        print(y.shape)
 
 
 if __name__ == "__main__":
