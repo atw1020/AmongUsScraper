@@ -89,8 +89,9 @@ class YoloLoss(Loss):
         :return: log error
         """
 
-        return - (self.positive_case_lambda * tf.multiply(y_true, tf.math.log(y_pred)) +
-                  self.negative_case_lambda * tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred))))
+        """return - (self.positive_case_lambda * tf.multiply(y_true, tf.math.log(y_pred)) +
+                  self.negative_case_lambda * tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred))))"""
+        return math.square(y_true - y_pred)
 
     def mappable_log_pc_loss(self, y_true, y_pred):
         """

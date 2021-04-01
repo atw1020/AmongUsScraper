@@ -147,7 +147,7 @@ def main():
                                          shuffle=False,
                                          image_dim=constants.meeting_dimensions_720p)
 
-    model = train_network(dataset.take(1),
+    model = train_network(dataset,
                           vocab,
                           reload=False)
 

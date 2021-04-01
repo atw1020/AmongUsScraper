@@ -112,7 +112,7 @@ def get_letters(dataset,
 
     predictions = model.predict(dataset)
     images = [x for x, y in dataset]
-    y_true = np.array([y.numpy() for x, y in dataset][0])
+    y_true = np.array([y.numpy()[0] for x, y in dataset])
     # y_true = predictions
 
     # go through the images
@@ -148,8 +148,8 @@ def get_letters(dataset,
         # reset the found points
         found_boxes = []
 
-        probabilities = sorted(list(predictions[i, :, :, ::output_channels].flatten()), reverse=True)
-        print(probabilities[:10])
+        # probabilities = sorted(list(predictions[i, :, :, ::output_channels].flatten()), reverse=True)
+        # print(probabilities[:10])
 
         # go through all of the rows and columns of the predictions
 
@@ -165,8 +165,7 @@ def get_letters(dataset,
 
         # sort the points by the probability
         found_boxes.sort(key=lambda x: x[0], reverse=True)
-        # found_boxes = found_boxes[16:18]
-        print(len(found_boxes))
+        # print(len(found_boxes))
 
         # get rid of all boxes with a high IoU (intersection over union)
         index = 0
@@ -208,7 +207,7 @@ def get_letters(dataset,
 
             index += 1
 
-        print(len(found_boxes))
+        # print(len(found_boxes))
 
         letters = []
 
@@ -249,13 +248,14 @@ def main():
 
     vocab = text_utils.get_model_vocab()
 
-    dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
+    dataset = data_generator.gen_dataset("Data/YOLO/High Res Training Data",
                                          vocab,
                                          batch_size=1,
-                                         verbose=True,
-                                         shuffle=False)
+                                         verbose=False,
+                                         shuffle=False,
+                                         image_dim=constants.meeting_dimensions_720p)
 
-    get_letters(dataset.take(1),
+    get_letters(dataset.take(6),
                 vocab,
                 load())
 
