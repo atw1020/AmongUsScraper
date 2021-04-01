@@ -36,6 +36,10 @@ class YoloLoss(Loss):
         # extract the anchor boxes
         self.anchor_boxes = anchor_boxes
 
+        # some local variables used to prevent repeat calculations
+        self.l_obj = None
+        self.l_no_obj = None
+
     def call(self, y_true, y_pred):
         """
 
@@ -45,6 +49,9 @@ class YoloLoss(Loss):
         :param y_pred:
         :return:
         """
+
+        self.l_obj = None
+        self.l_no_obj = None
 
         return self.loss_1(y_true, y_pred) + self.loss_3(y_true, y_pred) + self.loss_3(y_true, y_pred)
 
@@ -64,10 +71,38 @@ class YoloLoss(Loss):
 
         return 0
 
-    def loss_2(self, y_true, y_pred):
+    def loss_3(self, y_true, y_pred):
 
         return 0
 
-    def l_object(self):
+    def l_object(self, y_true, y_pred):
+        """
 
-        return 0
+        compute the variable "l_obj"
+
+        :param y_true:
+        :param y_pred:
+        :return:
+        """
+
+        if self.l_obj is None:
+
+            # l_obj is just defined as p(c)
+            self.l_obj = y_true[:, :, :, :, 0]
+
+        return self.l_obj
+
+    def l_no_object(self, y_true, y_pred):
+        """
+
+        compute the variable "l_no_obj"
+
+        :param y_true:
+        :param y_pred:
+        :return:
+        """
+
+        if self.l_no_obj is None:
+            self.l_no_obj = 0
+
+        return self.l_noobj
