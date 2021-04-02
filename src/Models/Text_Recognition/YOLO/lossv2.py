@@ -72,6 +72,8 @@ class YoloLoss(Loss):
 
         self.n_obj = None
 
+        self.iou = None
+
     def call(self, y_true, y_pred):
         """
 
@@ -82,10 +84,14 @@ class YoloLoss(Loss):
         :return:
         """
 
+        # reset temproary variables
+
         self.l_obj = None
         self.l_no_obj = None
 
         self.n_obj = None
+
+        self.iou = None
 
         print("loss 1", self.loss_1(y_true, y_pred))
         print("loss 2", self.loss_2(y_true, y_pred))
@@ -139,13 +145,7 @@ class YoloLoss(Loss):
         :return:
         """
 
-        # get the co-ords out of the input data
-        ground_truth = y_true[..., 1:5]
-        predictions  = y_pred[..., 1:5]
-
-        IoU = vectorized_IoU(ground_truth, predictions)
-
-        term_1 = tf.reduce_sum(self.l_object(y_true) * math.square(IoU - y_pred[..., 0]),
+        term_1 = tf.reduce_sum(self.l_object(y_true) * math.square(self.IoU(y_true, y_pred) - y_pred[..., 0]),
                                axis=(-1, -2, -3)) * self.lambda_obj
         term_2 = 0
 
@@ -200,6 +200,25 @@ class YoloLoss(Loss):
             self.l_no_obj = 0
 
         return self.l_noobj
+
+    def IoU(self, y_true, y_pred):
+        """
+
+        calculates the intersection over union of the predictions and the actual values
+
+        :param y_true:
+        :param y_pred:
+        :return:
+        """
+
+        if self.iou is None:
+            # get the co-ords out of the input data
+            ground_truth = y_true[..., 1:5]
+            predictions = y_pred[..., 1:5]
+
+            self.iou = vectorized_IoU(ground_truth, predictions)
+
+        return self.iou
 
 
 def main():
