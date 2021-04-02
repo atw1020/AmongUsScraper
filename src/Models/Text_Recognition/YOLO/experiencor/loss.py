@@ -4,10 +4,27 @@ Author: Arthur
 
 """
 
+import numpy as np
 import tensorflow as tf
 
+from src import constants
 
-def custom_loss(y_true, y_pred):
+GRID_W, GRID_H = constants.yolo_output_grid_dim
+ANCHORS = constants.anchor_boxes
+
+
+def mk_loss_func(lambda_coord,
+                 batch_size):
+
+    return lambda y_true, y_pred: custom_loss(y_true, y_pred,
+                                              lambda_coord,
+                                              batch_size)
+
+
+def custom_loss(y_true, y_pred,
+                COORD_SCALE,
+                BATCH_SIZE,
+                ):
     mask_shape = tf.shape(y_true)[:4]
 
     cell_x = tf.to_float(tf.reshape(tf.tile(tf.range(GRID_W), [GRID_H]), (1, GRID_H, GRID_W, 1, 1)))

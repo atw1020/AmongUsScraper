@@ -77,6 +77,9 @@ class YoloLoss(Loss):
         # take the mean of the mse loss
         mse_loss = tf.reduce_mean(mse_loss, axis=-1)
 
+        print(mse_loss.shape)
+        print(pc_loss.shape)
+
         return pc_loss + mse_loss
 
     def log_error(self, y_true, y_pred):

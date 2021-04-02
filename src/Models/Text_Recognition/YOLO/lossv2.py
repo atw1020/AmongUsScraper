@@ -7,14 +7,36 @@ loss function based on data from:
 
 """
 
+import numpy as np
+
 import tensorflow as tf
 from tensorflow import math
 from tensorflow.keras.losses import Loss
 
 from src import constants
 from src.Models.Text_Recognition import text_utils
-from src.Models.Text_Recognition.YOLO import box_geometry
 from src.Models.Text_Recognition.YOLO import data_generator
+
+
+def vectorized_IoU(y_true, y_pred):
+    """
+
+    computes a vectorized version of the IoU (intersection over union)
+
+    :param y_true: ture y
+    :param y_pred: predicted y
+    :return: intersection over union of all predictions
+    """
+
+    x_overlap = tf.maximum((y_true[..., 2] + y_pred[..., 2]) / 2 - tf.abs(y_true[..., 0] - y_pred[..., 0]), 0)
+    y_overlap = tf.maximum((y_true[..., 3] + y_pred[..., 3]) / 2 - tf.abs(y_true[..., 1] - y_pred[..., 1]), 0)
+
+    intersection = x_overlap * y_overlap
+
+    true_area = y_true[..., 2] * y_true[..., 3]
+    pred_area = y_pred[..., 2] * y_pred[..., 3]
+
+    return intersection / (true_area + pred_area - intersection)
 
 
 class YoloLoss(Loss):
@@ -35,10 +57,10 @@ class YoloLoss(Loss):
         super(YoloLoss, self).__init__()
 
         # extract the lambdas out
-        self.lambda_co_ord=lambda_co_ord
-        self.lambda_co_ord=lambda_class
-        self.lambda_co_ord=lambda_obj
-        self.lambda_co_ord=lambda_no_obj
+        self.lambda_co_ord = lambda_co_ord
+        self.lambda_class  = lambda_class
+        self.lambda_obj    = lambda_obj
+        self.lambda_no_obj = lambda_no_obj
 
         # extract the anchor boxes
         self.anchor_boxes = anchor_boxes
@@ -65,7 +87,11 @@ class YoloLoss(Loss):
 
         self.n_obj = None
 
-        return self.loss_1(y_true, y_pred) + self.loss_3(y_true, y_pred) + self.loss_3(y_true, y_pred)
+        print("loss 1", self.loss_1(y_true, y_pred))
+        print("loss 2", self.loss_2(y_true, y_pred))
+        print("loss 3", self.loss_3(y_true, y_pred))
+
+        return self.loss_1(y_true, y_pred) + self.loss_2(y_true, y_pred) + self.loss_3(y_true, y_pred)
 
     def loss_1(self, y_true, y_pred):
         """
@@ -97,14 +123,33 @@ class YoloLoss(Loss):
         p     = y_true[:, :, :, :, 5:]
         p_hat = y_pred[:, :, :, :, 5:]
 
-        log_error = p * math.log(p_hat)
+        log_error = math.reduce_sum(p * math.log(p_hat), axis=-1)
 
-        return self.lambda_class / self.n_obj * \
-               math.reduce_sum(self.l_object(y_true) * log_error)
+        return - self.lambda_class / self.n_objects(y_true) * \
+               math.reduce_sum(self.l_object(y_true) * log_error,
+                               axis=(-1, -2, -3))
 
     def loss_3(self, y_true, y_pred):
+        """
 
-        return 0
+        computes the object loss
+
+        :param y_true: true y
+        :param y_pred: predicted y
+        :return:
+        """
+
+        # get the co-ords out of the input data
+        ground_truth = y_true[..., 1:5]
+        predictions  = y_pred[..., 1:5]
+
+        IoU = vectorized_IoU(ground_truth, predictions)
+
+        term_1 = tf.reduce_sum(self.l_object(y_true) * math.square(IoU - y_pred[..., 0]),
+                               axis=(-1, -2, -3)) * self.lambda_obj
+        term_2 = 0
+
+        return term_1
 
     def n_objects(self, y_true):
         """
@@ -116,8 +161,7 @@ class YoloLoss(Loss):
         """
 
         if self.n_obj is None:
-            temp = tf.reduce_sum(self.l_object(y_true), axis=(-1, -2, -3))
-            return temp
+            self.n_obj = tf.reduce_sum(self.l_object(y_true), axis=(-1, -2, -3))
 
         return self.n_obj
 
@@ -166,25 +210,15 @@ def main():
     :return:
     """
 
-    path  = "Data/YOLO/Training Data"
-    vocab = text_utils.get_model_vocab()
-
-    dataset = data_generator.gen_dataset(path,
-                                         batch_size=12,
-                                         vocab=vocab,
-                                         shuffle=False)
+    y_pred = np.array([[[[[0.6, 0.4, 0.5, 1.1, 1.2, 0.1, 0.88]]]]])
+    y_true = np.array([[[[[1,   0.5, 0.5, 1,   1.5, 0,      1]]]]])
 
     loss = YoloLoss()
 
-    for x, y in dataset.take(1):
+    # 0.15693409740924835
+    # 0.15693409740924835
 
-        print(y.shape)
-
-        y_true = y
-        y_pred = tf.random.uniform(y.shape,
-                                   dtype=tf.float64)
-
-        print(loss(y_true, y_pred))
+    print(loss(y_true, y_pred))
 
 
 if __name__ == "__main__":

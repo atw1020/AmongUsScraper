@@ -108,6 +108,14 @@ def main():
     assert IoU(box1, box2) * 7 == 1
     assert IoU(box3, box4) * 10 == 2
 
+    box5 = (0.4, 0.5, 1.1, 1.2)
+    box6 = (0.5, 0.5, 1,   1.5)
+
+    print(IoU(box5, box6))
+
+    # 0.8341463414634147
+    # 0.83414634
+
 
 if __name__ == "__main__":
     main()
