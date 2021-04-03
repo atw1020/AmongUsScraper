@@ -248,16 +248,19 @@ def main():
 
     vocab = text_utils.get_model_vocab()
 
-    dataset = data_generator.gen_dataset("Data/YOLO/High Res Training Data",
+    dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
-                                         batch_size=1,
+                                         batch_size=12,
                                          verbose=False,
                                          shuffle=False,
-                                         image_dim=constants.meeting_dimensions_720p)
+                                         image_dim=constants.meeting_dimensions_420p)
 
-    get_letters(dataset.take(6),
+    get_letters(dataset.take(1),
                 vocab,
                 load())
+
+    model = load()
+    model.evaluate(dataset)
 
 
 if __name__ == "__main__":

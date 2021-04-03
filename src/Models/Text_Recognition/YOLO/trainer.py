@@ -10,7 +10,7 @@ import time
 import numpy as np
 
 import tensorflow as tf
-from tensorflow.keras.callbacks import Callback
+from tensorflow.keras.callbacks import Callback, ReduceLROnPlateau
 
 from src import constants
 from src.Models.Text_Recognition import text_utils
@@ -34,7 +34,7 @@ def train_network(dataset,
         model = text_generator.load()
     else:
         model = initializer.init_nn(vocab,
-                                    image_dimensions=constants.meeting_dimensions_720p)
+                                    image_dimensions=constants.meeting_dimensions_420p)
 
     if hasattr(model, "mse_lambda"):
         print("MSE lambda is", model.loss.mse_lambda)
@@ -42,7 +42,12 @@ def train_network(dataset,
     model.summary()
 
     callbacks = [LossBreakdownCallback(dataset),
-                 NanWeightsCallback()]
+                 NanWeightsCallback(),
+                 ReduceLROnPlateau(monitor="loss",
+                                   cooldown=10,
+                                   patience=20,
+                                   verbose=1,
+                                   min_lr=0.000000001)]
 
     model.fit(dataset,
               epochs=10000,
@@ -138,14 +143,14 @@ def main():
     :return:
     """
 
-    training_path = "Data/YOLO/High Res Training Data"
+    training_path = "Data/YOLO/Training Data"
     vocab = text_utils.get_model_vocab()
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
-                                         batch_size=12,
+                                         batch_size=36,
                                          shuffle=False,
-                                         image_dim=constants.meeting_dimensions_720p)
+                                         image_dim=constants.meeting_dimensions_420p)
 
     model = train_network(dataset,
                           vocab,

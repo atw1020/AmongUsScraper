@@ -87,6 +87,9 @@ def init_nn(vocab,
     activation = layers.LeakyReLU()(dropout)
     current = layers.BatchNormalization()(activation)
 
+    current = layers.MaxPooling2D(pool_size=(2, 1),
+                                  strides=(2, 1))(current)
+
     """for i in range(num_layers):
         convolution = layers.Conv2D(filters=int(4 ** (i + 2.5)),
                                     strides=2,
@@ -147,11 +150,11 @@ def init_nn(vocab,
     ideal_width  = constants.ideal_letter_dimensions[1] * dimensions[2] / image_dimensions[1]
 
     # calculate the best whole number stride based on the idea dimensions
-    stride_x = max(int((dimensions[2] - ideal_width) /
-                       (constants.yolo_output_grid_dim[1] - 1)), 1)
+    stride_x = min(max(int((dimensions[2] - ideal_width) /
+                       (constants.yolo_output_grid_dim[1] - 1)), 1), 2)
 
-    stride_y = max(int((dimensions[1] - ideal_height) /
-                       (constants.yolo_output_grid_dim[0] - 1)), 1)
+    stride_y = min(max(int((dimensions[1] - ideal_height) /
+                       (constants.yolo_output_grid_dim[0] - 1)), 1), 2)
 
     # using the exact strides, compute the actual dimensions that need to be used
     kernel_x = dimensions[2] - (constants.yolo_output_grid_dim[1] - 1) * stride_x
@@ -160,11 +163,14 @@ def init_nn(vocab,
     """kernel_x = stride_x
     kernel_y = stride_y"""
 
-    print(kernel_x)
-    print(kernel_y)
+    print("stride_x", stride_x)
+    print("stride_y", stride_y)
+
+    print("kernel_x", kernel_x)
+    print("kernel_y", kernel_y)
 
     # transition to Dense-like outputs
-    pseudo_dense = layers.Conv2D(filters=1024,
+    pseudo_dense = layers.Conv2D(filters=2048,
                                  kernel_size=(kernel_y, kernel_x),
                                  strides=(stride_y, stride_x),
                                  padding="valid")(current)
@@ -173,7 +179,7 @@ def init_nn(vocab,
     current = layers.BatchNormalization()(activation)
 
     for i in range(end_layers):
-        pseudo_dense = layers.Conv2D(filters=512,
+        pseudo_dense = layers.Conv2D(filters=1024,
                                      strides=1,
                                      kernel_size=1,
                                      padding="valid")(current)
@@ -188,8 +194,8 @@ def init_nn(vocab,
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(pseudo_dense)
     current = layers.BatchNormalization()(dropout)
 
-    # output = YoloOutput(output_channels=output_channels)(current)
-    output = current
+    output = YoloOutput(output_channels=output_channels)(current)
+    # output = current
     model = Model(inputs=input_layer,
                   outputs=output)
 
@@ -197,7 +203,7 @@ def init_nn(vocab,
     print(lr)
     optimizer = Adam(learning_rate=lr)
 
-    loss = YoloLoss(mse_lambda=300)
+    loss = YoloLoss(mse_lambda=1000)
     # loss = MeanSquaredError()
 
     model.compile(optimizer=optimizer,
