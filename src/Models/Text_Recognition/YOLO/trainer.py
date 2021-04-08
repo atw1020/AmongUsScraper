@@ -44,13 +44,13 @@ def train_network(dataset,
     callbacks = [LossBreakdownCallback(dataset),
                  NanWeightsCallback(),
                  ReduceLROnPlateau(monitor="loss",
-                                   cooldown=10,
+                                   cooldown=50,
                                    patience=20,
                                    verbose=1,
                                    min_lr=0.000000001)]
 
     model.fit(dataset,
-              epochs=10000,
+              epochs=1000,
               callbacks=callbacks)
 
     return model
@@ -102,8 +102,8 @@ class LossBreakdownCallback(Callback):
 
             t1 = time.time()
 
-            print("pc loss:", total_pc_loss / i)
-            print("mse loss:", total_mse_loss / i)
+            print("pc loss:", total_pc_loss)
+            print("mse loss:", total_mse_loss)
 
             print("calculation took", t1 - t0, "seconds")
 

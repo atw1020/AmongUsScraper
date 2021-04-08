@@ -75,6 +75,7 @@ class YoloLoss(Loss):
                              stack)
 
         # take the mean of the mse loss
+        pc_loss  = tf.reduce_mean(pc_loss,  axis=-1)
         mse_loss = tf.reduce_mean(mse_loss, axis=-1)
 
         return pc_loss + mse_loss
@@ -89,9 +90,8 @@ class YoloLoss(Loss):
         :return: log error
         """
 
-        """return - (self.positive_case_lambda * tf.multiply(y_true, tf.math.log(y_pred)) +
-                  self.negative_case_lambda * tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred))))"""
-        return math.square(y_true - y_pred)
+        return - (self.positive_case_lambda * tf.multiply(y_true, tf.math.log(y_pred)) +
+                  self.negative_case_lambda * tf.multiply((1 - y_true), tf.math.log(abs(1 - y_pred))))
 
     def mappable_log_pc_loss(self, y_true, y_pred):
         """
@@ -107,7 +107,9 @@ class YoloLoss(Loss):
         # calculate the log error
         log_error = self.log_error(y_true, y_pred)
 
-        return log_error[:, :, 0]
+        channels = y_true.shape[-1]
+
+        return log_error[:, :, 0::channels // self.anchor_boxes]
 
     def mappable_mse_loss(self, y_true, y_pred):
         """
@@ -128,15 +130,26 @@ class YoloLoss(Loss):
         squared_error = math.square(y_pred - y_true)
 
         # mask out the log error and mse
-        log_mask = tf.concat([tf.ones((H, W, 3)),
-                                        tf.zeros((H, W, 2)),
-                                        tf.ones((H, W, output_channels - 5))], axis=-1)
+        log_mask = tf.concat([tf.zeros((H, W, 1)),
+                              tf.ones((H, W, 2)),
+                              tf.zeros((H, W, 2)),
+                              tf.ones((H, W, output_channels - 5))], axis=-1)
+
+        mse_mask = tf.concat([tf.zeros((H, W, 1)),
+                              tf.zeros((H, W, 2)),
+                              tf.ones((H, W, 2)),
+                              tf.zeros((H, W, output_channels - 5))], axis=-1)
 
         log_mask = tf.concat([log_mask for i in range(self.anchor_boxes)],
                              axis=-1)
 
-        error = tf.math.multiply_no_nan(squared_error, 1 - log_mask) + \
+        mse_mask = tf.concat([mse_mask for i in range(self.anchor_boxes)],
+                             axis=-1)
+
+        error = tf.math.multiply_no_nan(squared_error, mse_mask) + \
                 tf.math.multiply_no_nan(log_error, log_mask)
+
+        # remove the first term of the error
 
         # reshape y
         y_true_first_term = tf.reshape(y_true, shape=y_true.shape + (1,))

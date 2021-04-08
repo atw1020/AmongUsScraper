@@ -1,0 +1,3 @@
+run,mse_lambda,pseudo dense dimension, end layers dimension
+1,300,1024,512
+2,1000,2048,1024

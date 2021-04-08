@@ -5,9 +5,11 @@ Author: Arthur Wesley
 """
 
 import os
+import sys
 
 import numpy as np
 
+import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import save_img
 
@@ -127,6 +129,7 @@ def get_letters(dataset,
     for i in range(M):
 
         # save a greyscale image
+        print(y_true.shape)
         greyscale = y_true[i, :, :, output_channels].reshape((V, H, 1))
 
         for j in range(constants.anchor_boxes):
@@ -250,7 +253,7 @@ def main():
 
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
-                                         batch_size=12,
+                                         batch_size=1,
                                          verbose=False,
                                          shuffle=False,
                                          image_dim=constants.meeting_dimensions_420p)
@@ -260,7 +263,14 @@ def main():
                 load())
 
     model = load()
-    model.evaluate(dataset)
+
+    for x, y in dataset.take(2):
+        y_pred = model(x)
+
+        pc_loss, mse_loss = model.loss.loss_summary(y, y_pred)
+
+        """pc_loss = tf.reduce_mean(pc_loss).numpy()
+        mse_loss = tf.reduce_mean(mse_loss).numpy()"""
 
 
 if __name__ == "__main__":
