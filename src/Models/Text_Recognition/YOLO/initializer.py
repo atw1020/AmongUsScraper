@@ -70,25 +70,22 @@ def init_nn(vocab,
     # num_layers = 3
     duplicates = 3
 
-    convolution = layers.Conv2D(filters=16,
-                                strides=2,
+    convolution = layers.Conv2D(filters=32,
+                                strides=1,
                                 kernel_size=7,
-                                padding="valid")(current)
+                                padding="same")(current)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     activation = layers.LeakyReLU()(dropout)
     current = layers.BatchNormalization()(activation)
 
-    convolution = layers.Conv2D(filters=32,
+    convolution = layers.Conv2D(filters=64,
                                 strides=2,
                                 kernel_size=(vertical_convolution_size,
                                              horizontal_convolution_size),
-                                padding="valid")(current)
+                                padding="same")(current)
     dropout = layers.Dropout(rate=constants.text_rec_dropout)(convolution)
     activation = layers.LeakyReLU()(dropout)
     current = layers.BatchNormalization()(activation)
-
-    current = layers.MaxPooling2D(pool_size=(2, 1),
-                                  strides=(2, 1))(current)
 
     """for i in range(num_layers):
         convolution = layers.Conv2D(filters=int(4 ** (i + 2.5)),
@@ -112,7 +109,7 @@ def init_nn(vocab,
 
     for i in range(duplicates):
 
-        convolution = layers.Conv2D(filters=128,
+        convolution = layers.Conv2D(filters=256,
                                     strides=1,
                                     kernel_size=1,
                                     padding="same")(current)
@@ -120,7 +117,7 @@ def init_nn(vocab,
         activation = layers.LeakyReLU()(dropout)
         current = layers.BatchNormalization()(activation)
 
-    convolution = layers.Conv2D(filters=256,
+    convolution = layers.Conv2D(filters=1024,
                                 strides=2,
                                 kernel_size=(vertical_convolution_size,
                                              horizontal_convolution_size),
@@ -131,7 +128,7 @@ def init_nn(vocab,
 
     for i in range(duplicates):
 
-        convolution = layers.Conv2D(filters=256,
+        convolution = layers.Conv2D(filters=2048,
                                     strides=1,
                                     kernel_size=1,
                                     padding="same")(current)
@@ -179,7 +176,7 @@ def init_nn(vocab,
     current = layers.BatchNormalization()(activation)
 
     for i in range(end_layers):
-        pseudo_dense = layers.Conv2D(filters=1024,
+        pseudo_dense = layers.Conv2D(filters=2048,
                                      strides=1,
                                      kernel_size=1,
                                      padding="valid")(current)

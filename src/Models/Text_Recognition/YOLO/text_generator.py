@@ -253,14 +253,14 @@ def main():
 
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
-                                         batch_size=1,
+                                         batch_size=180,
                                          verbose=False,
                                          shuffle=False,
                                          image_dim=constants.meeting_dimensions_420p)
 
-    get_letters(dataset.take(1),
+    """get_letters(dataset.take(1),
                 vocab,
-                load())
+                load())"""
 
     model = load()
 
@@ -269,8 +269,11 @@ def main():
 
         pc_loss, mse_loss = model.loss.loss_summary(y, y_pred)
 
-        """pc_loss = tf.reduce_mean(pc_loss).numpy()
-        mse_loss = tf.reduce_mean(mse_loss).numpy()"""
+        pc_loss = tf.reduce_mean(pc_loss).numpy()
+        mse_loss = tf.reduce_mean(mse_loss).numpy()
+
+        print(pc_loss)
+        print(mse_loss)
 
 
 if __name__ == "__main__":

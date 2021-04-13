@@ -148,11 +148,11 @@ def main():
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
-                                         batch_size=36,
+                                         batch_size=12,
                                          shuffle=False,
                                          image_dim=constants.meeting_dimensions_420p)
 
-    model = train_network(dataset,
+    model = train_network(dataset.take(1),
                           vocab,
                           reload=False)
 
