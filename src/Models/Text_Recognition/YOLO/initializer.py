@@ -128,7 +128,7 @@ def init_nn(vocab,
 
     for i in range(duplicates):
 
-        convolution = layers.Conv2D(filters=2048,
+        convolution = layers.Conv2D(filters=1024,
                                     strides=1,
                                     kernel_size=1,
                                     padding="same")(current)
@@ -167,7 +167,7 @@ def init_nn(vocab,
     print("kernel_y", kernel_y)
 
     # transition to Dense-like outputs
-    pseudo_dense = layers.Conv2D(filters=2048,
+    pseudo_dense = layers.Conv2D(filters=1024,
                                  kernel_size=(kernel_y, kernel_x),
                                  strides=(stride_y, stride_x),
                                  padding="valid")(current)
@@ -176,7 +176,7 @@ def init_nn(vocab,
     current = layers.BatchNormalization()(activation)
 
     for i in range(end_layers):
-        pseudo_dense = layers.Conv2D(filters=2048,
+        pseudo_dense = layers.Conv2D(filters=1024,
                                      strides=1,
                                      kernel_size=1,
                                      padding="valid")(current)

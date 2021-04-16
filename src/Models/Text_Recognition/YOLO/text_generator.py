@@ -112,10 +112,10 @@ def get_letters(dataset,
     vocab = text_utils.reverse_vocab(vocab)
     output_channels = 5 + len(vocab)
 
-    predictions = model.predict(dataset)
+    # predictions = model.predict(dataset)
     images = [x for x, y in dataset]
-    y_true = np.array([y.numpy()[0] for x, y in dataset])
-    # y_true = predictions
+    predictions = np.array([y.numpy()[0] for x, y in dataset])
+    y_true = predictions
 
     # go through the images
     M, V, H, O = predictions.shape
@@ -130,9 +130,9 @@ def get_letters(dataset,
 
         # save a greyscale image
         print(y_true.shape)
-        greyscale = y_true[i, :, :, output_channels].reshape((V, H, 1))
+        # greyscale = y_true[i, :, :, output_channels].reshape((V, H, 1))
 
-        for j in range(constants.anchor_boxes):
+        for j in range(1):  # constants.anchor_boxes):
 
             # save a greyscale image
             greyscale = predictions[i, :, :, j * output_channels].reshape((V, H, 1))
@@ -187,6 +187,8 @@ def get_letters(dataset,
 
             box_1 = (x1, y1, w1, h1)
 
+            print("box 1 was", box_1)
+
             # go through all of the remaining points
             for j, second_box in enumerate(found_boxes[index + 1:]):
 
@@ -203,10 +205,14 @@ def get_letters(dataset,
 
                 box_2 = (x2, y2, w2, h2)
 
+                print("box 2 was", box_2)
+
                 IoU = box_geometry.IoU(box_1, box_2)
 
+                print(IoU)
+
                 if IoU > constants.IoU_threshold:
-                    del found_boxes[j]
+                    del found_boxes[index + 1 + j]
 
             index += 1
 
@@ -253,16 +259,16 @@ def main():
 
     dataset = data_generator.gen_dataset("Data/YOLO/Training Data",
                                          vocab,
-                                         batch_size=180,
+                                         batch_size=100,
                                          verbose=False,
                                          shuffle=False,
                                          image_dim=constants.meeting_dimensions_420p)
 
-    """get_letters(dataset.take(1),
+    get_letters(dataset.take(1),
                 vocab,
-                load())"""
+                load())
 
-    model = load()
+    """model = load()
 
     for x, y in dataset.take(2):
         y_pred = model(x)
@@ -273,7 +279,7 @@ def main():
         mse_loss = tf.reduce_mean(mse_loss).numpy()
 
         print(pc_loss)
-        print(mse_loss)
+        print(mse_loss)"""
 
 
 if __name__ == "__main__":

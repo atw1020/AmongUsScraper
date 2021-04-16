@@ -15,6 +15,7 @@ from tensorflow.keras.preprocessing.image import load_img, save_img, img_to_arra
 
 from src import constants
 from src.Models.Text_Recognition import text_utils
+from src.Models.Text_Recognition.YOLO import box_geometry
 
 total_letters = 0
 overlapping_letters = 0
@@ -80,40 +81,51 @@ def gen_label(filename,
 
         # now set the appropriate parameters
 
-        # get the grid co-ordinates of the center
-        x = center_x // step_x
-        y = center_y // step_y
+        bounding_box = (center_x, center_y, width, height)
 
-        # find the anchor box for this letter
+        # go through all of the boxes that are overlapped in the x dimension
+        for x in range(left // step_x, (left + width) // step_x + 1):
+            for y in range(top // step_y, (top + height) // step_y + 1):
 
-        anchor_base = 0
+                # check to see if the IoU of this grid cell is higher than the threshold
 
-        while output[y, x, anchor_base] == 1:
-            if anchor_base < constants.anchor_boxes * output_channels:
-                anchor_base += output_channels
-            else:
-                raise Exception("Not Enough Anchor Boxes for image " + filename)
+                grid_box = ((x + 0.5) * step_x, (y + 0.5) * step_y, step_x, step_y)
 
-        # set PC
-        output[y, x, anchor_base] = 1
+                IoU = box_geometry.IoU(bounding_box, grid_box)
 
-        # note that all numbers are normalized by the step
+                if IoU > 0.4:
 
-        # set center co-ords
-        output[y, x, anchor_base + 1] = (center_x % step_x) / step_x
-        output[y, x, anchor_base + 2] = (center_y % step_y) / step_y
+                    # find the anchor box for this letter
+                    anchor_base = 0
 
-        # set the width and height
-        output[y, x, anchor_base + 3] = width / step_x
-        output[y, x, anchor_base + 4] = height / step_y
+                    while output[y, x, anchor_base] == 1:
+                        if anchor_base < (constants.anchor_boxes - 1) * output_channels:
+                            anchor_base += output_channels
+                        else:
+                            raise Exception("Not Enough Anchor Boxes for image " + filename)
 
-        # get the character ID
-        character_id = vocab[items[0]]
+                    # set PC
+                    output[y, x, anchor_base] = 1
 
-        # set the output
-        output[y, x, anchor_base + character_id + 5] = 1
+                    # note that all numbers are normalized by the step
 
-        total_letters += 1
+                    # set center co-ords
+                    output[y, x, anchor_base + 1] = min(max(center_x / step_x - x, 0), 1)
+                    # output[y, x, anchor_base + 1] = (center_x % step_x) / step_x
+                    output[y, x, anchor_base + 2] = min(max(center_y / step_y - y, 0), 1)
+                    # output[y, x, anchor_base + 1] = (center_y % step_y) / step_y
+
+                    # set the width and height
+                    output[y, x, anchor_base + 3] = width / step_x
+                    output[y, x, anchor_base + 4] = height / step_y
+
+                    # get the character ID
+                    character_id = vocab[items[0]]
+
+                    # set the output
+                    output[y, x, anchor_base + character_id + 5] = 1
+
+                    total_letters += 1
 
     return output
 
@@ -223,8 +235,10 @@ def main():
                           vocab=vocab,
                           shuffle=False)
 
-    for x, y in dataset.take(1):
-        save_img("test 3.jpg", x[0])
+    for x, y in dataset:
+        print(y.shape)
+        print(y)
+        break
 
 
 if __name__ == "__main__":

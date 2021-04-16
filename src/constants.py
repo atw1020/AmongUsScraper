@@ -92,11 +92,11 @@ YOLO parameters
 """
 
 
-yolo_output_grid_dim = (2, 32)
+yolo_output_grid_dim = (2, 60)
 image_detection_dropoff = 0.6
 ideal_letter_dimensions = (30, 30)
 IoU_threshold = 0.5
-anchor_boxes = 5
+anchor_boxes = 3
 box_color = (21, 53, 232)
 
 """

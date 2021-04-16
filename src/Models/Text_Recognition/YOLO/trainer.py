@@ -148,7 +148,7 @@ def main():
 
     dataset = data_generator.gen_dataset(training_path,
                                          vocab=vocab,
-                                         batch_size=12,
+                                         batch_size=1,
                                          shuffle=False,
                                          image_dim=constants.meeting_dimensions_420p)
 
